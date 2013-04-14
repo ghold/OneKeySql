@@ -1,6 +1,6 @@
 class handler(object):
     def callback(self,  name,  *args):
-        method = "call_" + name
-        if self.callable(method):
+        method = getattr(self,  name,  None) 
+        if callable(method):
             return method(*args)
             
