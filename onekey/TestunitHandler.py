@@ -1,7 +1,6 @@
 from xml.sax.handler import ContentHandler
-from xml.sax import parse
 
-class testunit_handler(ContentHandler):
+class TestunitHandler(ContentHandler):
     def __init__(self):
         self.data = []
         self.testunits = {}
@@ -27,7 +26,3 @@ class testunit_handler(ContentHandler):
     def characters(self,  string):
         if string.strip() != '':
             self.data.append(string.strip())
-            
-test = testunit_handler()    
-parse('sample.xml',  test)
-print(test.testunits)
