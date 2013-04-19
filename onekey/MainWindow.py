@@ -1,18 +1,28 @@
-from PyQt4 import QtGui
-from ui_previewer import Ui_Form
+from PyQt4 import QtGui, QtCore, Qt
+from OkItem import OkItem
 from xml.sax import parse
 from TestunitHandler import TestunitHandler
 
-class MainWindow(QtGui.QWidget,  Ui_Form):
+class MainWindow(QtGui.QWidget):
     def __init__(self,  parent=None):
         QtGui.QWidget.__init__(self,  parent)
-        #self.setWindowFlags(Qt.Qt.FramelessWindowHint)
+        self.setWindowFlags(Qt.Qt.FramelessWindowHint|Qt.Qt.CustomizeWindowHint|Qt.Qt.WindowSystemMenuHint)
 
         # Set up the model.
         self.setupModel()
+        
+        #test
+        self.scene = QtGui.QGraphicsScene(self)
+        self.scene.setSceneRect(0, 0, 800, 600)
+        #textItem = QtGui.QGraphicsTextItem("hello")
+        self.scene.addText("hello")
+        self.gView = QtGui.QGraphicsView(self.scene,  self)
+        self.gView.show()
+        
+        
 
         # Set up the widgets.
-        nameLabel = QtGui.QLabel("Na&me:")
+        nameLabel = QtGui.QLabel("&Name:")
         nameEdit = QtGui.QLineEdit()
         addressLabel = QtGui.QLabel("&Address:")
         addressEdit = QtGui.QTextEdit()
@@ -77,8 +87,33 @@ class MainWindow(QtGui.QWidget,  Ui_Form):
         self.previousButton.setEnabled(row > 0)
         self.nextButton.setEnabled(row < self.model.rowCount() - 1)
 
-            
+    def mousePressEvent(self,event):
+       #鼠标点击事件
+       if event.button() == QtCore.Qt.LeftButton:
+           self.dragPosition = event.globalPos() - self.frameGeometry().topLeft()
+           event.accept()
+           
+    def mouseMoveEvent(self,event):
+        if event.buttons() ==QtCore.Qt.LeftButton and not self.isMaximized():
+            self.move(event.globalPos() - self.dragPosition)
+            event.accept() 
     
+    def mouseDoubleClickEvent(self,  event):
+        if event.buttons() == QtCore.Qt.LeftButton:
+            if self.isMaximized():
+                self.showNormal()
+                event.accept()
+            else:
+                self.showMaximized()
+                event.accept()
+        
+    def paintEvent(self,  event):
+        tmpPainter = QtGui.QPainter()
+        tmpPainter.begin(self)
+        tmpBrush = QtGui.QBrush(Qt.Qt.white)
+        tmpPainter.fillRect(QtCore.QRectF(self.rect()), tmpBrush)
+        tmpPainter.end()
+        event.accept()
         
     def exit(self):
         self.close()
