@@ -1,0 +1,15 @@
+from PyQt4 import QtGui, QtCore, Qt
+
+class ModuleButton(QtGui.QPushButton):
+    def __init__(self,  text, parent=None):
+        QtGui.QPushButton.__init__(self, text, parent)
+        #self.setFlat(False)
+        
+    def paintEvent(self,  event):
+        tmpPainter = QtGui.QPainter()
+        tmpPainter.begin(self)
+        tmpBrush = QtGui.QBrush(QtGui.QColor(110,  202,  199))
+        tmpPainter.fillRect(QtCore.QRectF(self.rect()), tmpBrush)
+        tmpPainter.drawText(QtCore.QRectF(self.rect()),  Qt.Qt.AlignVCenter, self.text())
+        tmpPainter.end()
+        event.accept()

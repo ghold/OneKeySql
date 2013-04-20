@@ -1,5 +1,5 @@
 from PyQt4 import QtGui, QtCore, Qt
-from OkItem import OkItem
+from ModuleButton import ModuleButton
 from xml.sax import parse
 from TestunitHandler import TestunitHandler
 
@@ -7,17 +7,15 @@ class MainWindow(QtGui.QWidget):
     def __init__(self,  parent=None):
         QtGui.QWidget.__init__(self,  parent)
         self.setWindowFlags(Qt.Qt.FramelessWindowHint|Qt.Qt.CustomizeWindowHint|Qt.Qt.WindowSystemMenuHint)
+        self.screen = QtGui.QDesktopWidget().screenGeometry()
+        self.setGeometry(QtCore.QRect().adjusted(self.screen.width()/2 - 500, self.screen.height()/2 - 300, 
+                self.screen.width()/2 + 500,  self.screen.height()/2 + 300))
 
         # Set up the model.
         self.setupModel()
         
         #test
-        self.scene = QtGui.QGraphicsScene(self)
-        self.scene.setSceneRect(0, 0, 800, 600)
-        #textItem = QtGui.QGraphicsTextItem("hello")
-        self.scene.addText("hello")
-        self.gView = QtGui.QGraphicsView(self.scene,  self)
-        self.gView.show()
+        #tmpGV
         
         
 
@@ -28,8 +26,8 @@ class MainWindow(QtGui.QWidget):
         addressEdit = QtGui.QTextEdit()
         typeLabel = QtGui.QLabel("&Type:")
         typeComboBox = QtGui.QComboBox()
-        self.nextButton = QtGui.QPushButton("&Next")
-        self.previousButton = QtGui.QPushButton("&Previous")
+        self.nextButton = ModuleButton("Next")
+        self.previousButton = ModuleButton("Previous")
         nameLabel.setBuddy(nameEdit)
         addressLabel.setBuddy(addressEdit)
         typeLabel.setBuddy(typeComboBox)
