@@ -1,8 +1,9 @@
 from PyQt4 import QtGui, QtCore, Qt
 from ModuleButton import ModuleButton
+from OkToolBar import OkToolBar
 from xml.sax import parse
 from TestunitHandler import TestunitHandler
-
+from OkListItem import OkListItem
 class MainWindow(QtGui.QWidget):
     def __init__(self,  parent=None):
         QtGui.QWidget.__init__(self,  parent)
@@ -10,16 +11,29 @@ class MainWindow(QtGui.QWidget):
         self.screen = QtGui.QDesktopWidget().screenGeometry()
         self.setGeometry(QtCore.QRect().adjusted(self.screen.width()/2 - 500, self.screen.height()/2 - 300, 
                 self.screen.width()/2 + 500,  self.screen.height()/2 + 300))
+                
+        self.toolBar = OkToolBar(self)
 
         # Set up the model.
         self.setupModel()
         
         #test
+        item1 = OkListItem("Hello")
+        item2 = OkListItem("Hello")
+        listWidget = QtGui.QListWidget()
+        listWidget.setFrameStyle(QtGui.QFrame.NoFrame)
+        listWidget.setSelectionMode(0)
+        listWidget.setFocusPolicy(Qt.Qt.NoFocus)
+        listWidget.addItem(item1)
+        listWidget.addItem(item2)
+        
         #tmpGV
         
         
 
         # Set up the widgets.
+        horizontalSpacer = QtGui.QSpacerItem(20, 30)
+        verticalSpacer = QtGui.QSpacerItem(20, 30, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         nameLabel = QtGui.QLabel("&Name:")
         nameEdit = QtGui.QLineEdit()
         addressLabel = QtGui.QLabel("&Address:")
@@ -45,16 +59,36 @@ class MainWindow(QtGui.QWidget):
         self.nextButton.clicked.connect(self.mapper.toNext)
         self.mapper.currentIndexChanged.connect(self.updateButtons)
 
-        layout = QtGui.QGridLayout()
-        layout.addWidget(nameLabel, 0, 0, 1, 1)
-        layout.addWidget(nameEdit, 0, 1, 1, 1)
-        layout.addWidget(self.previousButton, 0, 2, 1, 1)
-        layout.addWidget(addressLabel, 1, 0, 1, 1)
-        layout.addWidget(addressEdit, 1, 1, 2, 1)
-        layout.addWidget(self.nextButton, 1, 2, 1, 1)
-        layout.addWidget(typeLabel, 3, 0, 1, 1)
-        layout.addWidget(typeComboBox, 3, 1, 1, 1)
-        self.setLayout(layout)
+        gridLayout = QtGui.QGridLayout()
+        gridLayout.setOriginCorner(Qt.Qt.TopLeftCorner)
+        gridLayout.addItem(horizontalSpacer, 0, 0, 1, 4)
+        gridLayout.addItem(verticalSpacer, 1, 0)
+        mainSplitter = QtGui.QSplitter()
+        mainSplitter.setHandleWidth(1)
+        gridLayout.addWidget(mainSplitter,  1, 1, 1, 1, Qt.Qt.AlignTop)
+        
+        moduleWidget = QtGui.QWidget()
+        moduleScene = QtGui.QVBoxLayout(moduleWidget)
+        moduleScene.addWidget(self.previousButton)
+        moduleScene.addWidget(self.nextButton)
+        
+        mainSplitter.addWidget(moduleWidget)
+        
+        moduleWidget2 = QtGui.QWidget()
+        moduleScene2 = QtGui.QVBoxLayout(moduleWidget2)
+        moduleScene2.addWidget(nameLabel)
+        moduleScene2.addWidget(addressLabel)
+        
+        mainSplitter.addWidget(listWidget)
+        #layout.addWidget(nameLabel, 1, 2, 1, 1)
+        #layout.addWidget(nameEdit, 1, 1, 1, 1)
+        #layout.addWidget(self.previousButton, 1, 0, 1, 1)
+        #layout.addWidget(addressLabel, 2, 2, 1, 1)
+        #layout.addWidget(addressEdit, 2, 1, 2, 1)
+        #layout.addWidget(self.nextButton, 2, 0, 1, 1)
+        #layout.addWidget(typeLabel, 4, 0, 1, 1)
+        #layout.addWidget(typeComboBox, 4, 1, 1, 1)
+        self.setLayout(gridLayout)
 
         self.setWindowTitle("Delegate Widget Mapper")
         self.mapper.toFirst()
@@ -86,7 +120,7 @@ class MainWindow(QtGui.QWidget):
         self.nextButton.setEnabled(row < self.model.rowCount() - 1)
 
     def mousePressEvent(self,event):
-       #鼠标点击事件
+        
        if event.button() == QtCore.Qt.LeftButton:
            self.dragPosition = event.globalPos() - self.frameGeometry().topLeft()
            event.accept()
@@ -96,14 +130,6 @@ class MainWindow(QtGui.QWidget):
             self.move(event.globalPos() - self.dragPosition)
             event.accept() 
     
-    def mouseDoubleClickEvent(self,  event):
-        if event.buttons() == QtCore.Qt.LeftButton:
-            if self.isMaximized():
-                self.showNormal()
-                event.accept()
-            else:
-                self.showMaximized()
-                event.accept()
         
     def paintEvent(self,  event):
         tmpPainter = QtGui.QPainter()
