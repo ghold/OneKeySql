@@ -1,0 +1,77 @@
+from xml.sax.handler import ContentHandler
+#from xml.sax import parse
+#import json
+
+class OkTestunitHandler(ContentHandler):
+    def __init__(self):
+        self.data = []
+        self.testunits = {}
+        self.testunit_id = ''
+        self.prifix = ''
+        
+    def startElement(self,  name,  attrs):
+        if name == 'testunit':
+            self.testunit_id = 'testunit_' + attrs['id']
+            self.testunits[self.testunit_id] = {}
+            for key,  val in attrs.items():
+                self.testunits[self.testunit_id][key] = val
+            self.testunits[self.testunit_id]['data'] = {}
+            
+    def endElement(self,  name):
+        if name != 'testunits' and name != 'testunit':
+            self.testunits[self.testunit_id]['data'][name] = self.data
+            self.data = []
+            
+    def characters(self,  string):
+        if string.strip() != '':
+            self.data.append(string.strip())
+            
+    def getTestunits(self):
+        return self.testunits
+        
+class OkTestcaseHandler(ContentHandler):
+    def __init__(self):
+        self.data = []
+        self.testcases = {}
+        self.testcase_id = ''
+        self.step = 1
+        self.tagname = ''
+        
+    def startElement(self,  name,  attrs):
+        if name == 'testcase':
+            self.step = 1
+            self.testcase_id = 'testcase_' + attrs['id']
+            self.testcases[self.testcase_id] = {}
+            for key,  val in attrs.items():
+                self.testcases[self.testcase_id][key] = val
+            self.testcases[self.testcase_id]['data'] = {}
+        elif name == 'testunits':
+            self.testcases[self.testcase_id]['data']['testunits'] = {}
+        elif name == 'testunit':
+            self.testcases[self.testcase_id]['data']['testunits'][self.step] = {}
+            for key,  val in attrs.items():
+                self.testcases[self.testcase_id]['data']['testunits'][self.step][key] = val
+            self.testcases[self.testcase_id]['data']['testunits'][self.step]['data'] = {}
+        elif name == 'tag':
+            self.tagname = attrs['name']
+                        
+    def endElement(self,  name):
+        if name == 'tag':
+            self.testcases[self.testcase_id]['data']['testunits'][self.step]['data'][self.tagname] = self.data
+        elif name == 'name' or name == 'desc'or name == 'var':
+            self.testcases[self.testcase_id]['data'][name] = self.data
+        elif name == 'testunit':
+            self.step += 1
+        self.data = []
+        
+    def characters(self,  string):
+        if string.strip() != '':
+            self.data.append(string.strip())
+            
+    def getTestcases(self):
+        return self.testcases
+
+#test = OkTestcaseHandler()
+#parse('testcase.xml', test)
+#jsonDumpsIndentStr = json.dumps(test.getTestcases(), indent=1)
+#print(jsonDumpsIndentStr)
