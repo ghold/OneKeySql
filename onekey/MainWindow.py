@@ -2,7 +2,7 @@ from PyQt4 import QtGui, QtCore, Qt
 from ModuleButton import ModuleButton
 from OkToolBar import OkToolBar
 from xml.sax import parse
-from TestunitHandler import TestunitHandler
+from OkXmlHandler import OkTestunitHandler
 from OkListItem import OkListItem
 class MainWindow(QtGui.QWidget):
     def __init__(self,  parent=None):
@@ -40,8 +40,8 @@ class MainWindow(QtGui.QWidget):
         addressEdit = QtGui.QTextEdit()
         typeLabel = QtGui.QLabel("&Type:")
         typeComboBox = QtGui.QComboBox()
-        self.nextButton = ModuleButton("Next")
-        self.previousButton = ModuleButton("Previous")
+        self.nextButton = ModuleButton("下一个")
+        self.previousButton = ModuleButton("上一个")
         nameLabel.setBuddy(nameEdit)
         addressLabel.setBuddy(addressEdit)
         typeLabel.setBuddy(typeComboBox)
@@ -65,12 +65,12 @@ class MainWindow(QtGui.QWidget):
         gridLayout.addItem(verticalSpacer, 1, 0)
         mainSplitter = QtGui.QSplitter()
         mainSplitter.setHandleWidth(1)
-        gridLayout.addWidget(mainSplitter,  1, 1, 1, 1, Qt.Qt.AlignTop)
+        gridLayout.addWidget(mainSplitter,  1, 1, 1, 1)
         
         moduleWidget = QtGui.QWidget()
         moduleScene = QtGui.QVBoxLayout(moduleWidget)
-        moduleScene.addWidget(self.previousButton)
-        moduleScene.addWidget(self.nextButton)
+        moduleScene.addWidget(self.previousButton, 0, Qt.Qt.AlignTop)
+        moduleScene.addWidget(self.nextButton, 1, Qt.Qt.AlignTop)
         
         mainSplitter.addWidget(moduleWidget)
         
@@ -99,11 +99,11 @@ class MainWindow(QtGui.QWidget):
 
         self.model = QtGui.QStandardItemModel(5, 3, self)
         
-        test = TestunitHandler()
+        test = OkTestunitHandler()
         parse("sample.xml",  test)
         
         names = ("Alice", "Bob", "Carol", "Donald", "Emma")
-        addresses = test.testunits['data']['testunit_00002']['id']
+        addresses = test.testunits['testunit_00002']['id']
         print(addresses)
         types = ("0", "1", "2", "0", "2")
         
