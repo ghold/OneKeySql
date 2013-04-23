@@ -1,6 +1,6 @@
 from PyQt4 import QtGui, QtCore, Qt
 
-class ModuleButton(QtGui.QPushButton):
+class OkModuleButton(QtGui.QPushButton):
     def __init__(self,  text, parent=None):
         QtGui.QPushButton.__init__(self, text, parent)
         self.setMinimumSize(200, 35)

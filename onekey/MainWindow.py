@@ -1,5 +1,5 @@
 from PyQt4 import QtGui, QtCore, Qt
-from ModuleButton import ModuleButton
+from OkModuleButton import OkModuleButton
 from OkToolBar import OkToolBar
 from OkModel import OkModel
 from OkListWidget import OkListWidget
@@ -21,11 +21,8 @@ class MainWindow(QtGui.QWidget):
         print(self.model.invisibleRootItem().rowCount())
         
         #test
-        item1 = OkListItem("Hello")
-        item2 = OkListItem("Hello")
         listWidget = OkListWidget()
-        listWidget.addItem(item1)
-        listWidget.addItem(item2)
+        listWidget.makeupCase("testcase.xml")
         #tmpGV
         
         
@@ -33,8 +30,8 @@ class MainWindow(QtGui.QWidget):
         # Set up the widgets.
         horizontalSpacer = QtGui.QSpacerItem(20, 30)
         verticalSpacer = QtGui.QSpacerItem(20, 30, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
-        self.nextButton = ModuleButton("下一个")
-        self.previousButton = ModuleButton("上一个")
+        self.nextButton = OkModuleButton("下一个")
+        self.previousButton = OkModuleButton("上一个")
 
         gridLayout = QtGui.QGridLayout()
         gridLayout.setOriginCorner(Qt.Qt.TopLeftCorner)

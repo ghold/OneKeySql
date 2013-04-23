@@ -6,20 +6,16 @@ class OkModel(QtGui.QStandardItemModel):
     
     def __init__(self,  file, handler, parent = None):
         QtGui.QStandardItemModel.__init__(self,  parent)
-        self.parentItem = self.invisibleRootItem()
+        self.appendRow(QtGui.QStandardItem(file))
         self.handler = handler()
         parse(file, self.handler)
         self.data = self.handler.getXmlData()
-        self.setupModel(self.data, self.parentItem)
+        self.setupModel(self.data, self.item(0))
         
-    def setupModel(self, tmpData,  tmpItem):
-        for key,  val in tmpData.items():
+    def setupModel(self, t_data,  t_item):
+        for key,  val in t_data.items():
             item = QtGui.QStandardItem(key)
-            tmpItem.appendRow(item)
+            t_item.appendRow(item)
             item.setData(val)
             if isinstance(val, dict):
                 self.setupModel(val, item)
-            
-#if __name__ == '__main__':
-#    test = OkTestCaseModel("testcase.xml")
-#   print(test.invisibleRootItem().child(0).text())
