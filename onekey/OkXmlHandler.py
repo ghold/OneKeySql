@@ -4,7 +4,7 @@ from xml.sax.handler import ContentHandler
 
 class OkTestunitHandler(ContentHandler):
     def __init__(self):
-        self.data = []
+        self.data = ''
         self.testunits = {}
         self.testunit_id = ''
         self.prifix = ''
@@ -20,18 +20,18 @@ class OkTestunitHandler(ContentHandler):
     def endElement(self,  name):
         if name != 'testunits' and name != 'testunit':
             self.testunits[self.testunit_id]['data'][name] = self.data
-            self.data = []
+            self.data = ''
             
     def characters(self,  string):
         if string.strip() != '':
-            self.data.append(string.strip())
+            self.data = string.strip()
             
-    def getTestunits(self):
+    def getXmlData(self):
         return self.testunits
         
 class OkTestcaseHandler(ContentHandler):
     def __init__(self):
-        self.data = []
+        self.data = ''
         self.testcases = {}
         self.testcase_id = ''
         self.step = 1
@@ -45,30 +45,30 @@ class OkTestcaseHandler(ContentHandler):
             for key,  val in attrs.items():
                 self.testcases[self.testcase_id][key] = val
             self.testcases[self.testcase_id]['data'] = {}
-        elif name == 'testunits':
-            self.testcases[self.testcase_id]['data']['testunits'] = {}
-        elif name == 'testunit':
-            self.testcases[self.testcase_id]['data']['testunits'][self.step] = {}
+        elif name == 'steps':
+            self.testcases[self.testcase_id]['data']['steps'] = {}
+        elif name == 'step':
+            self.testcases[self.testcase_id]['data']['steps'][self.step] = {}
             for key,  val in attrs.items():
-                self.testcases[self.testcase_id]['data']['testunits'][self.step][key] = val
-            self.testcases[self.testcase_id]['data']['testunits'][self.step]['data'] = {}
+                self.testcases[self.testcase_id]['data']['steps'][self.step][key] = val
+            self.testcases[self.testcase_id]['data']['steps'][self.step]['tags'] = {}
         elif name == 'tag':
             self.tagname = attrs['name']
                         
     def endElement(self,  name):
         if name == 'tag':
-            self.testcases[self.testcase_id]['data']['testunits'][self.step]['data'][self.tagname] = self.data
+            self.testcases[self.testcase_id]['data']['steps'][self.step]['tags'][self.tagname] = self.data
         elif name == 'name' or name == 'desc'or name == 'var':
             self.testcases[self.testcase_id]['data'][name] = self.data
-        elif name == 'testunit':
+        elif name == 'step':
             self.step += 1
-        self.data = []
+        self.data = ''
         
     def characters(self,  string):
         if string.strip() != '':
-            self.data.append(string.strip())
+            self.data = string.strip()
             
-    def getTestcases(self):
+    def getXmlData(self):
         return self.testcases
 
 #test = OkTestcaseHandler()
