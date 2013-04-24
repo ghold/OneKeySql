@@ -1,21 +1,42 @@
-from PyQt4 import QtGui
+from PyQt4 import QtGui, Qt
+from OkListItem import OkListItem
 from xml.sax import parse
 
-class OkModel(QtGui.QStandardItemModel):
+class OkListWidget(QtGui.QListWidget):
+    def __init__(self, parent=None):
+        QtGui.QListWidget.__init__(self, parent)
+        self.setFrameStyle(QtGui.QFrame.NoFrame)
+        #self.setSelectionMode(0)
+        self.setFocusPolicy(Qt.Qt.NoFocus)
+        self.setAcceptDrops(True)
+        self.setMinimumWidth(250)
+        
+class OkModel(object):
     data = []
     
     def __init__(self,  file, handler, parent = None):
-        QtGui.QStandardItemModel.__init__(self,  parent)
-        self.appendRow(QtGui.QStandardItem(file))
         self.handler = handler()
         parse(file, self.handler)
         self.data = self.handler.getXmlData()
-        self.setupModel(self.data, self.item(0))
         
-    def setupModel(self, t_data,  t_item):
-        for key,  val in t_data.items():
-            item = QtGui.QStandardItem(key)
-            t_item.appendRow(item)
-            item.setData(val)
-            if isinstance(val, dict):
-                self.setupModel(val, item)
+    def makeupTestList(self):
+        self.test_list = OkListWidget()
+        for key,  val in self.data.items():
+            #print(key)
+            item = OkListItem(key, self.test_list)
+            item.setData(Qt.Qt.UserRole, val)
+            self.test_list.addItem(item)
+        return self.test_list
+            
+    def makeupStepList(self, item):
+        self.step_list = OkListWidget()
+        tmp_data = item.data(Qt.Qt.UserRole)
+        step_count = len(tmp_data["data"]["steps"])
+        print(1)
+        for i in range(step_count):
+            val = tmp_data["data"]["steps"][i]
+            item = OkListItem("_".join((val["from"], val["type"], val["data_id"])), self.step_list)
+            #print(item.text())
+            item.setData(Qt.Qt.UserRole, val)
+            self.step_list.addItem(item)
+        return self.step_list

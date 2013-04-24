@@ -34,12 +34,12 @@ class OkTestcaseHandler(ContentHandler):
         self.data = ''
         self.testcases = {}
         self.testcase_id = ''
-        self.step = 1
+        self.step = 0
         self.tagname = ''
         
     def startElement(self,  name,  attrs):
         if name == 'testcase':
-            self.step = 1
+            self.step = 0
             self.testcase_id = 'testcase_' + attrs['id']
             self.testcases[self.testcase_id] = {}
             for key,  val in attrs.items():
@@ -73,5 +73,5 @@ class OkTestcaseHandler(ContentHandler):
 
 #test = OkTestcaseHandler()
 #parse('testcase.xml', test)
-#jsonDumpsIndentStr = json.dumps(test.getTestcases(), indent=1)
+#jsonDumpsIndentStr = json.dumps(test.getXmlData(), indent=1)
 #print(jsonDumpsIndentStr)

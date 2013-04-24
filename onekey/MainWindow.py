@@ -1,8 +1,8 @@
 from PyQt4 import QtGui, QtCore, Qt
+from PyQt4.QtCore import pyqtSlot
 from OkModuleButton import OkModuleButton
 from OkToolBar import OkToolBar
 from OkModel import OkModel
-from OkListWidget import OkListWidget
 from OkXmlHandler import OkTestcaseHandler, OkTestunitHandler
 from OkListItem import OkListItem
 
@@ -17,19 +17,15 @@ class MainWindow(QtGui.QWidget):
         self.toolBar = OkToolBar(self)
 
         # Set up the model.
-        self.model = OkModel("testcase.xml", OkTestcaseHandler)
-        print(self.model.invisibleRootItem().rowCount())
+        self.model = OkModel("testcase/testcase.xml", OkTestcaseHandler)
+        caseList = self.model.makeupTestList()
+        caseList.itemClicked.connect(self.updateStepList)
+        stepList = self.model.makeupStepList(caseList.item(0))
+        stepList.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Maximum)
         
-        #test
-        listWidget = OkListWidget()
-        listWidget.makeupCase("testcase.xml")
-        #tmpGV
-        
-        
-
         # Set up the widgets.
         horizontalSpacer = QtGui.QSpacerItem(20, 30)
-        verticalSpacer = QtGui.QSpacerItem(20, 30, QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        verticalSpacer = QtGui.QSpacerItem(20, 30)
         self.nextButton = OkModuleButton("下一个")
         self.previousButton = OkModuleButton("上一个")
 
@@ -37,25 +33,30 @@ class MainWindow(QtGui.QWidget):
         gridLayout.setOriginCorner(Qt.Qt.TopLeftCorner)
         gridLayout.addItem(horizontalSpacer, 0, 0, 1, 4)
         gridLayout.addItem(verticalSpacer, 1, 0)
-        mainSplitter = QtGui.QSplitter()
-        mainSplitter.setHandleWidth(1)
-        gridLayout.addWidget(mainSplitter,  1, 1, 1, 1)
+        self.mainSplitter = QtGui.QSplitter()
+        self.mainSplitter.setHandleWidth(1)
+        self.mainSplitter.setChildrenCollapsible(False)
+        gridLayout.addWidget(self.mainSplitter,  1, 1)
+        #gridLayout.addItem(verticalSpacer, 1, 2)
         
         moduleWidget = QtGui.QWidget()
-        moduleScene = QtGui.QVBoxLayout(moduleWidget)
-        moduleScene.addWidget(self.nextButton, 0, Qt.Qt.AlignTop)
-        moduleScene.addWidget(self.previousButton, 1, Qt.Qt.AlignTop)
+        moduleLayout = QtGui.QVBoxLayout(moduleWidget)
+        moduleLayout.addWidget(self.nextButton, 0, Qt.Qt.AlignTop)
+        moduleLayout.addWidget(self.previousButton, 1, Qt.Qt.AlignTop)
         
-        mainSplitter.addWidget(moduleWidget)
-        
-        mainSplitter.addWidget(listWidget)
+        self.mainSplitter.addWidget(moduleWidget)
+        self.mainSplitter.addWidget(caseList)
+        self.mainSplitter.addWidget(stepList)
+        self.mainSplitter.setStretchFactor(2, 1)
         self.setLayout(gridLayout)
 
         self.setWindowTitle("Delegate Widget Mapper")
  
-    def updateButtons(self, row):
-        self.previousButton.setEnabled(row > 0)
-        self.nextButton.setEnabled(row < self.model.rowCount() - 1)
+    @pyqtSlot(OkListItem)
+    def updateStepList(self, item):
+        stepList = self.model.makeupStepList(item)
+        self.mainSplitter.widget(2).setParent(None)
+        self.mainSplitter.addWidget(stepList)
 
     def mousePressEvent(self,event):
         
