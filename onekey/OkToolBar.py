@@ -34,7 +34,7 @@ class OkToolBar(QtGui.QToolBar):
     def paintEvent(self,  event):
         tmpPainter = QtGui.QPainter()
         tmpPainter.begin(self)
-        tmpBrush = QtGui.QBrush(QtGui.QColor(110,  202,  199))
-        tmpPainter.fillRect(QtCore.QRectF(self.rect()), tmpBrush)
+        #tmpBrush = QtGui.QBrush(QtGui.QColor(110,  202,  199))
+        #tmpPainter.fillRect(QtCore.QRectF(self.rect()), tmpBrush)
         tmpPainter.end()
         event.accept()

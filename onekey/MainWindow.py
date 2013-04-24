@@ -26,8 +26,10 @@ class MainWindow(QtGui.QWidget):
         # Set up the widgets.
         horizontalSpacer = QtGui.QSpacerItem(20, 30)
         verticalSpacer = QtGui.QSpacerItem(20, 30)
-        self.nextButton = OkModuleButton("下一个")
-        self.previousButton = OkModuleButton("上一个")
+        tcLogo = QtGui.QImage(":/images/tc.png")
+        tuLogo = QtGui.QImage(":/images/tu.png")
+        self.tcButton = OkModuleButton("测试用例", tcLogo)
+        self.tuButton = OkModuleButton("测试单元", tuLogo)
 
         gridLayout = QtGui.QGridLayout()
         gridLayout.setOriginCorner(Qt.Qt.TopLeftCorner)
@@ -41,8 +43,8 @@ class MainWindow(QtGui.QWidget):
         
         moduleWidget = QtGui.QWidget()
         moduleLayout = QtGui.QVBoxLayout(moduleWidget)
-        moduleLayout.addWidget(self.nextButton, 0, Qt.Qt.AlignTop)
-        moduleLayout.addWidget(self.previousButton, 1, Qt.Qt.AlignTop)
+        moduleLayout.addWidget(self.tcButton, 0, Qt.Qt.AlignTop)
+        moduleLayout.addWidget(self.tuButton, 1, Qt.Qt.AlignTop)
         
         self.mainSplitter.addWidget(moduleWidget)
         self.mainSplitter.addWidget(caseList)

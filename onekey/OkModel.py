@@ -1,15 +1,18 @@
 from PyQt4 import QtGui, Qt
 from OkListItem import OkListItem
 from xml.sax import parse
+from OkScrollBar import OkScrollBar
 
 class OkListWidget(QtGui.QListWidget):
     def __init__(self, parent=None):
         QtGui.QListWidget.__init__(self, parent)
         self.setFrameStyle(QtGui.QFrame.NoFrame)
-        #self.setSelectionMode(0)
+        self.setSelectionMode(0)
         self.setFocusPolicy(Qt.Qt.NoFocus)
         self.setAcceptDrops(True)
         self.setMinimumWidth(250)
+        self.setVerticalScrollBar(OkScrollBar())
+        self.setSpacing(1)
         
 class OkModel(object):
     data = []
