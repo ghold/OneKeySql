@@ -1,7 +1,7 @@
 from PyQt4 import QtGui, QtCore, Qt
 from OkToolBar import OkEditToolBar
 from OkLabel import OkEditWidgetLabel
-from OkTagWidget import DragWidget
+from OkTagWidget import OkTagWidget
 
 class OkEditWidget(QtGui.QWidget):
     editWidget = None
@@ -14,7 +14,8 @@ class OkEditWidget(QtGui.QWidget):
         horizontalSpacer = QtGui.QSpacerItem(20, 30)
         verticalSpacer = QtGui.QSpacerItem(20, 30)
         tagLabel = OkEditWidgetLabel("标签")
-        dragWidget = DragWidget()
+        tagWidget = OkTagWidget()
+        contentLabel = OkEditWidgetLabel("内容")
         #add layout
         gridLayout = QtGui.QGridLayout()
         gridLayout.setOriginCorner(Qt.Qt.TopLeftCorner)
@@ -24,7 +25,9 @@ class OkEditWidget(QtGui.QWidget):
         editLayout = QtGui.QVBoxLayout()
         # Set up the widgets.
         editLayout.addWidget(tagLabel, 0, Qt.Qt.AlignTop)
-        editLayout.addWidget(dragWidget, 1, Qt.Qt.AlignTop)
+        editLayout.addWidget(tagWidget, 1, Qt.Qt.AlignTop)
+        editLayout.addWidget(contentLabel, 2, Qt.Qt.AlignTop)
+        
         gridLayout.addLayout(editLayout, 1, 1)
         
         self.setLayout(gridLayout)
@@ -34,7 +37,7 @@ class OkEditWidget(QtGui.QWidget):
         self.setGeometry(QtCore.QRect(0, 0, self.parent().width()/2 ,  self.parent().height()))
         tmpPainter = QtGui.QPainter()
         tmpPainter.begin(self)
-        tmpBrush = QtGui.QBrush(QtGui.QColor(33,  133,  197))
+        tmpBrush = QtGui.QBrush(QtGui.QColor(62,  69,  76))
         tmpPainter.fillRect(QtCore.QRectF(self.rect().left() ,  self.rect().top(),  self.rect().width(),
                 self.rect().height()), tmpBrush)
         tmpPainter.end()

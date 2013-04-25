@@ -9,7 +9,6 @@ class OkListWidget(QtGui.QListWidget):
         self.setFrameStyle(QtGui.QFrame.NoFrame)
         self.setSelectionMode(0)
         self.setFocusPolicy(Qt.Qt.NoFocus)
-        self.setAcceptDrops(True)
         self.setMinimumWidth(250)
         self.setVerticalScrollBar(OkScrollBar())
         self.setSpacing(1)

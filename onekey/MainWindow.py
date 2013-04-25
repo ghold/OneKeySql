@@ -72,7 +72,7 @@ class MainWindow(QtGui.QWidget):
            
     def mouseMoveEvent(self,event):
         if event.buttons() ==QtCore.Qt.LeftButton and not self.isMaximized():
-            self.move(event.globalPos() - self.dragPosition)
+            #self.move(event.globalPos() - self.dragPosition)
             event.accept() 
     
         
