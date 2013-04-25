@@ -1,12 +1,14 @@
 from PyQt4 import QtGui, QtCore, Qt
 from PyQt4.QtCore import pyqtSlot
 from OkModuleButton import OkModuleButton
-from OkToolBar import OkToolBar
+from OkToolBar import OkMainToolBar
 from OkModel import OkModel
 from OkXmlHandler import OkTestcaseHandler, OkTestunitHandler
 from OkListItem import OkListItem
+from OkEditWidget import OkEditWidget
 
 class MainWindow(QtGui.QWidget):
+    editWidget = None
     def __init__(self,  parent=None):
         QtGui.QWidget.__init__(self,  parent)
         self.setWindowFlags(Qt.Qt.FramelessWindowHint|Qt.Qt.CustomizeWindowHint|Qt.Qt.WindowSystemMenuHint)
@@ -14,14 +16,13 @@ class MainWindow(QtGui.QWidget):
         self.setGeometry(QtCore.QRect().adjusted(self.screen.width()/2 - 500, self.screen.height()/2 - 300, 
                 self.screen.width()/2 + 500,  self.screen.height()/2 + 300))
                 
-        self.toolBar = OkToolBar(self)
+        self.toolBar = OkMainToolBar(self)
 
         # Set up the model.
         self.model = OkModel("testcase/testcase.xml", OkTestcaseHandler)
         caseList = self.model.makeupTestList()
         caseList.itemClicked.connect(self.updateStepList)
         stepList = self.model.makeupStepList(caseList.item(0))
-        stepList.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Maximum)
         
         # Set up the widgets.
         horizontalSpacer = QtGui.QSpacerItem(20, 30)
@@ -52,13 +53,16 @@ class MainWindow(QtGui.QWidget):
         self.mainSplitter.setStretchFactor(2, 1)
         self.setLayout(gridLayout)
 
-        self.setWindowTitle("Delegate Widget Mapper")
+        self.setWindowTitle("OneKeySql")
  
     @pyqtSlot(OkListItem)
     def updateStepList(self, item):
         stepList = self.model.makeupStepList(item)
         self.mainSplitter.widget(2).setParent(None)
         self.mainSplitter.addWidget(stepList)
+        self.mainSplitter.setStretchFactor(2, 1)
+        self.editWidget = OkEditWidget(self)
+        self.editWidget.show()
 
     def mousePressEvent(self,event):
         

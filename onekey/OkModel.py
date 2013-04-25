@@ -14,6 +14,7 @@ class OkListWidget(QtGui.QListWidget):
         self.setVerticalScrollBar(OkScrollBar())
         self.setSpacing(1)
         
+        
 class OkModel(object):
     data = []
     
@@ -35,7 +36,7 @@ class OkModel(object):
         self.step_list = OkListWidget()
         tmp_data = item.data(Qt.Qt.UserRole)
         step_count = len(tmp_data["data"]["steps"])
-        print(1)
+        #print(1)
         for i in range(step_count):
             val = tmp_data["data"]["steps"][i]
             item = OkListItem("_".join((val["from"], val["type"], val["data_id"])), self.step_list)
