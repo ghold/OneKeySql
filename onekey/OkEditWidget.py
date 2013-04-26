@@ -4,6 +4,7 @@ from OkLabel import OkEditWidgetLabel, OkTagLabel
 from OkTextEdit import OkTextEdit
 from OkTagWidget import OkTagWidget
 from OkScrollBar import OkScrollBar
+import sys
 
 class OkEditWidget(QtGui.QWidget):
     editWidget = None
@@ -19,11 +20,11 @@ class OkEditWidget(QtGui.QWidget):
         horizontalSpacer1 = QtGui.QSpacerItem(10, 1000, 7, 7)
         verticalSpacer = QtGui.QSpacerItem(20, 30)
         tagLabel = OkEditWidgetLabel("标签")
-        tagWidget = OkTagWidget()
+        tagWidget = OkTagWidget(self)
         settingLabel = OkEditWidgetLabel("设置")
-        settingLabel1 = OkTagLabel("设置")
+        settingLabel1 = OkTagLabel("设置设置设置")
         settingLabel2 = OkTagLabel("设置")
-        settingLabel3 = OkTagLabel("设置")
+        settingLabel3 = OkTagLabel("设置设置")
         
         #add layout
         gridLayout = QtGui.QGridLayout()
@@ -34,6 +35,8 @@ class OkEditWidget(QtGui.QWidget):
         
         #setting layout
         settingLayout = QtGui.QFormLayout()
+        settingLayout.setFieldGrowthPolicy(QtGui.QFormLayout.FieldsStayAtSizeHint)
+        settingLayout.setLabelAlignment(Qt.Qt.AlignRight)
         settingLayout.addRow(settingLabel1, OkTextEdit())
         settingLayout.addRow(settingLabel2, OkTextEdit())
         settingLayout.addRow(settingLabel3, OkTextEdit())
@@ -50,12 +53,12 @@ class OkEditWidget(QtGui.QWidget):
         self.setLayout(gridLayout)
                 
     def paintEvent(self, event):
-        self.toolBar.update()
         self.setGeometry(QtCore.QRect(0, 0, self.parent().width()/2 ,  self.parent().height()))
         tmpPainter = QtGui.QPainter()
         tmpPainter.begin(self)
-        tmpBrush = QtGui.QBrush(QtGui.QColor(62,  69,  76))
+        tmpBrush = QtGui.QBrush(QtGui.QColor(50,  50,  50))
         tmpPainter.fillRect(QtCore.QRectF(self.rect().left() ,  self.rect().top(),  self.rect().width(),
                 self.rect().height()), tmpBrush)
         tmpPainter.end()
         event.accept()
+

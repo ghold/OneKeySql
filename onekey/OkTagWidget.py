@@ -4,22 +4,26 @@ class DragLabel(QtGui.QLabel):
     def __init__(self, text, parent):
         super(DragLabel, self).__init__(text, parent)
         self.setMinimumSize(7 * (len(self.text().encode('utf-8')) + len(self.text())), 30)
+        self.setAlignment(Qt.Qt.AlignCenter)
         
         self.setAutoFillBackground(True)
         self.setFrameShape(QtGui.QFrame.Panel)
         self.setFrameShadow(QtGui.QFrame.Raised)
         
-    def paintEvent(self, event):
-        tmpPainter = QtGui.QPainter()
-        tmpPainter.begin(self)
-        tmpBrush = QtGui.QBrush(QtGui.QColor(255, 127, 107))
-        tmpPainter.fillRect(QtCore.QRectF(self.rect()), tmpBrush)
-        tmpPainter.setFont(QtGui.QFont("微软雅黑", 14))
-        tmpPainter.setPen(QtGui.QColor(255,  255,  255))
-        tmpPainter.drawText(QtCore.QRectF(self.rect().left() ,  self.rect().top(),  self.rect().width(),
-                self.rect().height()),  Qt.Qt.AlignCenter, self.text())
-        tmpPainter.end()
-        event.accept()
+        self.setStyleSheet("QLabel{"
+                    "border:1px solid #000000;"
+                    "background-color: #FF7F66;"
+                    "height: 25px;"
+                     "font-family: '微软雅黑';"
+                    "color: #FFFFFF;"
+                    "font-size: 14px;"
+                "}"
+                "QLabel:hover{"
+                    "border:1px solid #9BBAAC;"
+                "}"
+                "QLabel:focus{"
+                    "border:1px solid #7ECEFD;"              
+                "}")
 
     def mousePressEvent(self, event):
         hotSpot = event.pos()
@@ -46,14 +50,15 @@ class DragLabel(QtGui.QLabel):
 class OkTagWidget(QtGui.QWidget):
     def __init__(self, parent=None):
         super(OkTagWidget, self).__init__(parent)
+        print(parent.size().width())
 
-        x = 5
+        x = 25
         y = 5
 
         for word in "我的 熱門呢 誒反對 sdf sdf sdf sdfsdf sdfsd dfsf sdf sdf sdf sdfsdf sdfsd dfsf sdf sdf sdf sdf我的 熱門呢 誒反對 sdf sdf sdf sdfsdf sdfsd dfsf sdf sdf sdf sdfsdf sdfsd dfsf sdf sdf sdf sdf".split():
             wordLabel = DragLabel(word, self)
             if x >= (400 - wordLabel.minimumWidth()):
-                x = 5
+                x = 25
                 y += 32
             wordLabel.move(x, y)
             wordLabel.show()
