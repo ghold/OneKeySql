@@ -20,8 +20,8 @@ class MainWindow(QtGui.QWidget):
 
         # Set up the model.
         self.model = OkModel("testcase/testcase.xml", OkTestcaseHandler)
-        caseList = self.model.makeupTestList()
-        caseList.itemClicked.connect(self.updateStepList)
+        caseList = self.model.makeupTestList("Case")
+        #caseList.itemEntered.connect(self.updateStepList)
         stepList = self.model.makeupStepList(caseList.item(0))
         
         # Set up the widgets.
