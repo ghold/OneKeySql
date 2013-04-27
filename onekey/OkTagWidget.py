@@ -24,7 +24,7 @@ class DragLabel(QtGui.QLabel):
                 "QLabel:focus{"
                     "border:1px solid #7ECEFD;"              
                 "}")
-
+    
     def mousePressEvent(self, event):
         hotSpot = event.pos()
         mimeData = QtCore.QMimeData()
@@ -46,31 +46,35 @@ class DragLabel(QtGui.QLabel):
             self.close()
             self.update()
 
-
 class OkTagWidget(QtGui.QWidget):
     def __init__(self, parent=None):
-        super(OkTagWidget, self).__init__(parent)
-        print(parent.size().width())
-
+        QtGui.QWidget.__init__(self, parent)
         x = 25
         y = 5
-
         for word in "我的 熱門呢 誒反對 sdf sdf sdf sdfsdf sdfsd dfsf sdf sdf sdf sdfsdf sdfsd dfsf sdf sdf sdf sdf我的 熱門呢 誒反對 sdf sdf sdf sdfsdf sdfsd dfsf sdf sdf sdf sdfsdf sdfsd dfsf sdf sdf sdf sdf".split():
             wordLabel = DragLabel(word, self)
-            if x >= (400 - wordLabel.minimumWidth()):
+            if x >= (self.size().width() - wordLabel.minimumWidth()):
                 x = 25
                 y += 32
             wordLabel.move(x, y)
             wordLabel.show()
-            x += wordLabel.minimumWidth() + 2
-            
-
+            x += wordLabel.minimumWidth() + 2            
         newPalette = self.palette()
-        newPalette.setColor(QtGui.QPalette.Window, QtCore.Qt.white)
+        newPalette.setColor(QtGui.QPalette.Window, QtGui.QColor(50,  50,  50))
         self.setPalette(newPalette)
 
         self.setAcceptDrops(True)
-        self.setMinimumSize(400, y+40)
+    
+    def resizeEvent(self, event):
+        x = 25
+        y = 5
+        for wordLabel in self.children():
+            if x >= (event.size().width() - wordLabel.minimumWidth()):
+                x = 25
+                y += 32
+            wordLabel.move(x, y)
+            x += wordLabel.minimumWidth() + 2
+        self.setMinimumHeight(y+40)
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasText():
@@ -109,12 +113,3 @@ class OkTagWidget(QtGui.QWidget):
         else:
             event.ignore()
 
-
-if __name__ == '__main__':
-
-    import sys
-
-    app = QtGui.QApplication(sys.argv)
-    window = DragWidget()
-    window.show()
-    sys.exit(app.exec_())

@@ -62,7 +62,7 @@ class MainWindow(QtGui.QWidget):
         self.mainSplitter.addWidget(stepList)
         self.mainSplitter.setStretchFactor(2, 1)
         self.editWidget = OkEditWidget(self)
-        self.editWidget.show()
+        #self.editWidget.show()
 
     def mousePressEvent(self,event):
         

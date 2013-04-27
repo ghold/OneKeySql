@@ -28,5 +28,4 @@ class OkTagLabel(QtGui.QLabel):
                     "color: #FFFFFF;"
                     "font-size: 15px;"
                     "padding-left: 20px"
-                "}"
-                )
+                "}")

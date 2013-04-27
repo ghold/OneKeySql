@@ -3,14 +3,12 @@ from OkToolBar import OkEditToolBar
 from OkLabel import OkEditWidgetLabel, OkTagLabel
 from OkTextEdit import OkTextEdit
 from OkTagWidget import OkTagWidget
-from OkScrollBar import OkScrollBar
-import sys
 
 class OkEditWidget(QtGui.QWidget):
     editWidget = None
     def __init__(self,  parent=None):
         QtGui.QWidget.__init__(self,  parent)
-        self.setWindowFlags(Qt.Qt.FramelessWindowHint|Qt.Qt.CustomizeWindowHint|Qt.Qt.WindowSystemMenuHint)
+        self.setWindowFlags(Qt.Qt.FramelessWindowHint)
         
         #add toolBar
         self.toolBar = OkEditToolBar(self)
@@ -20,7 +18,7 @@ class OkEditWidget(QtGui.QWidget):
         horizontalSpacer1 = QtGui.QSpacerItem(10, 1000, 7, 7)
         verticalSpacer = QtGui.QSpacerItem(20, 30)
         tagLabel = OkEditWidgetLabel("标签")
-        tagWidget = OkTagWidget(self)
+        self.tagWidget = OkTagWidget(self)
         settingLabel = OkEditWidgetLabel("设置")
         settingLabel1 = OkTagLabel("设置设置设置")
         settingLabel2 = OkTagLabel("设置")
@@ -34,24 +32,26 @@ class OkEditWidget(QtGui.QWidget):
         editLayout = QtGui.QVBoxLayout()
         
         #setting layout
+        settingWidget = QtGui.QWidget()
         settingLayout = QtGui.QFormLayout()
         settingLayout.setFieldGrowthPolicy(QtGui.QFormLayout.FieldsStayAtSizeHint)
         settingLayout.setLabelAlignment(Qt.Qt.AlignRight)
         settingLayout.addRow(settingLabel1, OkTextEdit())
         settingLayout.addRow(settingLabel2, OkTextEdit())
         settingLayout.addRow(settingLabel3, OkTextEdit())
+        settingWidget.setLayout(settingLayout)
         
         # add the widgets.
         editLayout.addWidget(tagLabel, 0, Qt.Qt.AlignTop)
-        editLayout.addWidget(tagWidget, 1, Qt.Qt.AlignTop)
+        editLayout.addWidget(self.tagWidget, 1, Qt.Qt.AlignTop)
         editLayout.addWidget(settingLabel, 2, Qt.Qt.AlignTop)
-        editLayout.addLayout(settingLayout, 0)
+        editLayout.addWidget(settingWidget, 0, Qt.Qt.AlignTop)
         editLayout.addSpacerItem(horizontalSpacer1)
         
         gridLayout.addLayout(editLayout, 1, 1)
         
         self.setLayout(gridLayout)
-                
+        
     def paintEvent(self, event):
         self.setGeometry(QtCore.QRect(0, 0, self.parent().width()/2 ,  self.parent().height()))
         tmpPainter = QtGui.QPainter()
