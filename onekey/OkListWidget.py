@@ -44,17 +44,16 @@ class OkCaseWidget(OkListWidget):
             
     @pyqtSlot(OkListItem)
     def pressItem(self, item):
-        
-        item = self.currentItem()
         itemdata = repr(item.data(Qt.Qt.UserRole))
-        print(itemdata.encode("utf-8"))
         
         mimeData = QtCore.QMimeData()
         mimeData.setText(item.text())
         mimeData.setData('application/x-dict', itemdata.encode("utf-8"))
-
-        pixmap = QtGui.QPixmap(item.sizeHint())
-        self.render(pixmap)
+        
+        itemIndex = self.indexFromItem(item)
+        itemRect = self.visualRect(itemIndex)
+        pixmap = QtGui.QPixmap(itemRect.size())
+        self.render(pixmap, QtCore.QPoint(0, 0), QtGui.QRegion(itemRect))
 
         drag = QtGui.QDrag(self)
         drag.setMimeData(mimeData)
@@ -93,8 +92,6 @@ class OkUnitWidget(OkListWidget):
             
     @pyqtSlot(OkListItem)
     def pressItem(self, item):
-        
-        item = self.currentItem()
         itemdata = repr(item.data(Qt.Qt.UserRole))
         print(itemdata.encode("utf-8"))
         
