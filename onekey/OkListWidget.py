@@ -20,7 +20,6 @@ class OkListWidget(QtGui.QListWidget):
 class OkCaseWidget(OkListWidget):
     def __init__(self, parent=None):
         OkListWidget.__init__(self, parent)
-        self.itemPressed.connect(self.pressItem)
         
     def dragEnterEvent(self, event):
         if event.mimeData().hasFormat('application/x-dict'):

@@ -43,9 +43,9 @@ class OkEditWidget(QtGui.QWidget):
         
         # add the widgets.
         editLayout.addWidget(tagLabel, 0, Qt.Qt.AlignTop)
-        editLayout.addWidget(self.tagWidget, 1, Qt.Qt.AlignTop)
-        editLayout.addWidget(settingLabel, 2, Qt.Qt.AlignTop)
-        editLayout.addWidget(settingWidget, 0, Qt.Qt.AlignTop)
+        editLayout.addWidget(self.tagWidget, 0, Qt.Qt.AlignTop)
+        editLayout.addWidget(settingLabel, 0, Qt.Qt.AlignTop)
+        editLayout.addWidget(settingWidget, 1, Qt.Qt.AlignTop)
         editLayout.addSpacerItem(horizontalSpacer1)
         
         gridLayout.addLayout(editLayout, 1, 1)

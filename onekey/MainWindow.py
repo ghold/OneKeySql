@@ -4,6 +4,7 @@ from OkModuleButton import OkModuleButton
 from OkToolBar import OkMainToolBar
 from OkModel import OkModel
 from OkXmlHandler import OkTestcaseHandler, OkTestunitHandler
+from OkInfoWidget import OkInfoWidget
 from OkListItem import OkListItem
 from OkEditWidget import OkEditWidget
 
@@ -17,50 +18,98 @@ class MainWindow(QtGui.QWidget):
                 self.screen.width()/2 + 500,  self.screen.height()/2 + 300))
                 
         self.toolBar = OkMainToolBar(self)
-
+        self.setWindowTitle("OneKeySql")
+        
         # Set up the model.
         self.model = OkModel("testcase/testcase.xml", OkTestcaseHandler)
-        caseList = self.model.makeupTestList("Case")
-        #caseList.itemEntered.connect(self.updateStepList)
-        stepList = self.model.makeupStepList(caseList.item(0))
+        self.setupModel()
         
         # Set up the widgets.
-        horizontalSpacer = QtGui.QSpacerItem(20, 30)
-        verticalSpacer = QtGui.QSpacerItem(20, 30)
+        self.Spacer = QtGui.QSpacerItem(20, 30)
         tcLogo = QtGui.QImage(":/images/tc.png")
         tuLogo = QtGui.QImage(":/images/tu.png")
-        self.tcButton = OkModuleButton("测试用例", tcLogo)
-        self.tuButton = OkModuleButton("测试单元", tuLogo)
-
-        gridLayout = QtGui.QGridLayout()
-        gridLayout.setOriginCorner(Qt.Qt.TopLeftCorner)
-        gridLayout.addItem(horizontalSpacer, 0, 0, 1, 4)
-        gridLayout.addItem(verticalSpacer, 1, 0)
+        txButton = OkModuleButton("测试执行", tcLogo)
+        tcButton = OkModuleButton("测试用例", tcLogo)
+        tuButton = OkModuleButton("测试单元", tuLogo)
+        #buttonGroup
+        self.moduleGroup = QtGui.QButtonGroup()
+        self.moduleGroup.addButton(txButton, 1)
+        self.moduleGroup.addButton(tcButton, 2)
+        self.moduleGroup.addButton(tuButton, 3)
+        self.moduleGroup.buttonClicked.connect(self.moduleChange)
+        #mainSplitter
         self.mainSplitter = QtGui.QSplitter()
         self.mainSplitter.setHandleWidth(1)
         self.mainSplitter.setChildrenCollapsible(False)
-        gridLayout.addWidget(self.mainSplitter,  1, 1)
-        #gridLayout.addItem(verticalSpacer, 1, 2)
-        
+        #moduleWidget
         moduleWidget = QtGui.QWidget()
         moduleLayout = QtGui.QVBoxLayout(moduleWidget)
-        moduleLayout.addWidget(self.tcButton, 0, Qt.Qt.AlignTop)
-        moduleLayout.addWidget(self.tuButton, 1, Qt.Qt.AlignTop)
-        
+        moduleLayout.addWidget(txButton, 0, Qt.Qt.AlignTop)
+        moduleLayout.addWidget(tcButton, 0, Qt.Qt.AlignTop)
+        moduleLayout.addWidget(tuButton, 1, Qt.Qt.AlignTop)
         self.mainSplitter.addWidget(moduleWidget)
-        self.mainSplitter.addWidget(caseList)
-        self.mainSplitter.addWidget(stepList)
-        self.mainSplitter.setStretchFactor(2, 1)
+        #mainLayout
+        gridLayout = QtGui.QGridLayout()
+        gridLayout.setOriginCorner(Qt.Qt.TopLeftCorner)
+        gridLayout.addItem(self.Spacer, 0, 0, 1, 4)
+        gridLayout.addItem(self.Spacer, 1, 0)
+        gridLayout.addWidget(self.mainSplitter,  1, 1)
+        
         self.setLayout(gridLayout)
-
-        self.setWindowTitle("OneKeySql")
- 
+        
+        #default
+        self.mainSplitter.addWidget(self.caseExecModule())
+        self.mainSplitter.setStretchFactor(1, 1)
+        
+    def setupModel(self):
+        self.caseList = self.model.makeupTestList("CaseExec")
+        #self.caseList.itemClicked.connect(self.updateStepList)
+        self.stepList = self.model.makeupStepList(self.caseList.item(0))
+        
+    def caseEditModule(self):
+        #moduleSplitter
+        moduleSplitter = QtGui.QSplitter()
+        moduleSplitter.setHandleWidth(1)
+        moduleSplitter.setChildrenCollapsible(False)
+        #
+        self.setupModel()
+        moduleSplitter.addWidget(self.caseList)
+        moduleSplitter.addWidget(self.stepList)
+        moduleSplitter.setStretchFactor(1, 1)
+        
+        return moduleSplitter
+        
+    def caseExecModule(self):
+        #moduleSplitter
+        moduleSplitter = QtGui.QSplitter()
+        moduleSplitter.setHandleWidth(1)
+        moduleSplitter.setChildrenCollapsible(False)
+        #
+        self.setupModel()
+        moduleSplitter.addWidget(self.caseList)
+        okInfoWidget = OkInfoWidget()
+        moduleSplitter.addWidget(okInfoWidget)
+        moduleSplitter.setStretchFactor(1, 1)
+        self.caseList.itemPressed.connect(okInfoWidget.infoGeneratorUTF8)
+        return moduleSplitter
+        
+    @pyqtSlot(OkModuleButton)
+    def moduleChange(self, button):
+        if self.moduleGroup.id(button) == 1:
+            self.mainSplitter.widget(1).setParent(None)
+            self.mainSplitter.addWidget(self.caseExecModule())
+            self.mainSplitter.setStretchFactor(1, 1)
+        elif self.moduleGroup.id(button)  == 2:
+            self.mainSplitter.widget(1).setParent(None)
+            self.mainSplitter.addWidget(self.caseEditModule())
+            self.mainSplitter.setStretchFactor(1, 1)
+              
     @pyqtSlot(OkListItem)
     def updateStepList(self, item):
         stepList = self.model.makeupStepList(item)
-        self.mainSplitter.widget(2).setParent(None)
-        self.mainSplitter.addWidget(stepList)
-        self.mainSplitter.setStretchFactor(2, 1)
+        self.mainSplitter.widget(1).widget(1).setParent(None)
+        self.mainSplitter.widget(1).addWidget(stepList)
+        self.mainSplitter.widget(1).setStretchFactor(1, 1)
         self.editWidget = OkEditWidget(self)
         #self.editWidget.show()
 
