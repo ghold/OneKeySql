@@ -6,7 +6,7 @@ from OkModel import OkModel
 from OkXmlHandler import OkTestcaseHandler, OkTestunitHandler
 from OkInfoWidget import OkInfoWidget
 from OkListItem import OkListItem
-from OkEditWidget import OkEditWidget
+from OkEditPad import OkEditPad
 
 class MainWindow(QtGui.QWidget):
     editWidget = None
@@ -63,7 +63,7 @@ class MainWindow(QtGui.QWidget):
         
     def setupModel(self):
         self.caseList = self.model.makeupTestList("CaseExec")
-        #self.caseList.itemClicked.connect(self.updateStepList)
+        self.caseList.itemClicked.connect(self.updateStepList)
         self.stepList = self.model.makeupStepList(self.caseList.item(0))
         
     def caseEditModule(self):
@@ -110,8 +110,8 @@ class MainWindow(QtGui.QWidget):
         self.mainSplitter.widget(1).widget(1).setParent(None)
         self.mainSplitter.widget(1).addWidget(stepList)
         self.mainSplitter.widget(1).setStretchFactor(1, 1)
-        self.editWidget = OkEditWidget(self)
-        #self.editWidget.show()
+        self.editWidget = OkEditPad(self)
+        self.editWidget.show()
 
     def mousePressEvent(self,event):
         

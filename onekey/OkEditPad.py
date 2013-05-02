@@ -1,10 +1,10 @@
 from PyQt4 import QtGui, QtCore, Qt
 from OkToolBar import OkEditToolBar
 from OkLabel import OkEditWidgetLabel, OkTagLabel
-from OkTextEdit import OkTextEdit
+from OkEdit import OkTextEdit, OkDateTimeEdit
 from OkTagWidget import OkTagWidget
 
-class OkEditWidget(QtGui.QWidget):
+class OkEditPad(QtGui.QWidget):
     editWidget = None
     def __init__(self,  parent=None):
         QtGui.QWidget.__init__(self,  parent)
@@ -36,8 +36,8 @@ class OkEditWidget(QtGui.QWidget):
         settingLayout = QtGui.QFormLayout()
         settingLayout.setFieldGrowthPolicy(QtGui.QFormLayout.FieldsStayAtSizeHint)
         settingLayout.setLabelAlignment(Qt.Qt.AlignRight)
-        settingLayout.addRow(settingLabel1, OkTextEdit())
-        settingLayout.addRow(settingLabel2, OkTextEdit())
+        settingLayout.addRow(settingLabel1, OkDateTimeEdit())
+        settingLayout.addRow(settingLabel2, OkDateTimeEdit())
         settingLayout.addRow(settingLabel3, OkTextEdit())
         settingWidget.setLayout(settingLayout)
         
