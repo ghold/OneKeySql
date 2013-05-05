@@ -36,5 +36,6 @@ class OkDateTimeEdit(QtGui.QDateTimeEdit):
                     "border:1px solid #7ECEFD;"              
                 "}")
         calendar = QtGui.QCalendarWidget()
-        self.setCalendarWidget(calendar)
         self.setCalendarPopup(True)
+        self.setCalendarWidget(calendar)
+        

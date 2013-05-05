@@ -7,6 +7,7 @@ from OkXmlHandler import OkTestcaseHandler, OkTestunitHandler
 from OkInfoWidget import OkInfoWidget
 from OkListItem import OkListItem
 from OkEditPad import OkEditPad
+from OkArgSetPad import OkArgSetPad
 
 class MainWindow(QtGui.QWidget):
     editWidget = None
@@ -110,7 +111,7 @@ class MainWindow(QtGui.QWidget):
         self.mainSplitter.widget(1).widget(1).setParent(None)
         self.mainSplitter.widget(1).addWidget(stepList)
         self.mainSplitter.widget(1).setStretchFactor(1, 1)
-        self.editWidget = OkEditPad(self)
+        self.editWidget = OkArgSetPad(item.data(Qt.Qt.UserRole), self)
         self.editWidget.show()
 
     def mousePressEvent(self,event):
