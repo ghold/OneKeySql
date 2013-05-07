@@ -2,7 +2,6 @@ from PyQt4 import QtGui, QtCore, Qt
 from OkToolBar import OkEditToolBar
 from OkLabel import OkEditWidgetLabel, OkTagLabel
 from OkEdit import OkTextEdit, OkDateTimeEdit
-from OkTagWidget import OkTagWidget
 import re
 
 class OkArgSetPad(QtGui.QWidget):
@@ -21,10 +20,6 @@ class OkArgSetPad(QtGui.QWidget):
         horizontalSpacer1 = QtGui.QSpacerItem(10, 1000, 7, 7)
         verticalSpacer = QtGui.QSpacerItem(20, 30)
         caseLabel = OkEditWidgetLabel("标签")
-        self.setupLabel()
-        settingLabel1 = OkTagLabel("设置设置设置")
-        settingLabel2 = OkTagLabel("设置")
-        settingLabel3 = OkTagLabel("设置设置")
         
         #add layout
         gridLayout = QtGui.QGridLayout()
@@ -33,15 +28,7 @@ class OkArgSetPad(QtGui.QWidget):
         gridLayout.addItem(verticalSpacer, 1, 0)
         editLayout = QtGui.QVBoxLayout()
         
-        #setting layout
-        settingWidget = QtGui.QWidget()
-        settingLayout = QtGui.QFormLayout()
-        settingLayout.setFieldGrowthPolicy(QtGui.QFormLayout.FieldsStayAtSizeHint)
-        settingLayout.setLabelAlignment(Qt.Qt.AlignRight)
-        settingLayout.addRow(settingLabel1, OkDateTimeEdit())
-        settingLayout.addRow(settingLabel2, OkDateTimeEdit())
-        settingLayout.addRow(settingLabel3, OkTextEdit())
-        settingWidget.setLayout(settingLayout)
+        settingWidget = self.setupLabel()
         
         # add the widgets.
         editLayout.addWidget(caseLabel, 0, Qt.Qt.AlignTop)
@@ -53,11 +40,20 @@ class OkArgSetPad(QtGui.QWidget):
         self.setLayout(gridLayout)
         
     def setupLabel(self):
+        #setting layout
+        settingWidget = QtGui.QWidget()
+        settingLayout = QtGui.QFormLayout()
+        settingLayout.setFieldGrowthPolicy(QtGui.QFormLayout.FieldsStayAtSizeHint)
+        settingLayout.setLabelAlignment(Qt.Qt.AlignRight)
+        
         tag_pattern = r'\{(.+)\((.+)\)\}'
         tag_compiler = re.compile(tag_pattern)
         for tag in self.data['data']['var'].split(','):
             result = tag_compiler.match(tag)
-            
+            settingLayout.addRow(OkTagLabel(result.group(2)), OkTextEdit())
+        
+        settingWidget.setLayout(settingLayout)
+        return settingWidget
         
     def paintEvent(self, event):
         self.setGeometry(QtCore.QRect(self.parent().width()/2, 0, self.parent().width()/2 ,  self.parent().height()))

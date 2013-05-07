@@ -2,7 +2,7 @@ from PyQt4 import QtGui, QtCore, Qt
 from OkToolBar import OkEditToolBar
 from OkLabel import OkEditWidgetLabel, OkTagLabel
 from OkEdit import OkTextEdit, OkDateTimeEdit
-from OkTagWidget import OkTagWidget
+from OkTagBox import OkTagBox
 
 class OkEditPad(QtGui.QWidget):
     editWidget = None
@@ -18,7 +18,7 @@ class OkEditPad(QtGui.QWidget):
         horizontalSpacer1 = QtGui.QSpacerItem(10, 1000, 7, 7)
         verticalSpacer = QtGui.QSpacerItem(20, 30)
         tagLabel = OkEditWidgetLabel("标签")
-        self.tagWidget = OkTagWidget(self)
+        self.tagWidget = OkTagBox(self)
         settingLabel = OkEditWidgetLabel("设置")
         settingLabel1 = OkTagLabel("设置设置设置")
         settingLabel2 = OkTagLabel("设置")
