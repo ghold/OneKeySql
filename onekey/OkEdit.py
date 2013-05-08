@@ -18,7 +18,7 @@ class OkTextEdit(QtGui.QLineEdit):
                     "border:1px solid #7ECEFD;"              
                 "}")
         
-class OkDateTimeEdit(QtGui.QDateTimeEdit):
+class OkDatetimeEdit(QtGui.QDateTimeEdit):
     def __init__(self, parent=None):
         QtGui.QDateTimeEdit.__init__(self, parent)
         self.setStyleSheet("QDateTimeEdit{"
