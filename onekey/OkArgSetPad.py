@@ -34,7 +34,8 @@ class OkArgSetPad(QtGui.QWidget):
         settingWidget = self.setupLabel()
         
         #previewWidget
-        previewWidget = OkPreviewWidget()
+        previewWidget = self.setupPreview()
+        
         # add the widgets.
         editLayout.addWidget(caseLabel, 0, Qt.Qt.AlignTop)
         editLayout.addWidget(settingWidget, 0, Qt.Qt.AlignTop)
@@ -61,6 +62,11 @@ class OkArgSetPad(QtGui.QWidget):
         
         settingWidget.setLayout(settingLayout)
         return settingWidget
+    
+    def setupPreview(self):
+        previewWidget = OkPreviewWidget()
+        previewWidget.setupData(self.data['data']['steps'])
+        return previewWidget
         
     def paintEvent(self, event):
         self.setGeometry(QtCore.QRect(self.parent().width()/2, 0, self.parent().width()/2 ,  self.parent().height()))
