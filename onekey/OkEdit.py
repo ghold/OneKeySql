@@ -1,8 +1,11 @@
 from PyQt4 import QtCore, QtGui, Qt
+from PyQt4.QtCore import pyqtSignal, pyqtSlot
 
 class OkTextEdit(QtGui.QLineEdit):
-    def __init__(self, parent=None):
+    ValueChanged = pyqtSignal(str, str, str)
+    def __init__(self, name, parent=None):
         QtGui.QTextEdit.__init__(self, parent)
+        self.name = name
         self.setStyleSheet("QLineEdit{"
                     "border:1px solid #000000;"
                     "background-color: #656565;"
@@ -17,10 +20,17 @@ class OkTextEdit(QtGui.QLineEdit):
                 "QLineEdit:focus{"
                     "border:1px solid #7ECEFD;"              
                 "}")
-        
+        self.textChanged.connect(self.changeValue)
+
+    @pyqtSlot(str)
+    def changeValue(self, text):
+        self.ValueChanged.emit(self.name, text, "text")
+    
 class OkDatetimeEdit(QtGui.QDateTimeEdit):
-    def __init__(self, parent=None):
+    ValueChanged = pyqtSignal(str, str, str)
+    def __init__(self, name, parent=None):
         QtGui.QDateTimeEdit.__init__(self, parent)
+        self.name = name
         self.setStyleSheet("QDateTimeEdit{"
                     "border:1px solid #000000;"
                     "background-color: #656565;"
@@ -38,4 +48,10 @@ class OkDatetimeEdit(QtGui.QDateTimeEdit):
         calendar = QtGui.QCalendarWidget()
         self.setCalendarPopup(True)
         self.setCalendarWidget(calendar)
+        self.dateTimeChanged.connect(self.changeValue)
+        
+    @pyqtSlot(QtCore.QDateTime)
+    def changeValue(self, datetime):
+        self.ValueChanged.emit(self.name, datetime.toString(Qt.Qt.ISODate), "datetime")
+        
         

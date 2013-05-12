@@ -31,16 +31,18 @@ class OkArgSetPad(QtGui.QWidget):
         gridLayout.addItem(verticalSpacer, 1, 0)
         editLayout = QtGui.QVBoxLayout()
         
+        #previewWidget
+        self.previewWidget = self.setupPreview()
+        
         settingWidget = self.setupLabel()
         
-        #previewWidget
-        previewWidget = self.setupPreview()
+        
         
         # add the widgets.
         editLayout.addWidget(caseLabel, 0, Qt.Qt.AlignTop)
         editLayout.addWidget(settingWidget, 0, Qt.Qt.AlignTop)
         editLayout.addWidget(caseLabel2, 0, Qt.Qt.AlignTop)
-        editLayout.addWidget(previewWidget, 1, Qt.Qt.AlignTop)
+        editLayout.addWidget(self.previewWidget, 1, Qt.Qt.AlignTop)
         #editLayout.addSpacerItem(horizontalSpacer1)
         
         gridLayout.addLayout(editLayout, 1, 1)
@@ -58,7 +60,9 @@ class OkArgSetPad(QtGui.QWidget):
         tag_compiler = re.compile(tag_pattern)
         for tag in self.data['data']['var'].split(','):
             result = tag_compiler.match(tag)
-            settingLayout.addRow(OkTagLabel(result.group(2)), OkTagHandler.callback(result.group(1)))
+            OkTagWidget = OkTagHandler.callback(result.group(1), result.group(2))
+            OkTagWidget.ValueChanged.connect(self.previewWidget.tagValue)
+            settingLayout.addRow(OkTagLabel(result.group(2)), OkTagWidget)
         
         settingWidget.setLayout(settingLayout)
         return settingWidget

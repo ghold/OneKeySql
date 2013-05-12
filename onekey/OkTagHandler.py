@@ -8,9 +8,15 @@ class OkTagHandler(object):
     @classmethod        
     def datetime(cls, *args):
         from OkEdit import OkDatetimeEdit
-        return OkDatetimeEdit()
+        name = args[0]
+        return OkDatetimeEdit(name)
     @classmethod    
     def text(cls, *args):
         from OkEdit import OkTextEdit
-        return OkTextEdit()
+        name = args[0]
+        return OkTextEdit(name)
+    @classmethod        
+    def datetime_arg(cls, *args):
+        name = args[0]
+        return OkDatetimeEdit(name)
 
