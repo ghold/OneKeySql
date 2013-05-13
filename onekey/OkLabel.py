@@ -8,9 +8,9 @@ class OkEditWidgetLabel(QtGui.QLabel):
         self.setMinimumSize(200, 40)
         tmpPainter = QtGui.QPainter()
         tmpPainter.begin(self)
-        tmpBrush = QtGui.QBrush(QtGui.QColor(33,  133,  197))
-        tmpPainter.fillRect(QtCore.QRectF(self.rect().left() + 36,  self.rect().top(),  self.rect().width(),
-                self.rect().height()), tmpBrush)
+        #tmpBrush = QtGui.QBrush(QtGui.QColor(33,  133,  197))
+        #tmpPainter.fillRect(QtCore.QRectF(self.rect().left() + 36,  self.rect().top(),  self.rect().width(),
+        #        self.rect().height()), tmpBrush)
         #tmpPainter.drawImage(QtCore.QPoint(0, 0), self.image.scaled(35, 35))
         tmpPainter.setFont(QtGui.QFont("微软雅黑", 14))
         tmpPainter.setPen(QtGui.QColor(255,  255,  255))

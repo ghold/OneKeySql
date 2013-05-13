@@ -1,5 +1,5 @@
+from PyQt4 import QtCore, QtGui, Qt
 class OkTagHandler(object):
-    
     @classmethod
     def callback(cls,  name,  *args):
         method = getattr(cls,  name,  None)
@@ -15,8 +15,9 @@ class OkTagHandler(object):
         from OkEdit import OkTextEdit
         name = args[0]
         return OkTextEdit(name)
-    @classmethod        
+    @classmethod
     def datetime_arg(cls, *args):
-        name = args[0]
-        return OkDatetimeEdit(name)
+        datetime, arg = args
+        datetime = QtCore.QDateTime.fromString(datetime, Qt.Qt.ISODate)
+        return datetime.addMSecs(float(arg) * 1000 * 60).toString(Qt.Qt.ISODate)
 

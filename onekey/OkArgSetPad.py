@@ -1,8 +1,10 @@
 from PyQt4 import QtGui, QtCore, Qt
+from PyQt4.QtCore import pyqtSlot
 from OkTagHandler import OkTagHandler
 from OkToolBar import OkEditToolBar
 from OkLabel import OkEditWidgetLabel, OkTagLabel
 from OkPreviewWidget import OkPreviewWidget
+from oracle.OkSqlHandler import OkSqlHandler
 from OkEdit import *
 import re
 
@@ -36,13 +38,16 @@ class OkArgSetPad(QtGui.QWidget):
         
         settingWidget = self.setupLabel()
         
-        
+        #comfireButton
+        comfirmButton = QtGui.QPushButton("确定")
+        comfirmButton.clicked.connect(self.sqlExec)
         
         # add the widgets.
         editLayout.addWidget(caseLabel, 0, Qt.Qt.AlignTop)
         editLayout.addWidget(settingWidget, 0, Qt.Qt.AlignTop)
         editLayout.addWidget(caseLabel2, 0, Qt.Qt.AlignTop)
-        editLayout.addWidget(self.previewWidget, 1, Qt.Qt.AlignTop)
+        editLayout.addWidget(self.previewWidget, 0, Qt.Qt.AlignTop)
+        editLayout.addWidget(comfirmButton, 1, Qt.Qt.AlignTop)
         #editLayout.addSpacerItem(horizontalSpacer1)
         
         gridLayout.addLayout(editLayout, 1, 1)
@@ -71,6 +76,11 @@ class OkArgSetPad(QtGui.QWidget):
         previewWidget = OkPreviewWidget()
         previewWidget.setupData(self.data['data']['steps'])
         return previewWidget
+    
+    @pyqtSlot()
+    def sqlExec(self):
+        #print(self.previewWidget.toPlainText().__repr__())
+        OkSqlHandler.insertAction(self.previewWidget.toPlainText().__repr__())
         
     def paintEvent(self, event):
         self.setGeometry(QtCore.QRect(self.parent().width()/2, 0, self.parent().width()/2 ,  self.parent().height()))

@@ -24,6 +24,8 @@ class OkTextEdit(QtGui.QLineEdit):
 
     @pyqtSlot(str)
     def changeValue(self, text):
+        if text == '':
+            text = '{' + self.name + '}'
         self.ValueChanged.emit(self.name, text, "text")
     
 class OkDatetimeEdit(QtGui.QDateTimeEdit):
@@ -53,5 +55,3 @@ class OkDatetimeEdit(QtGui.QDateTimeEdit):
     @pyqtSlot(QtCore.QDateTime)
     def changeValue(self, datetime):
         self.ValueChanged.emit(self.name, datetime.toString(Qt.Qt.ISODate), "datetime")
-        
-        

@@ -1,9 +1,11 @@
 from PyQt4 import QtGui, QtCore, Qt
+from PyQt4.QtCore import pyqtSlot
+from OkTagHandler import OkTagHandler
 from OkScrollBar import OkScrollBar
 import OkXmlHandler
 from OkModel import OkModel
 import re
-from PyQt4.QtCore import pyqtSlot
+
 
 class OkPreviewWidget(QtGui.QTextEdit):
     def __init__(self, parent=None):
@@ -22,7 +24,6 @@ class OkPreviewWidget(QtGui.QTextEdit):
         self.cursor = QtGui.QTextCursor(okInfoDocument)
         self.cursor.setBlockFormat(OkBlockFormat())
         self.setDocument(okInfoDocument)
-        
         
     def setupData(self, data):
         self.data = data
@@ -49,15 +50,17 @@ class OkPreviewWidget(QtGui.QTextEdit):
     @pyqtSlot(str, str, str)
     def tagValue(self, tag, text, type):
         for val in self.tag_position[tag]:
+            ac_text = text
             block = self.document().findBlockByNumber(val[0])
             it = block.begin()
             it += (val[1] *2 + 1)
             fragment = it.fragment()
-            
             self.cursor.setPosition(fragment.position())
             self.cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.KeepAnchor, fragment.length())
             self.cursor.deleteChar()
-            self.tagFormat(text)
+            if val[2] is not None:
+                ac_text = OkTagHandler.callback(type + "_arg", ac_text, val[2])
+            self.tagFormat(ac_text)
             
     def subTag(self, tags, data):
         self.cursor.insertText("VALUES( ", OkContentFormat())
@@ -65,7 +68,6 @@ class OkPreviewWidget(QtGui.QTextEdit):
         tag_compiler =re.compile(tag_pattern)
         tag_list = tag_compiler.split(data)
         order = 0
-        
         arg_pattern = r'\{(?P<name>[0-9a-zA-Z_]+)(?:|\((?P<arg>[+-]{1}[0-9]+)\))\}'
         arg_compiler = re.compile(arg_pattern)
                 
@@ -82,7 +84,7 @@ class OkPreviewWidget(QtGui.QTextEdit):
         self.cursor.insertText(" )\n", OkContentFormat())
         
     def titleFormat(self, step):
-        self.cursor.insertText("Step %d\n" % step, OkTitleFormat())
+        self.cursor.insertText("/*Step %d */\n" % step, OkTitleFormat())
         
     def contentFormat(self, sql):
         self.cursor.insertText("%s" % sql, OkContentFormat())
@@ -93,7 +95,7 @@ class OkPreviewWidget(QtGui.QTextEdit):
 class OkBlockFormat(QtGui.QTextBlockFormat):
     def __init__(self):
         QtGui.QTextBlockFormat.__init__(self)
-        self.setTopMargin(20)
+        self.setTopMargin(5)
         
 class OkTitleFormat(QtGui.QTextCharFormat):
     def __init__(self):
@@ -110,7 +112,7 @@ class OkTagFormat(QtGui.QTextCharFormat):
         QtGui.QTextCharFormat.__init__(self)
         self.setFont(QtGui.QFont("微软雅黑", 12))
         self.setFontUnderline(True)
-        tmpBrush = QtGui.QBrush(QtGui.QColor(50,  50,  50))
+        tmpBrush = QtGui.QBrush(QtGui.QColor(255, 127, 102))
         self.setForeground(tmpBrush)
         
         
