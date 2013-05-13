@@ -6,7 +6,6 @@ import OkXmlHandler
 from OkModel import OkModel
 import re
 
-
 class OkPreviewWidget(QtGui.QTextEdit):
     def __init__(self, parent=None):
         QtGui.QTextEdit.__init__(self, parent)
@@ -43,8 +42,8 @@ class OkPreviewWidget(QtGui.QTextEdit):
             data_id = data[step]["type"] + "_" + data[step]["data_id"]
             step_data = model.data[data_id]["data"]
             
-            sql = "INSERT INTO\n%s(%s)\n" % (step_data["table"], step_data["column"])
-            self.contentFormat(sql)
+            tp_sql = "INSERT INTO\n%s(%s)\n" % (step_data["table"], step_data["column"])
+            self.contentFormat(tp_sql)
             self.subTag(data[step]["tags"], step_data["value"])
     
     @pyqtSlot(str, str, str)
@@ -81,7 +80,7 @@ class OkPreviewWidget(QtGui.QTextEdit):
             else:
                 self.contentFormat(val)
 
-        self.cursor.insertText(" )\n", OkContentFormat())
+        self.cursor.insertText(" );\n", OkContentFormat())
         
     def titleFormat(self, step):
         self.cursor.insertText("/*Step %d */\n" % step, OkTitleFormat())
