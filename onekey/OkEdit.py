@@ -10,9 +10,10 @@ class OkTextEdit(QtGui.QLineEdit):
                     "border:1px solid #000000;"
                     "background-color: #656565;"
                     "height: 25px;"
-                    "font-size: 18px;"
+                    "font-size: 14px;"
                     "padding-left:3px;"
-                    "width:300px"
+                    "width:300px;"
+                    "color: #a8a8a8"
                 "}"
                 "QLineEdit:hover{"
                     "border:1px solid #9BBAAC;"
@@ -39,7 +40,8 @@ class OkDatetimeEdit(QtGui.QDateTimeEdit):
                     "height: 25px;"
                     "font-size: 18px;"
                     "padding-left:3px;"
-                    "width:300px"
+                    "width:300px;"
+                    "color: #a8a8a8"
                 "}"
                 "QDateTimeEdit:hover{"
                     "border:1px solid #9BBAAC;"
@@ -48,10 +50,11 @@ class OkDatetimeEdit(QtGui.QDateTimeEdit):
                     "border:1px solid #7ECEFD;"              
                 "}")
         calendar = QtGui.QCalendarWidget()
+        self.setDateTime(QtCore.QDateTime.currentDateTime())
         self.setCalendarPopup(True)
         self.setCalendarWidget(calendar)
         self.dateTimeChanged.connect(self.changeValue)
         
     @pyqtSlot(QtCore.QDateTime)
     def changeValue(self, datetime):
-        self.ValueChanged.emit(self.name, datetime.toString(Qt.Qt.ISODate), "datetime")
+        self.ValueChanged.emit(self.name, datetime.toString("yyyy-MM-dd hh:mm:ss"), "datetime")

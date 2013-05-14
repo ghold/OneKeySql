@@ -80,7 +80,7 @@ class OkPreviewWidget(QtGui.QTextEdit):
             else:
                 self.contentFormat(val)
 
-        self.cursor.insertText(" );\n", OkContentFormat())
+        self.cursor.insertText(");\n", OkContentFormat())
         
     def titleFormat(self, step):
         self.cursor.insertText("/*Step %d */\n" % step, OkTitleFormat())

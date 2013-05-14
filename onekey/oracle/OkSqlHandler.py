@@ -11,6 +11,7 @@ class OkSqlHandler(object):
     def insertAction(cls, sql):
         conn = cls.setupConn()
         cursor = conn.cursor()
+        print(sql)
         cursor.execute(sql)
         cursor.close()
         conn.commit()

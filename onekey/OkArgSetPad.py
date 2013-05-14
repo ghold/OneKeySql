@@ -4,7 +4,7 @@ from OkTagHandler import OkTagHandler
 from OkToolBar import OkEditToolBar
 from OkLabel import OkEditWidgetLabel, OkTagLabel
 from OkPreviewWidget import OkPreviewWidget
-#from oracle.OkSqlHandler import OkSqlHandler
+from oracle.OkSqlHandler import OkSqlHandler
 from OkEdit import *
 import re
 
@@ -86,8 +86,8 @@ class OkArgSetPad(QtGui.QWidget):
         sql_compiler = re.compile(sql_pattern)
         for val in step_list:
             val = sql_compiler.sub(r' ', val)
-            print(repr(val))
-        #OkSqlHandler.insertAction(self.previewWidget.toPlainText().__repr__())
+            #Don't need to add " at start or at end
+            OkSqlHandler.insertAction(val.strip())
         
     def paintEvent(self, event):
         self.setGeometry(QtCore.QRect(self.parent().width()/2, 0, self.parent().width()/2 ,  self.parent().height()))
