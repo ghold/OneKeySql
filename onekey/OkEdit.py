@@ -58,3 +58,7 @@ class OkDatetimeEdit(QtGui.QDateTimeEdit):
     @pyqtSlot(QtCore.QDateTime)
     def changeValue(self, datetime):
         self.ValueChanged.emit(self.name, datetime.toString("yyyy-MM-dd hh:mm:ss"), "datetime")
+        
+class OkIncrementEdit(OkTextEdit):
+    def __init__(self, name, parent=None):
+        OkTextEdit.__init__(self, name, parent)

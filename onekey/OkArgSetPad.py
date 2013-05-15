@@ -5,6 +5,7 @@ from OkToolBar import OkEditToolBar
 from OkLabel import OkEditWidgetLabel, OkTagLabel
 from OkPreviewWidget import OkPreviewWidget
 from oracle.OkSqlHandler import OkSqlHandler
+from OkConfig import OkConfigHandler
 from OkEdit import *
 import re
 
@@ -61,11 +62,12 @@ class OkArgSetPad(QtGui.QWidget):
         settingLayout.setFieldGrowthPolicy(QtGui.QFormLayout.FieldsStayAtSizeHint)
         settingLayout.setLabelAlignment(Qt.Qt.AlignRight)
         
-        tag_pattern = r'\{(.+)\((.+)\)\}'
+        #match the form like {type_name(tag_name:default_val)}
+        tag_pattern = r'\{([0-9a-zA-Z_]+)\(([0-9a-zA-Z_]+)(?:|\:(?P<def>[0-9A-Z_]+))\)\}'
         tag_compiler = re.compile(tag_pattern)
         for tag in self.data['data']['var'].split(','):
             result = tag_compiler.match(tag)
-            OkTagWidget = OkTagHandler.callback(result.group(1), result.group(2))
+            OkTagWidget = OkTagHandler.callback(result.group(1), result.group(2), result.group("def"))
             OkTagWidget.ValueChanged.connect(self.previewWidget.tagValue)
             settingLayout.addRow(OkTagLabel(result.group(2)), OkTagWidget)
         
