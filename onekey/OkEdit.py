@@ -62,3 +62,9 @@ class OkDatetimeEdit(QtGui.QDateTimeEdit):
 class OkIncrementEdit(OkTextEdit):
     def __init__(self, name, parent=None):
         OkTextEdit.__init__(self, name, parent)
+        
+    @pyqtSlot(str)
+    def changeValue(self, text):
+        if text == '':
+            text = '{' + self.name + '}'
+        self.ValueChanged.emit(self.name, text, "increment")

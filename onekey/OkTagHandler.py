@@ -29,4 +29,11 @@ class OkTagHandler(object):
         datetime, arg = args
         datetime = QtCore.QDateTime.fromString(datetime, Qt.Qt.ISODate)
         return datetime.addMSecs(float(arg) * 1000 * 60).toString("yyyy-MM-dd hh:mm:ss")
+        
+    @classmethod    
+    def increment_arg(cls, *args):
+        number, arg = args
+        number = int(number) + int(arg)
+        return number
+        
     
