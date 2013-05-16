@@ -4,6 +4,7 @@ from OkTagHandler import OkTagHandler
 from OkScrollBar import OkScrollBar
 import OkXmlHandler
 from OkModel import OkModel
+from OkConfig import OkConfig
 import re
 
 class OkPreviewWidget(QtGui.QTextEdit):
@@ -12,6 +13,7 @@ class OkPreviewWidget(QtGui.QTextEdit):
         self.cache = {}
         self.data = {}
         self.tag_position = {}
+        self.config = OkConfig()
         self.setStyleSheet("QTextEdit{"
                     "border: 0px;"
                     "background: #656565"
@@ -46,8 +48,9 @@ class OkPreviewWidget(QtGui.QTextEdit):
             self.contentFormat(tp_sql)
             self.subTag(data[step]["tags"], step_data["value"])
     
-    @pyqtSlot(str, str, str)
-    def tagValue(self, tag, text, type):
+    @pyqtSlot(str, str, str, str)
+    def tagValue(self, tag, text, type, default):
+        self.config.reset()
         for val in self.tag_position[tag]:
             ac_text = text
             block = self.document().findBlockByNumber(val[0])
@@ -57,10 +60,11 @@ class OkPreviewWidget(QtGui.QTextEdit):
             self.cursor.setPosition(fragment.position())
             self.cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.KeepAnchor, fragment.length())
             self.cursor.deleteChar()
+            #if arg is set, it will be call the "_arg" suffix method
             if val[2] is not None:
-                ac_text = OkTagHandler.callback(type + "_arg", ac_text, val[2])
+                ac_text = OkTagHandler.callback(type + "_arg", ac_text, val[2], default, self.config)
             self.tagFormat(ac_text)
-            
+        
     def subTag(self, tags, data):
         self.cursor.insertText("VALUES( ", OkContentFormat())
         tag_pattern = r'\{[0-9a-zA-Z_]+\((?P<name>[0-9a-zA-Z_]+)\)\}'
@@ -69,12 +73,13 @@ class OkPreviewWidget(QtGui.QTextEdit):
         order = 0
         arg_pattern = r'\{(?P<name>[0-9a-zA-Z_]+)(?:|\((?P<arg>[+-]{1}[0-9]+)\))\}'
         arg_compiler = re.compile(arg_pattern)
-                
+               
         for val in tag_list:
             if tags.get(val) is not None:
                 arg_match = arg_compiler.match(tags[val])
-                self.tag_position.setdefault(arg_match.group("name"), [])
-                self.tag_position[arg_match.group("name")].append((self.cursor.blockNumber(), order, arg_match.group("arg")))
+                if arg_match is not None:
+                    self.tag_position.setdefault(arg_match.group("name"), [])
+                    self.tag_position[arg_match.group("name")].append((self.cursor.blockNumber(), order, arg_match.group("arg")))
                 self.tagFormat(tags[val])
                 order += 1
             else:

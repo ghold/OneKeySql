@@ -5,7 +5,7 @@ from OkToolBar import OkEditToolBar
 from OkLabel import OkEditWidgetLabel, OkTagLabel
 from OkPreviewWidget import OkPreviewWidget
 from oracle.OkSqlHandler import OkSqlHandler
-from OkConfig import OkConfigHandler
+from OkConfig import OkConfig
 from OkEdit import *
 import re
 
@@ -15,6 +15,7 @@ class OkArgSetPad(QtGui.QWidget):
     def __init__(self, data, parent=None):
         QtGui.QWidget.__init__(self,  parent)
         self.data = data
+        self.config = OkConfig()
         self.setWindowFlags(Qt.Qt.FramelessWindowHint)
         
         #add toolBar
@@ -63,14 +64,25 @@ class OkArgSetPad(QtGui.QWidget):
         settingLayout.setLabelAlignment(Qt.Qt.AlignRight)
         
         #match the form like {type_name(tag_name:default_val)}
-        tag_pattern = r'\{([0-9a-zA-Z_]+)\(([0-9a-zA-Z_]+)(?:|\:(?P<def>[0-9A-Z_]+))\)\}'
+        tag_pattern = r"\{([0-9a-zA-Z_]+)\(([0-9a-zA-Z_]+)(?:|\:(?P<def>.+))\)(?:|(?P<view>!))\}"
         tag_compiler = re.compile(tag_pattern)
         for tag in self.data['data']['var'].split(','):
             result = tag_compiler.match(tag)
-            OkTagWidget = OkTagHandler.callback(result.group(1), result.group(2), result.group("def"))
+            default_value = result.group("def")
+            #Globalconfig or user default 
+            
+            OkTagWidget = OkTagHandler.callback(result.group(1), result.group(2), default_value)
             OkTagWidget.ValueChanged.connect(self.previewWidget.tagValue)
-            settingLayout.addRow(OkTagLabel(result.group(2)), OkTagWidget)
-        
+            
+            if default_value[0] == "'":
+                default_value = default_value.strip("'")
+            else:
+                default_value = self.config.callback(result.group("def"))
+            
+            if default_value is not None:
+                OkTagWidget.setValue(default_value)
+            if result.group("view") is  None:
+                settingLayout.addRow(OkTagLabel(result.group(2)), OkTagWidget)
         settingWidget.setLayout(settingLayout)
         return settingWidget
     
@@ -90,6 +102,7 @@ class OkArgSetPad(QtGui.QWidget):
             val = sql_compiler.sub(r' ', val)
             #Don't need to add " at start or at end
             OkSqlHandler.insertAction(val.strip())
+        self.previewWidget.config.save()
         
     def paintEvent(self, event):
         self.setGeometry(QtCore.QRect(self.parent().width()/2, 0, self.parent().width()/2 ,  self.parent().height()))
