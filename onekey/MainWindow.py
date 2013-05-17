@@ -104,9 +104,13 @@ class MainWindow(QtGui.QWidget):
             self.mainSplitter.widget(1).setParent(None)
             self.mainSplitter.addWidget(self.caseEditModule())
             self.mainSplitter.setStretchFactor(1, 1)
-              
+    
     @pyqtSlot(OkListItem)
     def updateStepList(self, item):
+        tmpBrush = QtGui.QBrush()
+        tmpBrush.setTextureImage(QtGui.QImage(":/images/itembg_1x40.png"))
+        item.setBackground(tmpBrush)
+        item.state = True
         stepList = self.model.makeupStepList(item)
         self.mainSplitter.widget(1).widget(1).setParent(None)
         self.mainSplitter.widget(1).addWidget(stepList)
@@ -125,7 +129,6 @@ class MainWindow(QtGui.QWidget):
             #self.move(event.globalPos() - self.dragPosition)
             event.accept() 
     
-        
     def paintEvent(self,  event):
         tmpPainter = QtGui.QPainter()
         tmpPainter.begin(self)

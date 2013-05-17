@@ -7,7 +7,7 @@ class OkListWidget(QtGui.QListWidget):
     def __init__(self, parent=None):
         QtGui.QListWidget.__init__(self, parent)
         self.setFrameStyle(QtGui.QFrame.NoFrame)
-        self.setSelectionMode(0)
+        self.setSelectionMode(3)
         self.setFocusPolicy(Qt.Qt.NoFocus)
         self.setMinimumWidth(250)
         self.setVerticalScrollBar(OkScrollBar())
@@ -16,7 +16,7 @@ class OkListWidget(QtGui.QListWidget):
         self.setAcceptDrops(True)
         self.setDropIndicatorShown(True)
         self.setMouseTracking(True)
-
+        
 class OkCaseWidget(OkListWidget):
     def __init__(self, parent=None):
         OkListWidget.__init__(self, parent)
@@ -40,7 +40,7 @@ class OkCaseWidget(OkListWidget):
             event.accept()
         else:
             event.ignore()
-            
+        
     @pyqtSlot(OkListItem)
     def pressItem(self, item):
         itemdata = repr(item.data(Qt.Qt.UserRole))
