@@ -17,6 +17,7 @@ class OkArgSetPad(QtGui.QWidget):
         self.data = data
         self.config = OkConfig()
         self.setWindowFlags(Qt.Qt.FramelessWindowHint)
+        self.setGeometry(QtCore.QRect(200, 0, self.parent().width() - 200 ,  self.parent().height()))
         
         #add toolBar
         self.toolBar = OkEditToolBar(self)
@@ -48,8 +49,8 @@ class OkArgSetPad(QtGui.QWidget):
         editLayout.addWidget(caseLabel, 0, Qt.Qt.AlignTop)
         editLayout.addWidget(settingWidget, 0, Qt.Qt.AlignTop)
         editLayout.addWidget(caseLabel2, 0, Qt.Qt.AlignTop)
-        editLayout.addWidget(self.previewWidget, 0, Qt.Qt.AlignTop)
-        editLayout.addWidget(comfirmButton, 1, Qt.Qt.AlignTop)
+        editLayout.addWidget(self.previewWidget, 1, Qt.Qt.AlignTop)
+        editLayout.addWidget(comfirmButton, 0, Qt.Qt.AlignTop)
         #editLayout.addSpacerItem(horizontalSpacer1)
         
         gridLayout.addLayout(editLayout, 1, 1)
@@ -74,7 +75,7 @@ class OkArgSetPad(QtGui.QWidget):
             OkTagWidget = OkTagHandler.callback(result.group(1), result.group(2), default_value)
             OkTagWidget.ValueChanged.connect(self.previewWidget.tagValue)
             
-            if default_value[0] == "'":
+            if default_value is not None and default_value[0] == "'":
                 default_value = default_value.strip("'")
             else:
                 default_value = self.config.callback(result.group("def"))
@@ -105,7 +106,7 @@ class OkArgSetPad(QtGui.QWidget):
         self.previewWidget.config.save()
         
     def paintEvent(self, event):
-        self.setGeometry(QtCore.QRect(self.parent().width()/2, 0, self.parent().width()/2 ,  self.parent().height()))
+        #self.setGeometry(QtCore.QRect(200, 0, self.parent().width() - 200 ,  self.parent().height()))
         tmpPainter = QtGui.QPainter()
         tmpPainter.begin(self)
         tmpBrush = QtGui.QBrush(QtGui.QColor(50,  50,  50))

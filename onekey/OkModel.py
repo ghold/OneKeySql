@@ -16,8 +16,8 @@ class OkModel(object):
         #self.test_list = OkCaseWidget() if type == "Case" else OkUnitWidget()
         self.test_list = OkCaseWidget()
         for key,  val in self.data.items():
-            #print(key)
-            item = OkListItem(key, self.test_list)
+            #print(val["data"]["name"])
+            item = OkListItem(val["data"]["name"], self.test_list)
             item.setData(Qt.Qt.UserRole, val)
             self.test_list.addItem(item)
             self.test_list.setItemWidget(item, OkAddonWidget(item))

@@ -18,6 +18,8 @@ class OkPreviewWidget(QtGui.QTextEdit):
                     "border: 0px;"
                     "background: #656565"
                 "}")
+        #self.setMaximumHeight(600)
+        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.MinimumExpanding)
         self.setTextInteractionFlags(Qt.Qt.TextSelectableByMouse)
         self.setVerticalScrollBar(OkScrollBar())
         

@@ -127,6 +127,7 @@ class closeButton(windowButton):
                 "}")
         
     def mousePressEvent(self, event):
+        self.topLevelWidget().dragPosition = event.globalPos() - self.topLevelWidget().frameGeometry().topLeft()
         self.topLevelWidget().exit()
         event.accept()
         
@@ -136,6 +137,7 @@ class MaxOrResizeButton(windowButton):
         self.updateStyle()
     def mousePressEvent(self, event):
         if event.buttons() == QtCore.Qt.LeftButton:
+            self.topLevelWidget().dragPosition = event.globalPos() - self.topLevelWidget().frameGeometry().topLeft()
             if self.topLevelWidget().isMaximized():
                 self.topLevelWidget().showNormal()
                 self.updateStyle()
@@ -186,6 +188,7 @@ class MinButton(windowButton):
                 "}")
         
     def mousePressEvent(self, event):
+        self.topLevelWidget().dragPosition = event.globalPos() - self.topLevelWidget().frameGeometry().topLeft()
         self.topLevelWidget().showMinimized()
         event.accept()
         
@@ -203,5 +206,6 @@ class backButton(windowButton):
                 "}")
         
     def mousePressEvent(self, event):
+        self.topLevelWidget().dragPosition = event.globalPos() - self.topLevelWidget().frameGeometry().topLeft()
         self.parent().parent().close()
         event.accept()
