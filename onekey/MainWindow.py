@@ -9,15 +9,19 @@ from OkListItem import OkListItem
 from OkEditPad import OkEditPad
 from OkArgSetPad import OkArgSetPad
 
-class MainWindow(QtGui.QWidget):
+class MainWindow(QtGui.QFrame):
     editWidget = None
     def __init__(self,  parent=None):
-        QtGui.QWidget.__init__(self,  parent)
+        QtGui.QFrame.__init__(self,  parent)
         self.setWindowFlags(Qt.Qt.FramelessWindowHint|Qt.Qt.WindowSystemMenuHint|Qt.Qt.WindowMinMaxButtonsHint)
         self.screen = QtGui.QDesktopWidget().screenGeometry()
         self.setGeometry(QtCore.QRect().adjusted(self.screen.width()/2 - 500, self.screen.height()/2 - 300, 
                 self.screen.width()/2 + 500,  self.screen.height()/2 + 300))
-                
+        self.setObjectName("MainWindow")
+        self.setStyleSheet("QFrame#MainWindow{"
+                    "background-color: #FFF;"
+                    "border: 1px solid #ddd;"
+                "}")
         self.toolBar = OkMainToolBar(self)
         self.setWindowTitle("OneKeySql")
         
@@ -130,13 +134,6 @@ class MainWindow(QtGui.QWidget):
             #self.move(event.globalPos() - self.dragPosition)
             event.accept() 
     
-    def paintEvent(self,  event):
-        tmpPainter = QtGui.QPainter()
-        tmpPainter.begin(self)
-        tmpBrush = QtGui.QBrush(Qt.Qt.white)
-        tmpPainter.fillRect(QtCore.QRectF(self.rect()), tmpBrush)
-        tmpPainter.end()
-        event.accept()
         
     def exit(self):
         self.close()

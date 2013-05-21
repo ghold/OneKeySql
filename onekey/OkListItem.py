@@ -3,15 +3,20 @@ from PyQt4 import QtGui, QtCore, Qt
 class OkListItem(QtGui.QListWidgetItem):
     def __init__(self, text,  parent=None,  type=QtGui.QListWidgetItem.UserType):
         QtGui.QListWidgetItem.__init__(self, text,  parent, type)
-        tmpBrush = QtGui.QBrush(QtGui.QColor(238,  238,  238))
-        #tmpBrush = QtGui.QBrush()
-        #tmpBrush.setTextureImage(QtGui.QImage(":/images/itembg_1x40.png"))
-        self.setBackground(tmpBrush)
+        
+        #set background
+        image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
+        image.fill(QtGui.QColor(238,  238,  238))
+        image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
+        brush = QtGui.QBrush()
+        brush.setTextureImage(image)
+        self.setBackground(brush)
+        
         self.setFlags(Qt.Qt.ItemIsUserCheckable|Qt.Qt.ItemIsEnabled|Qt.Qt.ItemIsDragEnabled)
         self.setWhatsThis("hello")
         self.setFont(QtGui.QFont("微软雅黑", 12))
-        self.setTextColor(QtGui.QColor(59,  66,  76))
-        self.setSizeHint(QtCore.QSize(200, 40))
+        self.setTextColor(QtGui.QColor(110,  110,  110))
+        self.setSizeHint(QtCore.QSize(200, 41))
         self.state = False
     
     def setItemSelected(self, item):
@@ -19,6 +24,7 @@ class OkListItem(QtGui.QListWidgetItem):
             self.listWidget().selectedItem.state = False
             tmpBrush = QtGui.QBrush(QtGui.QColor(238,  238,  238))
             self.listWidget().selectedItem.setBackground(tmpBrush)
+            self.listWidget().selectedItem.setTextColor(QtGui.QColor(110,  110,  110))
         self.state = True
         self.listWidget().selectedItem = item
 
@@ -39,20 +45,36 @@ class OkAddonWidget(QtGui.QWidget):
         
     def enterEvent(self, event):
         if not self.parent.state:
-            tmpBrush = QtGui.QBrush(QtGui.QColor(33,  133,  197))
-            self.parent.setBackground(tmpBrush)
+            image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
+            image.fill(QtGui.QColor(77,  166,  234))
+            image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
+            brush = QtGui.QBrush()
+            brush.setTextureImage(image)
+            self.parent.setBackground(brush)
+            self.parent.setTextColor(QtGui.QColor(255,  255,  255))
             event.accept()
         
     def leaveEvent(self, event):
         if not self.parent.state:
-            tmpBrush = QtGui.QBrush(QtGui.QColor(238,  238,  238))
-            self.parent.setBackground(tmpBrush)
+            image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
+            image.fill(QtGui.QColor(238,  238,  238))
+            image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
+            brush = QtGui.QBrush()
+            brush.setTextureImage(image)
+            self.parent.setBackground(brush)
+            self.parent.setTextColor(QtGui.QColor(110,  110,  110))
             event.accept()
             
     def mousePressEvent(self, event):
-        if event.buttons() == Qt.Qt.LeftButton:
-            tmpBrush = QtGui.QBrush(QtGui.QColor(111,  111,  111))
-            self.parent.setBackground(tmpBrush)
+        if event.buttons() == Qt.Qt.LeftButton and not self.parent.state:
+            image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
+            image.fill(QtGui.QColor(221, 221, 221))
+            image.setPixel(0, 39, QtGui.qRgba(33, 133, 197, 255))
+            image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
+            brush = QtGui.QBrush()
+            brush.setTextureImage(image)
+            self.parent.setBackground(brush)
+            self.parent.setTextColor(QtGui.QColor(59,  66,  76))
             self.parent.setItemSelected(self.parent)
             event.accept()
         
