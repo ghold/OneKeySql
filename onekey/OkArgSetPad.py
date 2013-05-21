@@ -2,6 +2,8 @@ from PyQt4 import QtGui, QtCore, Qt
 from PyQt4.QtCore import pyqtSlot
 from OkTagHandler import OkTagHandler
 from OkToolBar import OkEditToolBar
+from OkScroll import OkScrollArea
+from OkButton import OkExecButton
 from OkLabel import OkEditWidgetLabel, OkTagLabel
 from OkPreviewWidget import OkPreviewWidget
 from oracle.OkSqlHandler import OkSqlHandler
@@ -23,46 +25,49 @@ class OkArgSetPad(QtGui.QWidget):
         self.toolBar = OkEditToolBar(self)
         
         # Set up the widgets.
-        horizontalSpacer = QtGui.QSpacerItem(20, 30)
-        #horizontalSpacer1 = QtGui.QSpacerItem(10, 1000, 7, 7)
-        verticalSpacer = QtGui.QSpacerItem(20, 30)
+        spacer = QtGui.QSpacerItem(20, 30)
         caseLabel = OkEditWidgetLabel("标签")
-        caseLabel2 = OkEditWidgetLabel("预览")
+        previewLabel = OkEditWidgetLabel("预览")
+        #comfireButton
+        comfirmButton = OkExecButton("执行")
+        comfirmButton.clicked.connect(self.sqlExec)
+        
+        #
+        horizonLayout = QtGui.QHBoxLayout()
+        horizonLayout.addWidget(previewLabel)
+        horizonLayout.addWidget(comfirmButton )
         
         #add layout
         gridLayout = QtGui.QGridLayout()
         gridLayout.setOriginCorner(Qt.Qt.TopLeftCorner)
-        gridLayout.addItem(horizontalSpacer, 0, 0, 1, 4)
-        gridLayout.addItem(verticalSpacer, 1, 0)
+        gridLayout.addItem(spacer, 0, 0, 1, 4)
+        gridLayout.addItem(spacer, 1, 0)
         editLayout = QtGui.QVBoxLayout()
         
         #previewWidget
         self.previewWidget = self.setupPreview()
-        
         settingWidget = self.setupLabel()
-        
-        #comfireButton
-        comfirmButton = QtGui.QPushButton("确定")
-        comfirmButton.clicked.connect(self.sqlExec)
-        
+
         # add the widgets.
-        editLayout.addWidget(caseLabel, 0, Qt.Qt.AlignTop)
-        editLayout.addWidget(settingWidget, 0, Qt.Qt.AlignTop)
-        editLayout.addWidget(caseLabel2, 0, Qt.Qt.AlignTop)
-        editLayout.addWidget(self.previewWidget, 1, Qt.Qt.AlignTop)
+        if settingWidget is not None:
+            editLayout.addWidget(caseLabel, 0, Qt.Qt.AlignTop)
+            editLayout.addWidget(settingWidget, 0, Qt.Qt.AlignTop)
+        editLayout.addLayout(horizonLayout, 0)
+        editLayout.addWidget(self.previewWidget, 1)
         editLayout.addWidget(comfirmButton, 0, Qt.Qt.AlignTop)
-        #editLayout.addSpacerItem(horizontalSpacer1)
         
         gridLayout.addLayout(editLayout, 1, 1)
-        
         self.setLayout(gridLayout)
         
     def setupLabel(self):
         #setting layout
-        settingWidget = QtGui.QWidget()
-        settingLayout = QtGui.QFormLayout()
-        settingLayout.setFieldGrowthPolicy(QtGui.QFormLayout.FieldsStayAtSizeHint)
-        settingLayout.setLabelAlignment(Qt.Qt.AlignRight)
+        settingWidget = OkScrollArea()
+        #label layout
+        labelWidget = QtGui.QWidget()
+        labelWidget.setStyleSheet("background-color: #323232;")
+        labelLayout = QtGui.QFormLayout()
+        labelLayout.setFieldGrowthPolicy(QtGui.QFormLayout.FieldsStayAtSizeHint)
+        labelLayout.setLabelAlignment(Qt.Qt.AlignRight)
         
         #match the form like {type_name(tag_name:default_val)}
         tag_pattern = r"\{([0-9a-zA-Z_]+)\(([0-9a-zA-Z_]+)(?:|\:(?P<def>.+))\)(?:|(?P<view>!))\}"
@@ -83,9 +88,12 @@ class OkArgSetPad(QtGui.QWidget):
             if default_value is not None:
                 OkTagWidget.setValue(default_value)
             if result.group("view") is  None:
-                settingLayout.addRow(OkTagLabel(result.group(2)), OkTagWidget)
-        settingWidget.setLayout(settingLayout)
-        return settingWidget
+                labelLayout.addRow(OkTagLabel(result.group(2)), OkTagWidget)
+        if labelLayout.count() > 0:
+            labelWidget.setLayout(labelLayout)
+            settingWidget.setWidget(labelWidget)
+            return settingWidget
+        return None
     
     def setupPreview(self):
         previewWidget = OkPreviewWidget()
@@ -106,7 +114,7 @@ class OkArgSetPad(QtGui.QWidget):
         self.previewWidget.config.save()
         
     def paintEvent(self, event):
-        #self.setGeometry(QtCore.QRect(200, 0, self.parent().width() - 200 ,  self.parent().height()))
+        self.setGeometry(QtCore.QRect(200, 0, self.parent().width() - 200 ,  self.parent().height()))
         tmpPainter = QtGui.QPainter()
         tmpPainter.begin(self)
         tmpBrush = QtGui.QBrush(QtGui.QColor(50,  50,  50))

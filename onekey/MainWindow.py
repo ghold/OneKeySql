@@ -1,6 +1,6 @@
 from PyQt4 import QtGui, QtCore, Qt
 from PyQt4.QtCore import pyqtSlot
-from OkModuleButton import OkModuleButton
+from OkButton import OkModuleButton
 from OkToolBar import OkMainToolBar
 from OkModel import OkModel
 from OkXmlHandler import OkTestcaseHandler, OkTestunitHandler
@@ -13,7 +13,7 @@ class MainWindow(QtGui.QWidget):
     editWidget = None
     def __init__(self,  parent=None):
         QtGui.QWidget.__init__(self,  parent)
-        self.setWindowFlags(Qt.Qt.FramelessWindowHint|Qt.Qt.CustomizeWindowHint|Qt.Qt.WindowSystemMenuHint)
+        self.setWindowFlags(Qt.Qt.FramelessWindowHint|Qt.Qt.WindowSystemMenuHint|Qt.Qt.WindowMinMaxButtonsHint)
         self.screen = QtGui.QDesktopWidget().screenGeometry()
         self.setGeometry(QtCore.QRect().adjusted(self.screen.width()/2 - 500, self.screen.height()/2 - 300, 
                 self.screen.width()/2 + 500,  self.screen.height()/2 + 300))
@@ -115,11 +115,12 @@ class MainWindow(QtGui.QWidget):
         self.mainSplitter.widget(1).widget(1).setParent(None)
         self.mainSplitter.widget(1).addWidget(stepList)
         self.mainSplitter.widget(1).setStretchFactor(1, 1)
+     
+    def showArgSetPad(self, item):
         self.editWidget = OkArgSetPad(item.data(Qt.Qt.UserRole), self)
         self.editWidget.show()
 
     def mousePressEvent(self,event):
-        
        if event.button() == QtCore.Qt.LeftButton:
            self.dragPosition = event.globalPos() - self.frameGeometry().topLeft()
            event.accept()

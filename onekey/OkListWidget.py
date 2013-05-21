@@ -1,11 +1,12 @@
 from PyQt4 import QtGui, QtCore, Qt
 from OkListItem import OkListItem
-from OkScrollBar import OkScrollBar
+from OkScroll import OkScrollBar
 from PyQt4.QtCore import pyqtSlot
 
 class OkListWidget(QtGui.QListWidget):
     def __init__(self, parent=None):
         QtGui.QListWidget.__init__(self, parent)
+        self.selectedItem = None
         self.setFrameStyle(QtGui.QFrame.NoFrame)
         self.setSelectionMode(3)
         self.setFocusPolicy(Qt.Qt.NoFocus)
@@ -29,14 +30,14 @@ class OkCaseWidget(OkListWidget):
 
     def dragMoveEvent(self, event):
         if event.mimeData().hasFormat('application/x-dict'):
-            event.setDropAction(QtCore.Qt.MoveAction)
+            event.setDropAction(Qt.Qt.MoveAction)
             event.accept()
         else:
             event.ignore()
 
     def dropEvent(self, event):
         if event.mimeData().hasFormat('application/x-dict'):
-            event.setDropAction(QtCore.Qt.CopyAction)
+            event.setDropAction(Qt.Qt.CopyAction)
             event.accept()
         else:
             event.ignore()

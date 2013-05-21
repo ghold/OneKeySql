@@ -1,5 +1,13 @@
-from PyQt4 import QtGui, Qt
-
+from PyQt4 import QtGui, QtCore, Qt
+class OkScrollArea(QtGui.QScrollArea):
+    def __init__(self, parent=None):
+        QtGui.QScrollArea.__init__(self, parent)
+        self.setVerticalScrollBar(OkScrollBar())
+        self.setStyleSheet("QScrollArea{"
+                    "border: 0px;"
+                    "background: #323232"
+                "}")
+        
 class OkScrollBar(QtGui.QScrollBar):
     def __init__(self, parent=None):
         QtGui.QScrollBar.__init__(self, parent)
@@ -9,7 +17,7 @@ class OkScrollBar(QtGui.QScrollBar):
                 "}"
                 " QScrollBar::handle:vertical {"
                     " background: grey;"
-                    " min-height: 200px;"
+                    " min-height: 10px;"
                 " }"
                 " QScrollBar::add-line:vertical {"
                     " height: 0px;"

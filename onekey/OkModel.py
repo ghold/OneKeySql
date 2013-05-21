@@ -2,7 +2,7 @@ from PyQt4 import QtGui, Qt
 from OkListItem import OkListItem
 from xml.sax import parse
 from OkListWidget import *
-from OkLittleButton import OkAddonWidget
+from OkListItem import OkAddonWidget
 
 class OkModel(object):
     data = []

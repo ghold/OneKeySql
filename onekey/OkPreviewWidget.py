@@ -1,7 +1,7 @@
 from PyQt4 import QtGui, QtCore, Qt
 from PyQt4.QtCore import pyqtSlot
 from OkTagHandler import OkTagHandler
-from OkScrollBar import OkScrollBar
+from OkScroll import OkScrollBar
 import OkXmlHandler
 from OkModel import OkModel
 from OkConfig import OkConfig
@@ -49,6 +49,7 @@ class OkPreviewWidget(QtGui.QTextEdit):
             tp_sql = "INSERT INTO\n%s(%s)\n" % (step_data["table"], step_data["column"])
             self.contentFormat(tp_sql)
             self.subTag(data[step]["tags"], step_data["value"])
+        self.cursor.movePosition(QtGui.QTextCursor.Start)
     
     @pyqtSlot(str, str, str, str)
     def tagValue(self, tag, text, type, default):

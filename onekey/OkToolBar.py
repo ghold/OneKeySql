@@ -8,7 +8,7 @@ class OkMainToolBar(QtGui.QToolBar):
         spacer.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         self.addWidget(spacer)
         self.addWidget(MinButton())
-        self.maxOrResizeButton = MaxOrResizeButton()
+        self.maxOrResizeButton = MaxOrResizeButton(self)
         self.addWidget(self.maxOrResizeButton)
         self.addWidget(closeButton())
         
@@ -17,22 +17,23 @@ class OkMainToolBar(QtGui.QToolBar):
             self.setGeometry(0,  0,  self.parent().rect().width(),  height)
             
     def mousePressEvent(self,event):
-       if event.button() == QtCore.Qt.LeftButton:
+       if event.button() == Qt.Qt.LeftButton:
            self.parent().dragPosition = event.globalPos() - self.parent().frameGeometry().topLeft()
            event.accept()
            
     def mouseMoveEvent(self,event):
-        if event.buttons() ==QtCore.Qt.LeftButton and not self.parent().isMaximized():
+        if event.buttons() ==Qt.Qt.LeftButton and not self.parent().isMaximized():
             self.parent().move(event.globalPos() - self.parent().dragPosition)
             event.accept() 
     
     def mouseDoubleClickEvent(self,  event):
-        if event.buttons() == QtCore.Qt.LeftButton:
+        if event.buttons() == Qt.Qt.LeftButton:
             if self.parent().isMaximized():
                 self.parent().showNormal()
                 self.maxOrResizeButton.updateStyle()
                 if self.parent().editWidget is not None:
                     self.parent().editWidget.update()
+                    self.parent().editWidget.toolBar.maxOrResizeButton.updateStyle()
                 self.update()
                 event.accept()
             else:
@@ -40,6 +41,7 @@ class OkMainToolBar(QtGui.QToolBar):
                 self.maxOrResizeButton.updateStyle()
                 if self.parent().editWidget is not None:
                     self.parent().editWidget.update()
+                    self.parent().editWidget.toolBar.maxOrResizeButton.updateStyle()
                 self.update()
                 event.accept()
                 
@@ -61,7 +63,7 @@ class OkEditToolBar(QtGui.QToolBar):
         self.addWidget(backButton())
         self.addWidget(spacer)
         self.addWidget(MinButton())
-        self.maxOrResizeButton = MaxOrResizeButton()
+        self.maxOrResizeButton = MaxOrResizeButton(self)
         self.addWidget(self.maxOrResizeButton)
         self.addWidget(closeButton())
             
@@ -70,17 +72,17 @@ class OkEditToolBar(QtGui.QToolBar):
             self.setGeometry(0,  0,  self.parent().rect().width(),  height)
             
     def mousePressEvent(self,event):
-       if event.button() == QtCore.Qt.LeftButton:
+       if event.button() == Qt.Qt.LeftButton:
            self.topLevelWidget().dragPosition = event.globalPos() - self.topLevelWidget().frameGeometry().topLeft()
            event.accept()
            
     def mouseMoveEvent(self,event):
-        if event.buttons() ==QtCore.Qt.LeftButton and not self.topLevelWidget().isMaximized():
+        if event.buttons() ==Qt.Qt.LeftButton and not self.topLevelWidget().isMaximized():
             self.topLevelWidget().move(event.globalPos() - self.topLevelWidget().dragPosition)
             event.accept() 
     
     def mouseDoubleClickEvent(self,  event):
-        if event.buttons() == QtCore.Qt.LeftButton:
+        if event.buttons() == Qt.Qt.LeftButton:
             if self.topLevelWidget().isMaximized():
                 self.topLevelWidget().showNormal()
                 self.maxOrResizeButton.updateStyle()
@@ -135,8 +137,9 @@ class MaxOrResizeButton(windowButton):
     def __init__(self, parent=None):
         windowButton.__init__(self, parent)
         self.updateStyle()
+        
     def mousePressEvent(self, event):
-        if event.buttons() == QtCore.Qt.LeftButton:
+        if event.buttons() == Qt.Qt.LeftButton:
             self.topLevelWidget().dragPosition = event.globalPos() - self.topLevelWidget().frameGeometry().topLeft()
             if self.topLevelWidget().isMaximized():
                 self.topLevelWidget().showNormal()
@@ -208,4 +211,5 @@ class backButton(windowButton):
     def mousePressEvent(self, event):
         self.topLevelWidget().dragPosition = event.globalPos() - self.topLevelWidget().frameGeometry().topLeft()
         self.parent().parent().close()
+        self.topLevelWidget().toolBar.maxOrResizeButton.updateStyle()
         event.accept()
