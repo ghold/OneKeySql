@@ -32,7 +32,7 @@ class OkExecButton(QtGui.QPushButton):
                     "font-family: '微软雅黑';"
                     "padding-left:3px;"
                     "width:300px;"
-                    "color: #FFF"
+                    "color: #FFF;"
                 "}"
                 "QPushButton:hover{"
                     "border:1px solid #9BBAAC;"

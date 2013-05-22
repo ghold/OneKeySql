@@ -1,8 +1,8 @@
 from PyQt4 import QtGui, QtCore, Qt
 
 class OkListItem(QtGui.QListWidgetItem):
-    def __init__(self, text,  parent=None,  type=QtGui.QListWidgetItem.UserType):
-        QtGui.QListWidgetItem.__init__(self, text,  parent, type)
+    def __init__(self, text, parent=None,  type=QtGui.QListWidgetItem.UserType):
+        QtGui.QListWidgetItem.__init__(self, text, parent, type)
         
         #set background
         image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
@@ -13,7 +13,6 @@ class OkListItem(QtGui.QListWidgetItem):
         self.setBackground(brush)
         
         self.setFlags(Qt.Qt.ItemIsUserCheckable|Qt.Qt.ItemIsEnabled|Qt.Qt.ItemIsDragEnabled)
-        self.setWhatsThis("hello")
         self.setFont(QtGui.QFont("微软雅黑", 12))
         self.setTextColor(QtGui.QColor(110,  110,  110))
         self.setSizeHint(QtCore.QSize(200, 41))
@@ -32,8 +31,9 @@ class OkAddonWidget(QtGui.QWidget):
     """
     work as a cover on OkListItem
     """
-    def __init__(self, parent=None):
+    def __init__(self, tooltip, parent=None):
         QtGui.QWidget.__init__(self)
+        self.setToolTip(tooltip)
         self.parent =parent
         vlayout = QtGui.QHBoxLayout()
         verticalSpacer = QtGui.QSpacerItem(20, 30, 7, 0)
@@ -42,6 +42,8 @@ class OkAddonWidget(QtGui.QWidget):
         vlayout.addSpacerItem(verticalSpacer)
         self.setLayout(vlayout)
         self.setMouseTracking(True)
+        
+        self.tooltip_minHeight =  (3.5 * (len(tooltip.encode('utf-8')) + len(tooltip))//250 + 1) * 18
         
     def enterEvent(self, event):
         if not self.parent.state:
@@ -52,6 +54,16 @@ class OkAddonWidget(QtGui.QWidget):
             brush.setTextureImage(image)
             self.parent.setBackground(brush)
             self.parent.setTextColor(QtGui.QColor(255,  255,  255))
+            
+            self.setStyleSheet("QToolTip{"
+                           "border: 1px solid #fff;"
+                           "font-size: 14px;"
+                           "color: #fff;"
+                           "background-color: #323232;"
+                           "qproperty-wordWrap:True;"
+                           "min-height: %d;"
+                           "max-width: 300px"
+                        "}"%self.tooltip_minHeight)
             event.accept()
         
     def leaveEvent(self, event):

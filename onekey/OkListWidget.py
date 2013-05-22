@@ -15,7 +15,7 @@ class OkListWidget(QtGui.QListWidget):
         self.setDragEnabled(True)
         self.setAcceptDrops(True)
         self.setDropIndicatorShown(True)
-        self.setMouseTracking(True)
+        #self.setMouseTracking(True)
         
 class OkCaseWidget(OkListWidget):
     def __init__(self, parent=None):

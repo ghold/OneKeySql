@@ -5,8 +5,9 @@ class OkScrollArea(QtGui.QScrollArea):
         self.setVerticalScrollBar(OkScrollBar())
         self.setStyleSheet("QScrollArea{"
                     "border: 0px;"
-                    "background: #323232"
+                    "background: #323232;"
                 "}")
+        #self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         
 class OkScrollBar(QtGui.QScrollBar):
     def __init__(self, parent=None):
