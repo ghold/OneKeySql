@@ -1,4 +1,5 @@
 from PyQt4 import QtGui, QtCore, Qt
+import time
 
 class OkListItem(QtGui.QListWidgetItem):
     def __init__(self, text, parent=None,  type=QtGui.QListWidgetItem.UserType):
@@ -33,7 +34,7 @@ class OkAddonWidget(QtGui.QWidget):
     """
     def __init__(self, tooltip, parent=None):
         QtGui.QWidget.__init__(self)
-        self.setToolTip(tooltip)
+        self.toolTip = OkToolTip(tooltip)
         self.parent =parent
         vlayout = QtGui.QHBoxLayout()
         verticalSpacer = QtGui.QSpacerItem(20, 30, 7, 0)
@@ -42,8 +43,6 @@ class OkAddonWidget(QtGui.QWidget):
         vlayout.addSpacerItem(verticalSpacer)
         self.setLayout(vlayout)
         self.setMouseTracking(True)
-        
-        self.tooltip_minHeight =  (3.5 * (len(tooltip.encode('utf-8')) + len(tooltip))//250 + 1) * 18
         
     def enterEvent(self, event):
         if not self.parent.state:
@@ -54,16 +53,6 @@ class OkAddonWidget(QtGui.QWidget):
             brush.setTextureImage(image)
             self.parent.setBackground(brush)
             self.parent.setTextColor(QtGui.QColor(255,  255,  255))
-            
-            self.setStyleSheet("QToolTip{"
-                           "border: 1px solid #fff;"
-                           "font-size: 14px;"
-                           "color: #fff;"
-                           "background-color: #323232;"
-                           "qproperty-wordWrap:True;"
-                           "min-height: %d;"
-                           "max-width: 300px"
-                        "}"%self.tooltip_minHeight)
             event.accept()
         
     def leaveEvent(self, event):
@@ -75,8 +64,9 @@ class OkAddonWidget(QtGui.QWidget):
             brush.setTextureImage(image)
             self.parent.setBackground(brush)
             self.parent.setTextColor(QtGui.QColor(110,  110,  110))
+            self.toolTip.hide()
             event.accept()
-            
+    
     def mousePressEvent(self, event):
         if event.buttons() == Qt.Qt.LeftButton and not self.parent.state:
             image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
@@ -88,6 +78,13 @@ class OkAddonWidget(QtGui.QWidget):
             self.parent.setBackground(brush)
             self.parent.setTextColor(QtGui.QColor(59,  66,  76))
             self.parent.setItemSelected(self.parent)
+            event.accept()
+            
+    def mouseMoveEvent(self, event):
+        if self.toolTip.isHidden():
+            self.toolTip.setGeometry(event.globalX()+5, event.globalY()+5, 100, 200)
+            #time.sleep(0.1)
+            self.toolTip.show()
             event.accept()
         
 class OkPencilButton(QtGui.QPushButton):
@@ -125,3 +122,20 @@ class OkPutinButton(QtGui.QPushButton):
     def mousePressEvent(self, event):
         self.topLevelWidget().showArgSetPad(self.parent().parent)
         event.accept()
+
+class OkToolTip(QtGui.QTextEdit):
+    def __init__(self, text, parent=None):
+        QtGui.QTextEdit.__init__(self, text, parent)
+        self.setWindowFlags(Qt.Qt.FramelessWindowHint)
+        self.setStyleSheet("QTextEdit{"
+                    "border: 0px;"
+                    "background: #656565"
+                "}")
+        self.setSizePolicy(6, 6)
+        
+    def mouseMoveEvent(self, event):
+        if self.isHidden():
+            self.toolTip.setGeometry(event.globalX()+5, event.globalY()+5, 100, 200)
+            #time.sleep(0.1)
+            self.toolTip.show()
+            event.accept()
