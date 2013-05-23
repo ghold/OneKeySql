@@ -1,6 +1,4 @@
 from PyQt4 import QtGui, QtCore, Qt
-from PyQt4.QtCore import pyqtSlot
-from OkListItem import OkListItem
 
 class OkInfoWidget(QtGui.QTextEdit):
     def __init__(self, parent=None):
@@ -13,22 +11,14 @@ class OkInfoWidget(QtGui.QTextEdit):
         
         okInfoDocument = QtGui.QTextDocument()
         self.cursor = QtGui.QTextCursor(okInfoDocument)
-        self.cursor.setBlockFormat(OkBlockFormat())
-        self.cursor.beginEditBlock()
-        self.cursor.insertText("helloworld\n", OkTitleFormat())
-        self.cursor.endEditBlock()
-        self.cursor.beginEditBlock()
-        self.cursor.insertText("Python 3.3.1 (v3.3.1:d9893d13c628, Apr  6 2013, 20:30:21) [MSC v.1600 64 bit (AMD64)] on Ghold-PC, Standard\n", OkContentFormat())
-        self.cursor.endEditBlock()
-        self.cursor.beginEditBlock()
-        self.cursor.insertText("helloworld\n", OkTitleFormat())
-        self.cursor.endEditBlock()
-        
         self.setDocument(okInfoDocument)
         
-    @pyqtSlot(OkListItem)
     def infoGeneratorUTF8(self, item):
-        self.cursor.insertText(item.data(Qt.Qt.UserRole)['id'], OkContentFormat())
+        data = item.data(Qt.Qt.UserRole)
+        self.document().clear()
+        self.cursor.setBlockFormat(OkBlockFormat())
+        self.cursor.insertText("%s-%s\n"%(data['id'], data['data']['name']), OkTitleFormat())
+        self.cursor.insertText("%s\n"%data['data']['desc'], OkContentFormat())
         
 class OkBlockFormat(QtGui.QTextBlockFormat):
     def __init__(self):

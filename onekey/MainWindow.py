@@ -68,7 +68,7 @@ class MainWindow(QtGui.QFrame):
         
     def setupModel(self):
         self.caseList = self.model.makeupTestList("CaseExec")
-        self.caseList.itemClicked.connect(self.updateStepList)
+        #self.caseList.itemClicked.connect(self.updateStepList)
         self.stepList = self.model.makeupStepList(self.caseList.item(0))
         
     def caseEditModule(self):
@@ -78,7 +78,13 @@ class MainWindow(QtGui.QFrame):
         moduleSplitter.setChildrenCollapsible(False)
         #
         self.setupModel()
-        moduleSplitter.addWidget(self.caseList)
+        caseWidget = QtGui.QWidget()
+        lineEdit = QtGui.QLineEdit()
+        caseLayout = QtGui.QVBoxLayout()
+        caseLayout.addWidget(lineEdit)
+        caseLayout.addWidget(self.caseList)
+        caseWidget.setLayout(caseLayout)
+        moduleSplitter.addWidget(caseWidget)
         moduleSplitter.addWidget(self.stepList)
         moduleSplitter.setStretchFactor(1, 1)
         
@@ -89,13 +95,26 @@ class MainWindow(QtGui.QFrame):
         moduleSplitter = QtGui.QSplitter()
         moduleSplitter.setHandleWidth(1)
         moduleSplitter.setChildrenCollapsible(False)
-        #
+        #setup model
         self.setupModel()
-        moduleSplitter.addWidget(self.caseList)
+        #completer
+        wordList = ["中转" ,  "运输" ,  "散货" ,  "收仓"]
+        completer = QtGui.QCompleter(wordList)
+        #caseWidget
+        caseWidget = QtGui.QWidget()
+        lineEdit = QtGui.QLineEdit()
+        lineEdit.setCompleter(completer)
+        lineEdit.textChanged.connect(self.caseList.search)
+        caseLayout = QtGui.QVBoxLayout()
+        caseLayout.addWidget(lineEdit)
+        caseLayout.addWidget(self.caseList)
+        caseWidget.setLayout(caseLayout)
+        moduleSplitter.addWidget(caseWidget)
+        #infoWidget
         okInfoWidget = OkInfoWidget()
+        self.caseList.setOkInfo(okInfoWidget)
         moduleSplitter.addWidget(okInfoWidget)
         moduleSplitter.setStretchFactor(1, 1)
-        self.caseList.itemPressed.connect(okInfoWidget.infoGeneratorUTF8)
         return moduleSplitter
         
     @pyqtSlot(OkModuleButton)
@@ -133,7 +152,6 @@ class MainWindow(QtGui.QFrame):
         if event.buttons() ==QtCore.Qt.LeftButton and not self.isMaximized():
             #self.move(event.globalPos() - self.dragPosition)
             event.accept() 
-    
         
     def exit(self):
         self.close()

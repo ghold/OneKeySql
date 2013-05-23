@@ -20,7 +20,7 @@ class OkModel(object):
             item = OkListItem(val["data"]["name"], self.test_list)
             item.setData(Qt.Qt.UserRole, val)
             self.test_list.addItem(item)
-            self.test_list.setItemWidget(item, OkAddonWidget(val["data"]["desc"], item))
+            self.test_list.setItemWidget(item, OkAddonWidget(val["data"]["desc"], item, self.test_list))
         return self.test_list
             
     def makeupStepList(self, item):

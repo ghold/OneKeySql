@@ -20,6 +20,10 @@ class OkListWidget(QtGui.QListWidget):
 class OkCaseWidget(OkListWidget):
     def __init__(self, parent=None):
         OkListWidget.__init__(self, parent)
+        self.infoWidget = None
+        
+    def setOkInfo(self, widget):
+        self.infoWidget = widget
         
     def dragEnterEvent(self, event):
         if event.mimeData().hasFormat('application/x-dict'):
@@ -64,7 +68,16 @@ class OkCaseWidget(OkListWidget):
         if dropAction == QtCore.Qt.MoveAction:
             self.close()
             self.update()
-            
+    
+    @pyqtSlot(str)        
+    def search(self, text):
+        for i in range(self.count()):
+            self.setItemHidden(self.item(i), True)
+        itemList = self.findItems(text, Qt.Qt.MatchContains)
+        for item in itemList:
+            self.setItemHidden(item, False)
+        
+        
 class OkUnitWidget(OkListWidget):
     def __init__(self, parent=None):
         OkListWidget.__init__(self, parent)
