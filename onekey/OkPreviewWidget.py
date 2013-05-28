@@ -76,7 +76,6 @@ class OkPreviewWidget(QtGui.QTextEdit):
         order = 0
         arg_pattern = r'\{(?P<name>[0-9a-zA-Z_]+)(?:|\((?P<arg>[+-]{1}[0-9]+)\))\}'
         arg_compiler = re.compile(arg_pattern)
-               
         for val in tag_list:
             if tags.get(val) is not None:
                 arg_match = arg_compiler.match(tags[val])
@@ -87,7 +86,6 @@ class OkPreviewWidget(QtGui.QTextEdit):
                 order += 1
             else:
                 self.contentFormat(val)
-
         self.cursor.insertText(");\n", OkContentFormat())
         
     def titleFormat(self, step):
