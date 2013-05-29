@@ -1,4 +1,5 @@
 import cx_Oracle
+import logging
 
 class OkSqlHandler(object):
     @classmethod
@@ -11,7 +12,9 @@ class OkSqlHandler(object):
     def insertAction(cls, sql):
         conn = cls.setupConn()
         cursor = conn.cursor()
-        print(sql)
+        #logging
+        logging.basicConfig(filename='onkey.log',level=logging.DEBUG, format='%(asctime)s %(message)s')
+        logging.info(sql)
         cursor.execute(sql)
         cursor.close()
         conn.commit()

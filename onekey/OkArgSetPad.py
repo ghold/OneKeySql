@@ -29,13 +29,13 @@ class OkArgSetPad(QtGui.QWidget):
         caseLabel = OkEditWidgetLabel("标签")
         previewLabel = OkEditWidgetLabel("预览")
         #comfireButton
-        comfirmButton = OkExecButton("执行")
-        comfirmButton.clicked.connect(self.sqlExec)
+        self.comfirmButton = OkExecButton("执行")
+        self.comfirmButton.clicked.connect(self.sqlExec)
         
         #
         horizonLayout = QtGui.QHBoxLayout()
         horizonLayout.addWidget(previewLabel)
-        horizonLayout.addWidget(comfirmButton )
+        horizonLayout.addWidget(self.comfirmButton )
         
         #add layout
         gridLayout = QtGui.QGridLayout()
@@ -54,7 +54,7 @@ class OkArgSetPad(QtGui.QWidget):
             editLayout.addWidget(settingWidget, 0, Qt.Qt.AlignTop)
         editLayout.addLayout(horizonLayout, 0)
         editLayout.addWidget(self.previewWidget, 1)
-        editLayout.addWidget(comfirmButton, 0, Qt.Qt.AlignTop)
+        editLayout.addWidget(self.comfirmButton, 0, Qt.Qt.AlignTop)
         
         gridLayout.addLayout(editLayout, 1, 1)
         self.setLayout(gridLayout)
@@ -102,6 +102,7 @@ class OkArgSetPad(QtGui.QWidget):
     
     @pyqtSlot()
     def sqlExec(self):
+        self.comfirmButton.setDisabled(True)
         step_pattern = r";\n/\*Step [0-9 ]+\*/\n"
         step_compiler = re.compile(step_pattern)
         step_list = step_compiler.split(self.previewWidget.toPlainText())
@@ -112,6 +113,7 @@ class OkArgSetPad(QtGui.QWidget):
             #Don't need to add " at start or at end
             OkSqlHandler.insertAction(val.strip())
         self.previewWidget.config.save()
+        self.close()
         
     def paintEvent(self, event):
         self.setGeometry(QtCore.QRect(200, 0, self.parent().width() - 200 ,  self.parent().height()))
