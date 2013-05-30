@@ -3,7 +3,7 @@ from PyQt4 import QtCore, QtGui, Qt
 class DragLabel(QtGui.QLabel):
     def __init__(self, text, parent):
         super(DragLabel, self).__init__(text, parent)
-        self.setMinimumSize(7 * (len(self.text().encode('utf-8')) + len(self.text())), 30)
+        self.setMinimumSize(4 * (len(self.text().encode('utf-8')) + len(self.text())), 30)
         self.setAlignment(Qt.Qt.AlignCenter)
         
         self.setAutoFillBackground(True)
@@ -47,11 +47,11 @@ class DragLabel(QtGui.QLabel):
             self.update()
 
 class OkTagBox(QtGui.QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, tag, parent=None):
         QtGui.QWidget.__init__(self, parent)
         x = 25
         y = 5
-        for word in "我的 熱門呢 誒反對 sdf sdf sdf sdfsdf sdfsd dfsf sdf sdf sdf sdfsdf sdfsd dfsf sdf sdf sdf sdf我的 熱門呢 誒反對 sdf sdf sdf sdfsdf sdfsd dfsf sdf sdf sdf sdfsdf sdfsd dfsf sdf sdf sdf sdf".split():
+        for word in tag:
             wordLabel = DragLabel(word, self)
             if x >= (self.size().width() - wordLabel.minimumWidth()):
                 x = 25

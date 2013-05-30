@@ -22,8 +22,12 @@ class OkListItem(QtGui.QListWidgetItem):
     def setItemSelected(self, item):
         if self.listWidget().selectedItem is not None:
             self.listWidget().selectedItem.state = False
-            tmpBrush = QtGui.QBrush(QtGui.QColor(238,  238,  238))
-            self.listWidget().selectedItem.setBackground(tmpBrush)
+            image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
+            image.fill(QtGui.QColor(238,  238,  238))
+            image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
+            brush = QtGui.QBrush()
+            brush.setTextureImage(image)
+            self.listWidget().selectedItem.setBackground(brush)
             self.listWidget().selectedItem.setTextColor(QtGui.QColor(110,  110,  110))
         self.state = True
         self.listWidget().selectedItem = item
@@ -37,12 +41,10 @@ class OkAddonWidget(QtGui.QWidget):
         #self.toolTip = OkToolTip(tooltip)
         self.setToolTip(tooltip)
         self.item =item
-        vlayout = QtGui.QHBoxLayout()
-        verticalSpacer = QtGui.QSpacerItem(20, 30, 7, 0)
-        vlayout.setDirection(QtGui.QBoxLayout.RightToLeft)        
-        vlayout.addWidget(OkPutinButton())
-        vlayout.addSpacerItem(verticalSpacer)
-        self.setLayout(vlayout)
+        self.vlayout = QtGui.QHBoxLayout()
+        self.vlayout .setDirection(QtGui.QBoxLayout.RightToLeft)
+        
+        self.setLayout(self.vlayout)
         self.setMouseTracking(True)
         
     def enterEvent(self, event):
@@ -72,7 +74,19 @@ class OkAddonWidget(QtGui.QWidget):
             self.item.setBackground(brush)
             self.item.setTextColor(QtGui.QColor(110,  110,  110))
             event.accept()
-    
+
+class OkCaseAddon(OkAddonWidget):
+    def __init__(self, tooltip, item, type, parent=None):
+        OkAddonWidget.__init__(self, tooltip, item, parent)
+        
+
+class OkExecAddon(OkAddonWidget):
+    def __init__(self, tooltip, item, type, parent=None):
+        OkAddonWidget.__init__(self, tooltip, item, parent)
+        verticalSpacer = QtGui.QSpacerItem(20, 30, 7, 0)
+        self.vlayout.addWidget(OkPutinButton())
+        self.vlayout .addSpacerItem(verticalSpacer)
+        
     def mousePressEvent(self, event):
         if event.buttons() == Qt.Qt.LeftButton and not self.item.state:
             #change background
@@ -103,10 +117,24 @@ class OkPencilButton(QtGui.QPushButton):
                 "QPushButton:hover {"
                     "background: url(:/images/pencil_18x18_blue.png)"
                 "}")
+        self.state = False
         
     def mousePressEvent(self, event):
-        #self.parent().parent().parent().itemPressed.connect(self.parent().parent().parent().pressItem)
-        event.accept()
+        caseList = self.parent().parent().parent()
+        if caseList.editState:
+            caseList.itemPressed.disconnect(caseList.pressItem)
+            caseList.itemPressed.connect(self.topLevelWidget().updateStepList)
+            self.topLevelWidget().mainSplitter.widget(2).setParent(None)
+            self.topLevelWidget().mainSplitter.widget(1).setStretchFactor(1, 1)
+            caseList.editState = False
+            event.accept()
+        else:
+            caseList.itemPressed.disconnect(self.topLevelWidget().updateStepList)
+            caseList.itemPressed.connect(caseList.pressItem)
+            unitList = self.topLevelWidget().model.makeupUnitList()
+            self.topLevelWidget().mainSplitter.addWidget(unitList)
+            caseList.editState = True
+            event.accept()
 
 class OkPutinButton(QtGui.QPushButton):
     def __init__(self, parent=None):

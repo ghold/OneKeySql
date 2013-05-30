@@ -12,7 +12,7 @@ class OkTagHandler(object):
         name, default = args
         return OkDatetimeEdit(name, default)
         
-    @classmethod        
+    @classmethod
     def date(cls, *args):
         from OkEdit import OkDateEdit
         name, default = args

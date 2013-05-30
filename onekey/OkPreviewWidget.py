@@ -40,11 +40,11 @@ class OkPreviewWidget(QtGui.QTextEdit):
                 xml_filename = "%s/%s.xml" % (data[step]["type"], data[step]["from"])
                 handler_type = "Ok%sHandler" % data[step]["type"].capitalize()
                 handler = getattr(OkXmlHandler, handler_type, None)
-                model = OkModel(xml_filename, handler)
+                model = OkModel((xml_filename, handler, 'unit'))
                 self.cache[key] = model
                 
             data_id = data[step]["type"] + "_" + data[step]["data_id"]
-            step_data = model.data[data_id]["data"]
+            step_data = model.data['unit'][data_id]["data"]
             
             tp_sql = "INSERT INTO\n%s(%s)\n" % (step_data["table"], step_data["column"])
             self.contentFormat(tp_sql)

@@ -6,7 +6,7 @@ from OkModel import OkModel
 from OkXmlHandler import OkTestcaseHandler, OkTestunitHandler
 from OkInfoWidget import OkInfoWidget
 from OkListItem import OkListItem
-from OkEditPad import OkEditPad
+from OkCaseEditPad import OkCaseEditPad
 from OkArgSetPad import OkArgSetPad
 
 class MainWindow(QtGui.QFrame):
@@ -26,8 +26,7 @@ class MainWindow(QtGui.QFrame):
         self.setWindowTitle("OneKeySql")
         
         # Set up the model.
-        self.model = OkModel("testcase/testcase.xml", OkTestcaseHandler)
-        self.setupModel()
+        self.model = OkModel(("testcase/testcase.xml", OkTestcaseHandler, 'case'), ("testunit/testunit.xml", OkTestunitHandler, 'unit'))
         
         # Set up the widgets.
         self.Spacer = QtGui.QSpacerItem(20, 30)
@@ -67,27 +66,32 @@ class MainWindow(QtGui.QFrame):
         self.mainSplitter.setStretchFactor(1, 1)
         
     def setupModel(self):
-        self.caseList = self.model.makeupTestList("CaseExec")
+        pass
         #self.caseList.itemClicked.connect(self.updateStepList)
-        self.stepList = self.model.makeupStepList(self.caseList.item(0))
+        #self.stepList = self.model.makeupStepList(self.caseList.item(0))
         
     def caseEditModule(self):
         #moduleSplitter
         moduleSplitter = QtGui.QSplitter()
         moduleSplitter.setHandleWidth(1)
         moduleSplitter.setChildrenCollapsible(False)
-        #
-        self.setupModel()
+        
+        #setup case list
+        caseList = self.model.makeupCaseList()
+        caseList.itemPressed.connect(self.updateStepList)
+        caseList.itemDoubleClicked.connect(self.openEditMode)
+        stepList = self.model.makeupStepList(caseList.item(0))
+        
         caseWidget = QtGui.QWidget()
         lineEdit = QtGui.QLineEdit()
         caseLayout = QtGui.QVBoxLayout()
         caseLayout.addWidget(lineEdit)
-        caseLayout.addWidget(self.caseList)
+        caseLayout.addWidget(caseList)
         caseWidget.setLayout(caseLayout)
         moduleSplitter.addWidget(caseWidget)
-        moduleSplitter.addWidget(self.stepList)
+        moduleSplitter.addWidget(stepList)
         moduleSplitter.setStretchFactor(1, 1)
-        
+
         return moduleSplitter
         
     def caseExecModule(self):
@@ -95,8 +99,8 @@ class MainWindow(QtGui.QFrame):
         moduleSplitter = QtGui.QSplitter()
         moduleSplitter.setHandleWidth(1)
         moduleSplitter.setChildrenCollapsible(False)
-        #setup model
-        self.setupModel()
+        #setup exec list
+        caseList = self.model.makeupExecList()
         #completer
         wordList = ["中转" ,  "运输" ,  "散货" ,  "收仓"]
         completer = QtGui.QCompleter(wordList)
@@ -104,15 +108,15 @@ class MainWindow(QtGui.QFrame):
         caseWidget = QtGui.QWidget()
         lineEdit = QtGui.QLineEdit()
         lineEdit.setCompleter(completer)
-        lineEdit.textChanged.connect(self.caseList.search)
+        lineEdit.textChanged.connect(caseList.search)
         caseLayout = QtGui.QVBoxLayout()
         caseLayout.addWidget(lineEdit)
-        caseLayout.addWidget(self.caseList)
+        caseLayout.addWidget(caseList)
         caseWidget.setLayout(caseLayout)
         moduleSplitter.addWidget(caseWidget)
         #infoWidget
         okInfoWidget = OkInfoWidget()
-        self.caseList.setOkInfo(okInfoWidget)
+        caseList.setOkInfo(okInfoWidget)
         moduleSplitter.addWidget(okInfoWidget)
         moduleSplitter.setStretchFactor(1, 1)
         return moduleSplitter
@@ -130,17 +134,55 @@ class MainWindow(QtGui.QFrame):
     
     @pyqtSlot(OkListItem)
     def updateStepList(self, item):
-        tmpBrush = QtGui.QBrush()
-        tmpBrush.setTextureImage(QtGui.QImage(":/images/itembg_1x40.png"))
-        item.setBackground(tmpBrush)
-        item.state = True
         stepList = self.model.makeupStepList(item)
         self.mainSplitter.widget(1).widget(1).setParent(None)
         self.mainSplitter.widget(1).addWidget(stepList)
         self.mainSplitter.widget(1).setStretchFactor(1, 1)
-     
+    
+    @pyqtSlot(OkListItem)
+    def openEditMode(self, item):
+        if item.listWidget().editState and item == item.listWidget().selectedItem:
+            item.listWidget().itemPressed.connect(self.updateStepList)
+            item.listWidget().itemPressed.disconnect(item.listWidget().pressItem)
+            self.mainSplitter.widget(2).setParent(None)
+            self.mainSplitter.widget(1).setStretchFactor(1, 1)
+            item.listWidget().editState = False
+            #change background
+            image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
+            image.fill(QtGui.QColor(238,  238,  238))
+            image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
+            brush = QtGui.QBrush()
+            brush.setTextureImage(image)
+            item.setBackground(brush)
+            item.setTextColor(QtGui.QColor(110,  110,  110))
+            item.state = False
+            item.listWidget().selectedItem = None
+            
+        elif not item.listWidget().editState:
+            self.updateStepList(item)
+            item.listWidget().itemPressed.disconnect(self.updateStepList)
+            item.listWidget().itemPressed.connect(item.listWidget().pressItem)
+            unitList = self.model.makeupUnitList()
+            unitList.itemPressed.connect(unitList.pressItem)
+            self.mainSplitter.addWidget(unitList)
+            item.listWidget().editState = True
+            #change background
+            image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
+            image.fill(QtGui.QColor(221, 221, 221))
+            image.setPixel(0, 39, QtGui.qRgba(33, 133, 197, 255))
+            image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
+            brush = QtGui.QBrush()
+            brush.setTextureImage(image)
+            item.setBackground(brush)
+            item.setTextColor(QtGui.QColor(59,  66,  76))
+            item.setItemSelected(item)
+            
     def showArgSetPad(self, item):
         self.editWidget = OkArgSetPad(item.data(Qt.Qt.UserRole), self)
+        self.editWidget.show()
+        
+    def showCaseEditPad(self, item, data):
+        self.editWidget = OkCaseEditPad(item.data(Qt.Qt.UserRole), data, self)
         self.editWidget.show()
 
     def mousePressEvent(self,event):

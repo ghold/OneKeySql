@@ -3,7 +3,7 @@ from PyQt4.QtCore import pyqtSignal, pyqtSlot
 
 class OkTextEdit(QtGui.QLineEdit):
     ValueChanged = pyqtSignal(str, str, str, str)
-    def __init__(self, name, default, parent=None):
+    def __init__(self, name=None, default=None, parent=None):
         QtGui.QTextEdit.__init__(self, parent)
         self.name = name
         self.default = default
@@ -29,23 +29,27 @@ class OkTextEdit(QtGui.QLineEdit):
 
     @pyqtSlot(str)
     def changeValue(self, text):
+        if self.name is None:
+            return
         if text == '':
             text = '{' + self.name + '}'
         self.ValueChanged.emit(self.name, text, "text", self.default)
     
 class OkIncrementEdit(OkTextEdit):
-    def __init__(self, name, default, parent=None):
+    def __init__(self, name=None, default=None, parent=None):
         OkTextEdit.__init__(self, name, default, parent)
         
     @pyqtSlot(str)
     def changeValue(self, text):
+        if self.name is None:
+            return
         if text == '':
             text = '{' + self.name + '}'
         self.ValueChanged.emit(self.name, text, "increment", self.default)
 
 class OkDatetimeEdit(QtGui.QDateTimeEdit):
     ValueChanged = pyqtSignal(str, str, str, str)
-    def __init__(self, name, default, parent=None):
+    def __init__(self, name=None, default=None, parent=None):
         QtGui.QDateTimeEdit.__init__(self, parent)
         self.name = name
         self.default = default
@@ -74,11 +78,13 @@ class OkDatetimeEdit(QtGui.QDateTimeEdit):
         
     @pyqtSlot(QtCore.QDateTime)
     def changeValue(self, datetime):
+        if self.name is None:
+            return
         self.ValueChanged.emit(self.name, datetime.toString("yyyy-MM-dd hh:mm:ss"), "datetime", self.default)
         
 class OkDateEdit(QtGui.QDateEdit):
     ValueChanged = pyqtSignal(str, str, str, str)
-    def __init__(self, name, default, parent=None):
+    def __init__(self, name=None, default=None, parent=None):
         QtGui.QDateEdit.__init__(self, parent)
         self.name = name
         self.default = default
@@ -108,11 +114,13 @@ class OkDateEdit(QtGui.QDateEdit):
         
     @pyqtSlot(QtCore.QDate)
     def changeValue(self, date):
+        if self.name is None:
+            return
         self.ValueChanged.emit(self.name, date.toString("yyyy-MM-dd"), "date", self.default )
         
 class OkTimeEdit(QtGui.QTimeEdit):
     ValueChanged = pyqtSignal(str, str, str, str)
-    def __init__(self, name, default, parent=None):
+    def __init__(self, name=None, default=None, parent=None):
         QtGui.QTimeEdit.__init__(self, parent)
         self.name = name
         self.default = default
@@ -139,4 +147,6 @@ class OkTimeEdit(QtGui.QTimeEdit):
         
     @pyqtSlot(QtCore.QTime)
     def changeValue(self, time):
+        if self.name is None:
+            return
         self.ValueChanged.emit(self.name, time.toString("hh:mm:ss"), "time", self.default)
