@@ -54,7 +54,6 @@ class OkArgSetPad(QtGui.QWidget):
             editLayout.addWidget(settingWidget, 0, Qt.Qt.AlignTop)
         editLayout.addLayout(horizonLayout, 0)
         editLayout.addWidget(self.previewWidget, 1)
-        editLayout.addWidget(self.comfirmButton, 0, Qt.Qt.AlignTop)
         
         gridLayout.addLayout(editLayout, 1, 1)
         self.setLayout(gridLayout)

@@ -1,9 +1,9 @@
 from PyQt4 import QtGui, QtCore, Qt
 from OkToolBar import OkEditToolBar
-from OkLabel import OkEditWidgetLabel, OkTagLabel
-from OkScroll import OkScrollArea
+from OkLabel import OkEditWidgetLabel
+from OkButton import OkExecButton
+from OkTagSetting import OkTagSetting
 from OkTagBox import OkTagBox
-from OkTagHandler import OkTagHandler
 import re
 
 class OkCaseEditPad(QtGui.QWidget):
@@ -36,13 +36,20 @@ class OkCaseEditPad(QtGui.QWidget):
         
         #setting layout
         settingWidget = self.setupLabel()
+        #comfireButton
+        self.comfirmButton = OkExecButton("保存")
+        #self.comfirmButton.clicked.connect(self.sqlExec)
+        #
+        horizonLayout = QtGui.QHBoxLayout()
+        horizonLayout.addWidget(settingLabel)
+        horizonLayout.addWidget(self.comfirmButton )
         
         # add the widgets.
         editLayout.addWidget(tagLabel, 0, Qt.Qt.AlignTop)
         editLayout.addWidget(self.tagWidget, 0, Qt.Qt.AlignTop)
+        editLayout.addLayout(horizonLayout, 0)
         if settingWidget is not None:
-            editLayout.addWidget(settingLabel, 0, Qt.Qt.AlignTop)
-            editLayout.addWidget(settingWidget, 1, Qt.Qt.AlignTop)
+            editLayout.addWidget(settingWidget, 1)
         
         gridLayout.addLayout(editLayout, 1, 1)
         
@@ -63,24 +70,11 @@ class OkCaseEditPad(QtGui.QWidget):
         tag_compiler =re.compile(tag_pattern)
         tag_list = tag_compiler.findall(self.insertData['data']['value'])
         #setting layout
-        settingWidget = OkScrollArea()
-        #label layout
-        labelWidget = QtGui.QWidget()
-        labelWidget.setStyleSheet("background-color: #323232;")
-        #settingLayout
-        labelLayout = QtGui.QFormLayout()
-        labelLayout.setFieldGrowthPolicy(QtGui.QFormLayout.FieldsStayAtSizeHint)
-        labelLayout.setLabelAlignment(Qt.Qt.AlignRight)
+        settingWidget = OkTagSetting(tag_list)
+        return settingWidget
         
-        for val in tag_list:
-            settingLabel = OkTagLabel(val[1])
-            labelLayout.addRow(settingLabel, OkTagHandler.callback(val[0], None, None))
-            
-        if labelLayout.count() > 0:
-            labelWidget.setLayout(labelLayout)
-            settingWidget.setWidget(labelWidget)
-            return settingWidget
-        return None
+    def saveCase(self):
+        pass
         
     def paintEvent(self, event):
         self.setGeometry(QtCore.QRect(200, 0, self.parent().width() - 200 ,  self.parent().height()))

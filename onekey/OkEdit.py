@@ -2,6 +2,7 @@ from PyQt4 import QtCore, QtGui, Qt
 from PyQt4.QtCore import pyqtSignal, pyqtSlot
 
 class OkTextEdit(QtGui.QLineEdit):
+    #define ValueChanged Signal
     ValueChanged = pyqtSignal(str, str, str, str)
     def __init__(self, name=None, default=None, parent=None):
         QtGui.QTextEdit.__init__(self, parent)
@@ -20,7 +21,7 @@ class OkTextEdit(QtGui.QLineEdit):
                     "border:1px solid #9BBAAC;"
                 "}"
                 "QLineEdit:focus{"
-                    "border:1px solid #7ECEFD;"              
+                    "border:1px solid #7ECEFD;" 
                 "}")
         self.textChanged.connect(self.changeValue)
         
@@ -33,6 +34,7 @@ class OkTextEdit(QtGui.QLineEdit):
             return
         if text == '':
             text = '{' + self.name + '}'
+        #send the singal
         self.ValueChanged.emit(self.name, text, "text", self.default)
     
 class OkIncrementEdit(OkTextEdit):
