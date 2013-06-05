@@ -65,9 +65,9 @@ class OkCaseEditPad(QtGui.QWidget):
         tag_compiler = re.compile(tag_pattern)
         for tag in self.caseData['data']['var'].split(','):
             result = tag_compiler.match(tag)
-            tagList.append("{%s(%s:%s)}"%(result.group(1), result.group(2), result.group('def')))
+            tagList.append([result.group(1), result.group(2), result.group('def'),  result.group('view')])
         return tagList
-        
+    
     def setupTable(self):
         tag_pattern = r'\{(?P<type>[0-9a-zA-Z_]+)\((?P<name>[0-9a-zA-Z_]+)\)\}'
         tag_compiler =re.compile(tag_pattern)

@@ -34,13 +34,18 @@ class OkComboBoxDelegate(QtGui.QStyledItemDelegate):
         
 class OkTagNameDelegate(QtGui.QStyledItemDelegate):
     #if use qss for delegate, please use QStyledItemDelegate
-    def __init__(self, tagList, parent=None):
+    def __init__(self, tagList, varDict, parent=None):
         QtGui.QStyledItemDelegate.__init__(self, parent)
         self.tagList = tagList
+        self.varDict = varDict
         
     def createEditor(self, parent, option, index):
+        row = index.row()
+        self.accessList = []
+        if self.varDict.get(self.tagList[row][0], None) is not None:
+            self.accessList = self.varDict.get(self.tagList[row][0])
         editor = QtGui.QComboBox(parent)
-        editor.addItems(self.tagList)
+        editor.addItems(self.accessList)
         editor.setEditable(True)
         return editor
         
@@ -51,9 +56,19 @@ class OkTagNameDelegate(QtGui.QStyledItemDelegate):
         
     def setModelData(self, comboBox, model, index):
         value = comboBox.currentText()
-        model.setData(index, value, QtCore.Qt.EditRole)
-        value = comboBox.findText(value, QtCore.Qt.MatchExactly)
-        model.setData(index, value, QtCore.Qt.UserRole)
+        if value != '--':
+            typeIndex = model.index(index.row(), index.column()-1, QtCore.QModelIndex())
+            type = model.data(typeIndex, QtCore.Qt.UserRole)
+            if value in self.accessList and type == 1:
+                self.parent().typeChanged(2)
+                model.setData(typeIndex, "标签引用", QtCore.Qt.DisplayRole)
+                model.setData(typeIndex, 2, QtCore.Qt.UserRole)
+            if value not in self.accessList and type == 2:
+                self.parent().typeChanged(1)
+                model.setData(typeIndex, "自定义标签", QtCore.Qt.DisplayRole)
+                model.setData(typeIndex, 1, QtCore.Qt.UserRole)
+            model.setData(index, value, QtCore.Qt.EditRole)
+            model.setData(index, value, QtCore.Qt.UserRole)
         
     def updateEditorGeometry(self, editor, option, index):
         editor.setGeometry(option.rect)
@@ -161,11 +176,15 @@ class OkTagSetting(QtGui.QTableView):
         #set Delegate for items
         delegate = OkComboBoxDelegate(self)
         self.setItemDelegateForColumn(0, delegate)
-        tagNameList = []
+        tagNameDict = {}
         for val in self.tagLabels:
-            print(val)
-        #delegate = OkTagNameDelegate(tagNameList, self)
-        #self.setItemDelegateForColumn(1, delegate)
+            if tagNameDict.get(val[0], None) is None:
+                tagNameDict[val[0]] = [val[1]]
+            else:
+                tagNameDict[val[0]].append(val[1])
+            
+        delegate = OkTagNameDelegate(self.tagVars, tagNameDict, self)
+        self.setItemDelegateForColumn(1, delegate)
         self.setModel(self.model)
         
     @pyqtSlot(int)
@@ -175,8 +194,9 @@ class OkTagSetting(QtGui.QTableView):
             for column in range(1, self.settingColumn):
                 index = self.model.index(currentIndex.row(), column, QtCore.QModelIndex())
                 if column == 2:
-                    self.model.setData(index, '', QtCore.Qt.EditRole)
-                    self.model.setData(index, '', QtCore.Qt.UserRole)
+                    if self.model.data(index, QtCore.Qt.EditRole) == '--':
+                        self.model.setData(index, '', QtCore.Qt.EditRole)
+                        self.model.setData(index, '', QtCore.Qt.UserRole)
                     self.model.itemFromIndex(index).setEnabled(True)
                 elif column == 4:
                     self.model.setData(index, False, QtCore.Qt.CheckStateRole)
@@ -195,8 +215,9 @@ class OkTagSetting(QtGui.QTableView):
                     self.model.setData(index, False, QtCore.Qt.UserRole)
                     self.model.itemFromIndex(index).setEnabled(True)
                 else:
-                    self.model.setData(index, '', QtCore.Qt.EditRole)
-                    self.model.setData(index, '', QtCore.Qt.UserRole)
+                    if self.model.data(index, QtCore.Qt.EditRole) == '--':
+                        self.model.setData(index, '', QtCore.Qt.EditRole)
+                        self.model.setData(index, '', QtCore.Qt.UserRole)
                     self.model.itemFromIndex(index).setEnabled(True)
         elif type == 2:
             currentIndex = self.currentIndex()
@@ -211,8 +232,9 @@ class OkTagSetting(QtGui.QTableView):
                     self.model.setData(index, None, QtCore.Qt.UserRole)
                     self.model.itemFromIndex(index).setEnabled(False)
                 else:
-                    self.model.setData(index, '', QtCore.Qt.EditRole)
-                    self.model.setData(index, '', QtCore.Qt.UserRole)
+                    if self.model.data(index, QtCore.Qt.EditRole) == '--':
+                        self.model.setData(index, '', QtCore.Qt.EditRole)
+                        self.model.setData(index, '', QtCore.Qt.UserRole)
                     self.model.itemFromIndex(index).setEnabled(True)
     
     def setupModelDict(self):

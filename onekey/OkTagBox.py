@@ -1,9 +1,11 @@
 from PyQt4 import QtCore, QtGui, Qt
 
 class DragLabel(QtGui.QLabel):
-    def __init__(self, text, parent):
-        super(DragLabel, self).__init__(text, parent)
-        self.setMinimumSize(4 * (len(self.text().encode('utf-8')) + len(self.text())), 30)
+    def __init__(self, var, parent):
+        QtGui.QLabel.__init__(self, parent)
+        self.var = var
+        self.setText(self.var[1])
+        self.setMinimumSize(7 * (len(self.text().encode('utf-8')) + len(self.text())), 30)
         self.setAlignment(Qt.Qt.AlignCenter)
         
         self.setAutoFillBackground(True)
@@ -24,11 +26,15 @@ class DragLabel(QtGui.QLabel):
                 "QLabel:focus{"
                     "border:1px solid #7ECEFD;"              
                 "}")
-    
+                
+        tpl = r"标签类型：%s； 标签名称：%s； 默认值：%s； 可配置：%s"
+        self.setToolTip(tpl%tuple(self.var))
+        
     def mousePressEvent(self, event):
         hotSpot = event.pos()
         mimeData = QtCore.QMimeData()
-        mimeData.setText(self.text())
+        var = ','.join(self.var)
+        mimeData.setText(var)
         mimeData.setData('application/x-point',
                 '%d %d' % (self.pos().x(), self.pos().y()))
 
@@ -51,19 +57,30 @@ class OkTagBox(QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
         x = 25
         y = 5
-        for word in tag:
-            wordLabel = DragLabel(word, self)
+        for var in tag:
+            var = self.makeupVar(var)
+            wordLabel = DragLabel(var, self)
             if x >= (self.size().width() - wordLabel.minimumWidth()):
                 x = 25
                 y += 32
             wordLabel.move(x, y)
             wordLabel.show()
-            x += wordLabel.minimumWidth() + 2            
+            x += wordLabel.minimumWidth() + 2
         newPalette = self.palette()
         newPalette.setColor(QtGui.QPalette.Window, QtGui.QColor(50,  50,  50))
         self.setPalette(newPalette)
 
         self.setAcceptDrops(True)
+    
+    def makeupVar(self, var):
+        tp_var = var.copy()
+        view = '否'
+        if tp_var[3] is None:
+            view = '是'
+        if tp_var[2] is None:
+            tp_var[2] = '无'
+        tp_var[3] = view
+        return tp_var
     
     def resizeEvent(self, event):
         x = 25
@@ -89,7 +106,7 @@ class OkTagBox(QtGui.QWidget):
     def dropEvent(self, event):
         if event.mimeData().hasText():
             mime = event.mimeData()
-            pieces = mime.text().split()
+            pieces = mime.text().split(',')
             position = event.pos()
             point = QtCore.QPoint()
 
@@ -98,8 +115,8 @@ class OkTagBox(QtGui.QWidget):
                point.setX(pointxy[0].toInt()[0])
                point.setY(pointxy[1].toInt()[0])
 
-            for piece in pieces:
-                newLabel = DragLabel(piece, self)
+            if pieces is not None:
+                newLabel = DragLabel(pieces, self)
                 newLabel.move(point)
                 newLabel.show()
 
