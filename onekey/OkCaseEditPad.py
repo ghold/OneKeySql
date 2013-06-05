@@ -4,6 +4,8 @@ from OkLabel import OkEditWidgetLabel
 from OkButton import OkExecButton
 from OkTagSetting import OkTagSetting
 from OkTagBox import OkTagBox
+from OkXmlWriter import OkTestcaseWriter
+from PyQt4.QtCore import pyqtSlot
 import re
 
 class OkCaseEditPad(QtGui.QWidget):
@@ -24,7 +26,8 @@ class OkCaseEditPad(QtGui.QWidget):
         verticalSpacer = QtGui.QSpacerItem(20, 30)
         #tag
         tagLabel = OkEditWidgetLabel("标签")
-        self.tagWidget = OkTagBox(self.setupTag(), self)
+        self.labelTags = self.setupTag()
+        self.tagWidget = OkTagBox(self.labelTags, self)
         settingLabel = OkEditWidgetLabel("设置")
         
         #add layout
@@ -35,10 +38,10 @@ class OkCaseEditPad(QtGui.QWidget):
         editLayout = QtGui.QVBoxLayout()
         
         #setting layout
-        settingWidget = self.setupLabel()
+        self.settingWidget = self.setupTable()
         #comfireButton
         self.comfirmButton = OkExecButton("保存")
-        #self.comfirmButton.clicked.connect(self.sqlExec)
+        self.comfirmButton.clicked.connect(self.saveCase)
         #
         horizonLayout = QtGui.QHBoxLayout()
         horizonLayout.addWidget(settingLabel)
@@ -48,8 +51,8 @@ class OkCaseEditPad(QtGui.QWidget):
         editLayout.addWidget(tagLabel, 0, Qt.Qt.AlignTop)
         editLayout.addWidget(self.tagWidget, 0, Qt.Qt.AlignTop)
         editLayout.addLayout(horizonLayout, 0)
-        if settingWidget is not None:
-            editLayout.addWidget(settingWidget, 1)
+        if self.settingWidget is not None:
+            editLayout.addWidget(self.settingWidget, 1)
         
         gridLayout.addLayout(editLayout, 1, 1)
         
@@ -65,16 +68,21 @@ class OkCaseEditPad(QtGui.QWidget):
             tagList.append("{%s(%s:%s)}"%(result.group(1), result.group(2), result.group('def')))
         return tagList
         
-    def setupLabel(self):
+    def setupTable(self):
         tag_pattern = r'\{(?P<type>[0-9a-zA-Z_]+)\((?P<name>[0-9a-zA-Z_]+)\)\}'
         tag_compiler =re.compile(tag_pattern)
         tag_list = tag_compiler.findall(self.insertData['data']['value'])
         #setting layout
-        settingWidget = OkTagSetting(tag_list)
+        settingWidget = OkTagSetting(tag_list, self.labelTags, self.insertData)
         return settingWidget
         
+    @pyqtSlot()
     def saveCase(self):
-        pass
+        data = self.settingWidget.setupModelDict()
+        if data is None:
+            return
+        writer = OkTestcaseWriter('testcase/testcase.xml')
+        writer.makeupData(data)
         
     def paintEvent(self, event):
         self.setGeometry(QtCore.QRect(200, 0, self.parent().width() - 200 ,  self.parent().height()))
