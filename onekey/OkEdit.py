@@ -27,6 +27,9 @@ class OkTextEdit(QtGui.QLineEdit):
         
     def setValue(self, text):
         self.setText(text)
+        
+    def getValue(self):
+        return self.text()
 
     @pyqtSlot(str)
     def changeValue(self, text):
@@ -78,6 +81,9 @@ class OkDatetimeEdit(QtGui.QDateTimeEdit):
     def setValue(self, datetime):
         self.setDateTime(QtCore.QDateTime.fromString(datetime, "yyyy-MM-dd hh:mm:ss"))
         
+    def getValue(self):
+        return self.dateTime().toString("yyyy-MM-dd hh:mm:ss")
+
     @pyqtSlot(QtCore.QDateTime)
     def changeValue(self, datetime):
         if self.name is None:
@@ -114,6 +120,9 @@ class OkDateEdit(QtGui.QDateEdit):
     def setValue(self, date):
         self.setDate(QtCore.QDate.fromString(date, "yyyy-MM-dd"))
         
+    def getValue(self):
+        return self.date().toString("yyyy-MM-dd")
+        
     @pyqtSlot(QtCore.QDate)
     def changeValue(self, date):
         if self.name is None:
@@ -146,6 +155,9 @@ class OkTimeEdit(QtGui.QTimeEdit):
         
     def setValue(self, time):
         self.setTime(QtCore.QTime.fromString(time, "hh:mm:ss"))
+        
+    def getValue(self):
+        return self.time().toString("hh:mm:ss")
         
     @pyqtSlot(QtCore.QTime)
     def changeValue(self, time):

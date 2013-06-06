@@ -76,7 +76,7 @@ class OkArgSetPad(QtGui.QWidget):
             default_value = result.group("def")
             #Globalconfig or user default 
             
-            OkTagWidget = OkTagHandler.callback(result.group(1), result.group(2), default_value)
+            OkTagWidget = OkTagHandler.callback(result.group(1), result.group(2), default_value, None)
             OkTagWidget.ValueChanged.connect(self.previewWidget.tagValue)
             
             if default_value is not None and default_value[0] == "'":

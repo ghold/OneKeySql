@@ -5,36 +5,37 @@ class OkTagHandler(object):
         method = getattr(cls,  name,  None)
         if callable(method):
             return method(*args)
+        return None
             
     @classmethod        
     def datetime(cls, *args):
         from OkEdit import OkDatetimeEdit
-        name, default = args
-        return OkDatetimeEdit(name, default)
+        name, default, parent = args
+        return OkDatetimeEdit(name, default, parent)
         
     @classmethod
     def date(cls, *args):
         from OkEdit import OkDateEdit
-        name, default = args
-        return OkDateEdit(name, default)
+        name, default, parent = args
+        return OkDateEdit(name, default, parent)
         
     @classmethod        
     def time(cls, *args):
         from OkEdit import OkTimeEdit
-        name, default = args
-        return OkTimeEdit(name, default)
+        name, default, parent = args
+        return OkTimeEdit(name, default, parent)
         
     @classmethod    
     def text(cls, *args):
         from OkEdit import OkTextEdit
-        name, default = args
-        return OkTextEdit(name, default)
+        name, default, parent = args
+        return OkTextEdit(name, default, parent)
         
     @classmethod    
     def increment(cls, *args):
         from OkEdit import OkIncrementEdit
-        name, default = args
-        return OkIncrementEdit(name, default)
+        name, default, parent = args
+        return OkIncrementEdit(name, default, parent)
         
     @classmethod
     def datetime_arg(cls, *args):
