@@ -82,7 +82,7 @@ class OkCaseEditPad(QtGui.QWidget):
         if data is None:
             return
         writer = OkTestcaseWriter('testcase/testcase.xml')
-        writer.makeupData(data)
+        writer.makeupElement(data, self.caseData['id'])
         
     def paintEvent(self, event):
         self.setGeometry(QtCore.QRect(200, 0, self.parent().width() - 200 ,  self.parent().height()))

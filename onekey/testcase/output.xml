@@ -2,7 +2,7 @@
 	<testcase id="00001">
 		<name>中转件量--T6应发及囤货数据</name>
 		<desc>生成中转件量预测预警755WD1100的囤货数据，755WD2100的应发数据</desc>
-		<var>{increment(bar_id:BAR_RECORD_ID)!},{increment(waybill_no:WAYBILL_NO)!},{date(bar_scan_d:TODAY)!}</var>
+		<var>{increment(bar_id:'')},{increment(waybill_no:WAYBILL_NO)!},{date(bar_scan_d:TODAY)!}</var>
 		<steps>
 			<step data_id="00004" from="testunit" type="testunit">
 				<tag name="bar_record_id">{bar_id(+1)}</tag>
@@ -29,7 +29,7 @@
 			<step data_id="00001" from="testunit" type="testunit">
 				<tag name="record_id">{bar_id(+0)}</tag>
 			</step>
-		<step hello="123" /></steps>			
+		<step data_id="00003" from="testunit" type="testunit"><tag name="record_id">1232441241</tag></step></steps>			
 	</testcase>
 	<testcase id="00002">
 		<name>配合BSP造航管运力</name>

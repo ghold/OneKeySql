@@ -127,10 +127,11 @@ class OkTagNameDelegate(QtGui.QStyledItemDelegate):
                 self.parent().typeChanged(2)
                 model.setData(typeIndex, "标签引用", QtCore.Qt.DisplayRole)
                 model.setData(typeIndex, 2, QtCore.Qt.UserRole)
-            if value not in self.accessList and type == 2:
+            if value not in self.accessList and len(value)>0 and type == 2:
                 self.parent().typeChanged(1)
                 model.setData(typeIndex, "自定义标签", QtCore.Qt.DisplayRole)
                 model.setData(typeIndex, 1, QtCore.Qt.UserRole)
+            
             #set config 
             if value in self.accessList and self.confDict.get(value, None) is not None:
                 model.setData(confIndex, self.confDict.get(value)[0], QtCore.Qt.CheckStateRole)
@@ -154,7 +155,7 @@ class OkDefaultValDelegate(QtGui.QStyledItemDelegate):
         
     def setEditorData(self, tagEdit, index):
         value = index.model().data(index, QtCore.Qt.EditRole)
-        tagEdit.setValue(value)
+        tagEdit.setValue("%s"%value)
         
     def setModelData(self, tagEdit, model, index):
         value = tagEdit.getValue()
@@ -197,6 +198,7 @@ class OkTagSetting(QtGui.QTableView):
         self.tagVars = tagVars
         self.tagLabels = tagLabels
         self.data = data
+        self.customTags = {}
         self.setVerticalScrollBar(OkScrollBar())
         self.setAlternatingRowColors(False)
         self.setShowGrid(False)
@@ -276,7 +278,6 @@ class OkTagSetting(QtGui.QTableView):
                 #Colimn5 set the checkBox
                 elif column == 4:
                     self.model.setData(index, 0, QtCore.Qt.CheckStateRole)
-                    self.model.setData(index, False, QtCore.Qt.UserRole)
                     self.model.itemFromIndex(index).setFlags(QtCore.Qt.ItemIsUserCheckable|QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable)
                 #Column3 or (Column4 and arg can't need to set)
                 elif (column == 2) or (column == 3 and getattr(OkTagHandler, self.tagVars[row][0] + '_arg', None) is None):
@@ -309,7 +310,7 @@ class OkTagSetting(QtGui.QTableView):
             else:
                 confDict[val[1]] = (2, True)
             
-        delegate = OkTagNameDelegate(self.tagVars, tagNameDict, confDict, self)
+        delegate = OkTagNameDelegate(self.tagVars, tagNameDict, confDict, self.customTags, self)
         self.setItemDelegateForColumn(1, delegate)
         delegate = OkDefaultValDelegate(self.tagVars, self)
         self.setItemDelegateForColumn(2, delegate)
@@ -330,19 +331,18 @@ class OkTagSetting(QtGui.QTableView):
                     self.model.itemFromIndex(index).setEnabled(True)
                 elif column == 4:
                     self.model.setData(index, 0, QtCore.Qt.CheckStateRole)
-                    self.model.setData(index, False, QtCore.Qt.UserRole)
+                    self.model.setData(index, None, QtCore.Qt.UserRole)
                     self.model.itemFromIndex(index).setEnabled(False)
                 else:
                     self.model.setData(index, '--', QtCore.Qt.EditRole)
                     self.model.setData(index, None, QtCore.Qt.UserRole)
                     self.model.itemFromIndex(index).setEnabled(False)
         elif type == 1:
-            currentIndex = self.currentIndex()
             for column in range(1, self.settingColumn):
                 index = self.model.index(currentIndex.row(), column, QtCore.QModelIndex())
                 if column == 4:
                     self.model.setData(index, 0, QtCore.Qt.CheckStateRole)
-                    self.model.setData(index, False, QtCore.Qt.UserRole)
+                    self.model.setData(index, None, QtCore.Qt.UserRole)
                     self.model.itemFromIndex(index).setEnabled(True)
                 elif column == 3 and getattr(OkTagHandler, self.tagVars[currentIndex.row()][0] + '_arg', None) is None:
                     self.model.setData(index, '--', QtCore.Qt.EditRole)
@@ -353,12 +353,10 @@ class OkTagSetting(QtGui.QTableView):
                     self.model.setData(index, '', QtCore.Qt.UserRole)
                     self.model.itemFromIndex(index).setEnabled(True)
         elif type == 2:
-            currentIndex = self.currentIndex()
             for column in range(1, self.settingColumn):
                 index = self.model.index(currentIndex.row(), column, QtCore.QModelIndex())
                 if column == 4:
                     self.model.setData(index, 0, QtCore.Qt.CheckStateRole)
-                    self.model.setData(index, False, QtCore.Qt.UserRole)
                     self.model.itemFromIndex(index).setEnabled(True)
                 elif (column == 2) or (column == 3 and getattr(OkTagHandler, self.tagVars[currentIndex.row()][0] + '_arg', None) is None):
                     self.model.setData(index, '--', QtCore.Qt.EditRole)
@@ -384,7 +382,23 @@ class OkTagSetting(QtGui.QTableView):
                 if self.model.data(index) == '' and column == 1:
                     self.edit(index)
                     return None
-                modelDict['tags'][tag].append(self.model.data(index, QtCore.Qt.UserRole))
+                if column == 4:
+                    tagState = self.model.data(index, QtCore.Qt.UserRole)
+                    varState = self.model.data(index, QtCore.Qt.CheckStateRole) 
+                    if tagState is not None:
+                        if varState == 2 and not tagState:
+                            modelDict['tags'][tag].append(1)
+                        elif varState == 0 and tagState:
+                            modelDict['tags'][tag].append(2)
+                        else:
+                            modelDict['tags'][tag].append(0)
+                    else:
+                        if varState == 2 :
+                            modelDict['tags'][tag].append(True)
+                        else:
+                            modelDict['tags'][tag].append(False)
+                else:
+                    modelDict['tags'][tag].append(self.model.data(index, QtCore.Qt.UserRole))
             modelDict['tags'][tag].append(self.tagVars[row][0])
         return modelDict
         
