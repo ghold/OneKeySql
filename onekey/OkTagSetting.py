@@ -96,26 +96,37 @@ class OkComboBoxDelegate(QtGui.QStyledItemDelegate):
         
 class OkTagNameDelegate(QtGui.QStyledItemDelegate):
     #if use qss for delegate, please use QStyledItemDelegate
-    def __init__(self, tagList, varDict, confDict, parent=None):
+    def __init__(self, tagList, varDict, confDict, tagConn, parent=None):
         QtGui.QStyledItemDelegate.__init__(self, parent)
         self.tagList = tagList
         self.varDict = varDict
         self.confDict = confDict
+        self.customTags = {}
+        self.customTagsOwner = {}
+        self.customTagsUser = {}
+        self.tagConn = tagConn
         
     def createEditor(self, parent, option, index):
         row = index.row()
         self.accessList = []
+        self.customList = []
         if self.varDict.get(self.tagList[row][0], None) is not None:
             self.accessList = self.varDict.get(self.tagList[row][0])
+        if self.customTags.get(self.tagList[row][0], None) is not None:
+            self.customList = self.customTags.get(self.tagList[row][0])
+            self.finalList = self.accessList + self.customList
+        else:
+            self.finalList = self.accessList.copy()
+        #delete the editing one
+        
         editor = QtGui.QComboBox(parent)
-        editor.addItems(self.accessList)
+        editor.addItems(self.finalList)
         editor.setEditable(True)
         return editor
         
     def setEditorData(self, comboBox, index):
         value = index.model().data(index, QtCore.Qt.EditRole)
-        value = comboBox.findText(value, QtCore.Qt.MatchExactly)
-        comboBox.setCurrentIndex(value)
+        comboBox.setEditText("%s"%value)
         
     def setModelData(self, comboBox, model, index):
         value = comboBox.currentText()
@@ -123,15 +134,110 @@ class OkTagNameDelegate(QtGui.QStyledItemDelegate):
             typeIndex = model.index(index.row(), index.column()-1, QtCore.QModelIndex())
             type = model.data(typeIndex, QtCore.Qt.UserRole)
             confIndex = model.index(index.row(), index.column()+3, QtCore.QModelIndex())
+            
+            #init
+            for key, val in self.tagConn.items():
+                removeList = [index.row()]
+                if type == 1 and self.customTagsOwner.get(index.row(), None) is not None and self.customTagsUser.get(key, None) is not None and self.customTagsOwner[index.row()] != value:
+                    removeList = [index.row()] + self.customTagsUser[key]
+                for i in removeList:
+                    if val is not None and i in val:
+                        val.remove(i)
+                break
+            
+            currentRowTag = self.customTagsOwner.get(index.row(), None)
+            currentRowTagList = self.customTags.get(self.tagList[index.row()][0], None)
+            # accessList use
             if value in self.accessList and type == 1:
+                if currentRowTag is not None and len(currentRowTagList) >0:
+                    #init custom tags user
+                    tag = "%s-%s"%(self.tagList[index.row()][0], self.customTagsOwner[index.row()])
+                    if self.customTagsUser.get(tag, None) is not None:
+                        for val in self.customTagsUser[tag]:
+                            userIndex = model.index(val, 0, QtCore.QModelIndex())
+                            self.parent().typeChanged(2, userIndex)
+                            model.setData(userIndex, "标签引用", QtCore.Qt.DisplayRole)
+                            model.setData(userIndex, 2, QtCore.Qt.UserRole)
+                    currentRowTagList.remove(currentRowTag)
                 self.parent().typeChanged(2)
                 model.setData(typeIndex, "标签引用", QtCore.Qt.DisplayRole)
                 model.setData(typeIndex, 2, QtCore.Qt.UserRole)
-            if value not in self.accessList and len(value)>0 and type == 2:
-                self.parent().typeChanged(1)
-                model.setData(typeIndex, "自定义标签", QtCore.Qt.DisplayRole)
-                model.setData(typeIndex, 1, QtCore.Qt.UserRole)
             
+            if value not in self.finalList and len(value)>0:
+                #customTags
+                currentRowTag = self.customTagsOwner.get(index.row(), None)
+                currentRowTagList = self.customTags.get(self.tagList[index.row()][0], None)
+                if currentRowTagList is not None:
+                    if currentRowTag is not None and len(currentRowTagList)>0:
+                        #init custom tags user
+                        tag = "%s-%s"%(self.tagList[index.row()][0], self.customTagsOwner[index.row()])
+                        if self.customTagsUser.get(tag, None) is not None:
+                            for val in self.customTagsUser[tag]:
+                                userIndex = model.index(val, 0, QtCore.QModelIndex())
+                                self.parent().typeChanged(2, userIndex)
+                                model.setData(userIndex, "标签引用", QtCore.Qt.DisplayRole)
+                                model.setData(userIndex, 2, QtCore.Qt.UserRole)
+                        #
+                        self.customTags.get(self.tagList[index.row()][0]).remove(self.customTagsOwner[index.row()])
+                    self.customTags[self.tagList[index.row()][0]].append(value)
+                else:
+                    self.customTags[self.tagList[index.row()][0]] = [value]
+                
+                #add custom tag owner
+                self.customTagsOwner[index.row()] = value
+                if type == 2 :
+                    self.parent().typeChanged(1)
+                    model.setData(typeIndex, "自定义标签", QtCore.Qt.DisplayRole)
+                    model.setData(typeIndex, 1, QtCore.Qt.UserRole)
+                    
+            if len(value)==0 and self.customTagsOwner.get(index.row(), None) is not None:
+                #init custom tags user
+                tag = "%s-%s"%(self.tagList[index.row()][0], self.customTagsOwner[index.row()])
+                if self.customTagsUser.get(tag, None) is not None:
+                    for val in self.customTagsUser[tag]:
+                        userIndex = model.index(val, 0, QtCore.QModelIndex())
+                        self.parent().typeChanged(2, userIndex)
+                        model.setData(userIndex, "标签引用", QtCore.Qt.DisplayRole)
+                        model.setData(userIndex, 2, QtCore.Qt.UserRole)
+                self.customTags.get(self.tagList[index.row()][0]).remove(self.customTagsOwner[index.row()] )
+                self.customTagsOwner.pop(index.row())
+                
+            #customList use
+            if value not in self.finalList and self.customTagsOwner.get(index.row(), None) is not None:
+                self.customTagsOwner[index.row()] = value
+            if value in self.customList:
+                if self.customTagsOwner.get(index.row(), None) is None:
+                    self.parent().typeChanged(2)
+                    model.setData(typeIndex, "标签引用", QtCore.Qt.DisplayRole)
+                    model.setData(typeIndex, 2, QtCore.Qt.UserRole)
+                elif self.customTagsOwner[index.row()] != value and len(self.customTagsOwner[index.row()])>0:
+                    self.customTags.get(self.tagList[index.row()][0]).remove(self.customTagsOwner[index.row()])
+                    self.parent().typeChanged(2)
+                    model.setData(typeIndex, "标签引用", QtCore.Qt.DisplayRole)
+                    model.setData(typeIndex, 2, QtCore.Qt.UserRole)
+            
+            #set tagConn
+            if len(value) > 0:
+                tag = "%s-%s"%(self.tagList[index.row()][0], value)
+                if self.tagConn.get(tag, None) is not None:
+                    self.tagConn[tag].append(index.row())
+                else:
+                    self.tagConn[tag]=[index.row()]
+            
+            #customUser
+            for key, val in self.customTagsUser.items():
+                if val is not None and index.row() in val:
+                    val.remove(index.row())
+                    break
+                    
+            if value in self.customList:
+                if (self.customTagsOwner.get(index.row(), None) is not None  and self.customTagsOwner[index.row()] != value) or self.customTagsOwner.get(index.row(), None) is None:
+                    tag = "%s-%s"%(self.tagList[index.row()][0], value)
+                    if self.customTagsUser.get(tag, None) is not None:
+                        self.customTagsUser[tag].append(index.row())
+                    else:
+                        self.customTagsUser[tag]=[index.row()]
+                    
             #set config 
             if value in self.accessList and self.confDict.get(value, None) is not None:
                 model.setData(confIndex, self.confDict.get(value)[0], QtCore.Qt.CheckStateRole)
@@ -198,7 +304,7 @@ class OkTagSetting(QtGui.QTableView):
         self.tagVars = tagVars
         self.tagLabels = tagLabels
         self.data = data
-        self.customTags = {}
+        self.tagConn = {}
         self.setVerticalScrollBar(OkScrollBar())
         self.setAlternatingRowColors(False)
         self.setShowGrid(False)
@@ -263,6 +369,7 @@ class OkTagSetting(QtGui.QTableView):
         self.settingColumn = len(horizontalHeaderList)
         self.model = QtGui.QStandardItemModel(self.settingRow, self.settingColumn)
         self.model.setHorizontalHeaderLabels(horizontalHeaderList)
+        self.model.itemChanged.connect(self.checkableChange)
         self.setSelectionMode(3)
         self.setSelectionBehavior(1)
         
@@ -310,7 +417,7 @@ class OkTagSetting(QtGui.QTableView):
             else:
                 confDict[val[1]] = (2, True)
             
-        delegate = OkTagNameDelegate(self.tagVars, tagNameDict, confDict, self.customTags, self)
+        delegate = OkTagNameDelegate(self.tagVars, tagNameDict, confDict, self.tagConn, self)
         self.setItemDelegateForColumn(1, delegate)
         delegate = OkDefaultValDelegate(self.tagVars, self)
         self.setItemDelegateForColumn(2, delegate)
@@ -319,8 +426,10 @@ class OkTagSetting(QtGui.QTableView):
         self.setModel(self.model)
         
     @pyqtSlot(int)
-    def typeChanged(self, type):
+    def typeChanged(self, type, ind=None):
         currentIndex = self.currentIndex()
+        if ind is not None:
+            currentIndex = ind
         if type == 0:
             for column in range(1, self.settingColumn):
                 index = self.model.index(currentIndex.row(), column, QtCore.QModelIndex())
@@ -349,8 +458,9 @@ class OkTagSetting(QtGui.QTableView):
                     self.model.setData(index, None, QtCore.Qt.UserRole)
                     self.model.itemFromIndex(index).setEnabled(False)
                 else:
-                    self.model.setData(index, '', QtCore.Qt.EditRole)
-                    self.model.setData(index, '', QtCore.Qt.UserRole)
+                    if self.model.data(index, QtCore.Qt.EditRole) == '--' or ind is not None:
+                        self.model.setData(index, '', QtCore.Qt.EditRole)
+                        self.model.setData(index, '', QtCore.Qt.UserRole)
                     self.model.itemFromIndex(index).setEnabled(True)
         elif type == 2:
             for column in range(1, self.settingColumn):
@@ -363,10 +473,26 @@ class OkTagSetting(QtGui.QTableView):
                     self.model.setData(index, None, QtCore.Qt.UserRole)
                     self.model.itemFromIndex(index).setEnabled(False)
                 else:
-                    if self.model.data(index, QtCore.Qt.EditRole) == '--':
+                    if self.model.data(index, QtCore.Qt.EditRole) == '--' or ind is not None:
                         self.model.setData(index, '', QtCore.Qt.EditRole)
                         self.model.setData(index, '', QtCore.Qt.UserRole)
                     self.model.itemFromIndex(index).setEnabled(True)
+    
+    @pyqtSlot(QtGui.QStandardItem)
+    def checkableChange(self, item):
+        if item.column() != 4:
+            return
+        chData = item.data(QtCore.Qt.CheckStateRole)
+        userData = item.data(QtCore.Qt.UserRole)
+        for key , val in self.tagConn.items():
+            if val is not None and item.row() in val:
+                print(val)
+                for row in val:
+                    index = self.model.index(int(row), 4, QtCore.QModelIndex())
+                    if self.model.data(index, QtCore.Qt.CheckStateRole) == chData and self.model.data(index, QtCore.Qt.UserRole) == userData:
+                        continue
+                    self.model.setData(index, chData, QtCore.Qt.CheckStateRole)
+                    self.model.setData(index, userData, QtCore.Qt.UserRole)
     
     def setupModelDict(self):
         modelDict = {}
