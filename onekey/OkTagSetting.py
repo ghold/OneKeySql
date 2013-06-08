@@ -4,11 +4,17 @@ from OkTagHandler import OkTagHandler
 from OkScroll import OkScrollBar
 
 class OkTypeBox(QtGui.QComboBox):
+    changeType = pyqtSignal(int, QtCore.QModelIndex)
     def __init__(self, parent=None):
         QtGui.QComboBox.__init__(self, parent)
         strList = ["固定值", "自定义标签", "标签引用"]
         self.addItems(strList)
-        self.currentIndexChanged.connect(self.parent().parent().typeChanged)
+        self.currentIndexChanged.connect(self.typeChanged)
+        self.changeType.connect(self.parent().parent().typeChanged)
+        
+    @pyqtSlot(int)
+    def typeChanged(self, type):
+        self.changeType.emit(type, self.parent().parent().currentIndex())
         
 class OkParamBox(QtGui.QWidget):
     closeEditor = pyqtSignal(QtGui.QWidget, QtGui.QAbstractItemDelegate.EndEditHint)
@@ -96,14 +102,14 @@ class OkComboBoxDelegate(QtGui.QStyledItemDelegate):
         
 class OkTagNameDelegate(QtGui.QStyledItemDelegate):
     #if use qss for delegate, please use QStyledItemDelegate
-    def __init__(self, tagList, varDict, confDict, tagConn, parent=None):
+    def __init__(self, tagList, varDict, confDict, customTagsUser, tagConn, parent=None):
         QtGui.QStyledItemDelegate.__init__(self, parent)
         self.tagList = tagList
         self.varDict = varDict
         self.confDict = confDict
         self.customTags = {}
         self.customTagsOwner = {}
-        self.customTagsUser = {}
+        self.customTagsUser = customTagsUser
         self.tagConn = tagConn
         
     def createEditor(self, parent, option, index):
@@ -143,7 +149,7 @@ class OkTagNameDelegate(QtGui.QStyledItemDelegate):
                 for i in removeList:
                     if val is not None and i in val:
                         val.remove(i)
-                break
+                    break
             
             currentRowTag = self.customTagsOwner.get(index.row(), None)
             currentRowTagList = self.customTags.get(self.tagList[index.row()][0], None)
@@ -304,6 +310,7 @@ class OkTagSetting(QtGui.QTableView):
         self.tagVars = tagVars
         self.tagLabels = tagLabels
         self.data = data
+        self.customTagsUser = {}
         self.tagConn = {}
         self.setVerticalScrollBar(OkScrollBar())
         self.setAlternatingRowColors(False)
@@ -417,7 +424,7 @@ class OkTagSetting(QtGui.QTableView):
             else:
                 confDict[val[1]] = (2, True)
             
-        delegate = OkTagNameDelegate(self.tagVars, tagNameDict, confDict, self.tagConn, self)
+        delegate = OkTagNameDelegate(self.tagVars, tagNameDict, confDict, self.customTagsUser, self.tagConn, self)
         self.setItemDelegateForColumn(1, delegate)
         delegate = OkDefaultValDelegate(self.tagVars, self)
         self.setItemDelegateForColumn(2, delegate)
@@ -425,58 +432,72 @@ class OkTagSetting(QtGui.QTableView):
         self.setItemDelegateForColumn(3, delegate)
         self.setModel(self.model)
         
-    @pyqtSlot(int)
+    @pyqtSlot(int, QtCore.QModelIndex)
     def typeChanged(self, type, ind=None):
         currentIndex = self.currentIndex()
+        needRemove = [currentIndex.row()]
         if ind is not None:
             currentIndex = ind
-        if type == 0:
-            for column in range(1, self.settingColumn):
-                index = self.model.index(currentIndex.row(), column, QtCore.QModelIndex())
-                if column == 2:
-                    if self.model.data(index, QtCore.Qt.EditRole) == '--':
-                        self.model.setData(index, '', QtCore.Qt.EditRole)
-                        self.model.setData(index, '', QtCore.Qt.UserRole)
-                    self.model.itemFromIndex(index).setEnabled(True)
-                elif column == 4:
-                    self.model.setData(index, 0, QtCore.Qt.CheckStateRole)
-                    self.model.setData(index, None, QtCore.Qt.UserRole)
-                    self.model.itemFromIndex(index).setEnabled(False)
-                else:
-                    self.model.setData(index, '--', QtCore.Qt.EditRole)
-                    self.model.setData(index, None, QtCore.Qt.UserRole)
-                    self.model.itemFromIndex(index).setEnabled(False)
-        elif type == 1:
-            for column in range(1, self.settingColumn):
-                index = self.model.index(currentIndex.row(), column, QtCore.QModelIndex())
-                if column == 4:
-                    self.model.setData(index, 0, QtCore.Qt.CheckStateRole)
-                    self.model.setData(index, None, QtCore.Qt.UserRole)
-                    self.model.itemFromIndex(index).setEnabled(True)
-                elif column == 3 and getattr(OkTagHandler, self.tagVars[currentIndex.row()][0] + '_arg', None) is None:
-                    self.model.setData(index, '--', QtCore.Qt.EditRole)
-                    self.model.setData(index, None, QtCore.Qt.UserRole)
-                    self.model.itemFromIndex(index).setEnabled(False)
-                else:
-                    if self.model.data(index, QtCore.Qt.EditRole) == '--' or ind is not None:
-                        self.model.setData(index, '', QtCore.Qt.EditRole)
-                        self.model.setData(index, '', QtCore.Qt.UserRole)
-                    self.model.itemFromIndex(index).setEnabled(True)
-        elif type == 2:
-            for column in range(1, self.settingColumn):
-                index = self.model.index(currentIndex.row(), column, QtCore.QModelIndex())
-                if column == 4:
-                    self.model.setData(index, 0, QtCore.Qt.CheckStateRole)
-                    self.model.itemFromIndex(index).setEnabled(True)
-                elif (column == 2) or (column == 3 and getattr(OkTagHandler, self.tagVars[currentIndex.row()][0] + '_arg', None) is None):
-                    self.model.setData(index, '--', QtCore.Qt.EditRole)
-                    self.model.setData(index, None, QtCore.Qt.UserRole)
-                    self.model.itemFromIndex(index).setEnabled(False)
-                else:
-                    if self.model.data(index, QtCore.Qt.EditRole) == '--' or ind is not None:
-                        self.model.setData(index, '', QtCore.Qt.EditRole)
-                        self.model.setData(index, '', QtCore.Qt.UserRole)
-                    self.model.itemFromIndex(index).setEnabled(True)
+            tpIndex = self.model.index(currentIndex.row(), 1, QtCore.QModelIndex())
+            value = self.model.data(tpIndex, QtCore.Qt.EditRole)
+            tag = "%s-%s"%(self.tagVars[currentIndex.row()][0], value)
+            if self.customTagsUser.get(tag, None) is not None:
+                needRemove = [currentIndex.row()] + self.customTagsUser[tag]
+                self.customTagsUser.pop(tag)
+            if self.tagConn.get(tag, None) is not None: 
+                for row in needRemove:
+                    self.tagConn[tag].remove(row)
+        
+        for row in needRemove:
+            if type == 0:
+                for column in range(1, self.settingColumn):
+                    index = self.model.index(row, column, QtCore.QModelIndex())
+                    if column == 2:
+                        if self.model.data(index, QtCore.Qt.EditRole) == '--':
+                            self.model.setData(index, '', QtCore.Qt.EditRole)
+                            self.model.setData(index, '', QtCore.Qt.UserRole)
+                        self.model.itemFromIndex(index).setEnabled(True)
+                    elif column == 4:
+                        self.model.setData(index, 0, QtCore.Qt.CheckStateRole)
+                        self.model.setData(index, None, QtCore.Qt.UserRole)
+                        self.model.itemFromIndex(index).setEnabled(False)
+                    else:
+                        self.model.setData(index, '--', QtCore.Qt.EditRole)
+                        self.model.setData(index, None, QtCore.Qt.UserRole)
+                        self.model.itemFromIndex(index).setEnabled(False)
+            elif type == 1:
+                for column in range(1, self.settingColumn):
+                    index = self.model.index(row, column, QtCore.QModelIndex())
+                    if column == 4:
+                        self.model.setData(index, 0, QtCore.Qt.CheckStateRole)
+                        self.model.setData(index, None, QtCore.Qt.UserRole)
+                        self.model.itemFromIndex(index).setEnabled(True)
+                    elif column == 3 and getattr(OkTagHandler, self.tagVars[currentIndex.row()][0] + '_arg', None) is None:
+                        self.model.setData(index, '--', QtCore.Qt.EditRole)
+                        self.model.setData(index, None, QtCore.Qt.UserRole)
+                        self.model.itemFromIndex(index).setEnabled(False)
+                    else:
+                        if self.model.data(index, QtCore.Qt.EditRole) == '--' or ind is not None:
+                            self.model.setData(index, '', QtCore.Qt.EditRole)
+                            self.model.setData(index, '', QtCore.Qt.UserRole)
+                        self.model.itemFromIndex(index).setEnabled(True)
+                type += 1
+                continue
+            elif type == 2:
+                for column in range(1, self.settingColumn):
+                    index = self.model.index(row, column, QtCore.QModelIndex())
+                    if column == 4:
+                        self.model.setData(index, 0, QtCore.Qt.CheckStateRole)
+                        self.model.itemFromIndex(index).setEnabled(True)
+                    elif (column == 2) or (column == 3 and getattr(OkTagHandler, self.tagVars[currentIndex.row()][0] + '_arg', None) is None):
+                        self.model.setData(index, '--', QtCore.Qt.EditRole)
+                        self.model.setData(index, None, QtCore.Qt.UserRole)
+                        self.model.itemFromIndex(index).setEnabled(False)
+                    else:
+                        if self.model.data(index, QtCore.Qt.EditRole) == '--' or ind is not None:
+                            self.model.setData(index, '', QtCore.Qt.EditRole)
+                            self.model.setData(index, '', QtCore.Qt.UserRole)
+                        self.model.itemFromIndex(index).setEnabled(True)
     
     @pyqtSlot(QtGui.QStandardItem)
     def checkableChange(self, item):
@@ -486,7 +507,6 @@ class OkTagSetting(QtGui.QTableView):
         userData = item.data(QtCore.Qt.UserRole)
         for key , val in self.tagConn.items():
             if val is not None and item.row() in val:
-                print(val)
                 for row in val:
                     index = self.model.index(int(row), 4, QtCore.QModelIndex())
                     if self.model.data(index, QtCore.Qt.CheckStateRole) == chData and self.model.data(index, QtCore.Qt.UserRole) == userData:

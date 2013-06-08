@@ -8,11 +8,6 @@ class OkTestcaseWriter(object):
         self.root = self.tree.getroot()
         self.config = OkConfig()
         
-    def appendStepById(self, id):
-        result = self.root.find("./testcase[@id='%s']/steps"% id)
-        element = Element('step', {'hello':'123'})
-        result.append(element)
-        
     def makeupElement(self, data, id):
         #vars
         result = self.root.find("./testcase[@id='%s']/var"% id)
@@ -24,15 +19,15 @@ class OkTestcaseWriter(object):
         for tag, val in tags.items():
             if val[0] == 2:
                 if val[4] == 1:
-                    for id in range(len(varList)):
-                        if varList[id].find("{%s(%s:"%(val[5], val[1])) >= 0 or varList[id].find("{%s(%s)"%(val[5], val[1])) >= 0:
-                            varList[id] = varList[id].replace('!}','}')
+                    for ind in range(len(varList)):
+                        if varList[ind].find("{%s(%s:"%(val[5], val[1])) >= 0 or varList[ind].find("{%s(%s)"%(val[5], val[1])) >= 0:
+                            varList[ind] = varList[ind].replace('!}','}')
                         result.text = ','.join(varList)
                         break
                 if val[4] == 2:
-                    for id in range(len(varList)):
-                        if varList[id].find("{%s(%s:"%(val[5], val[1])) >= 0 or varList[id].find("{%s(%s)"%(val[5], val[1])) >= 0:
-                            varList[id] = varList[id].replace('}','!}')
+                    for ind in range(len(varList)):
+                        if varList[ind].find("{%s(%s:"%(val[5], val[1])) >= 0 or varList[ind].find("{%s(%s)"%(val[5], val[1])) >= 0:
+                            varList[ind] = varList[ind].replace('}','!}')
                         result.text = ','.join(varList)
                         break
                 tagElement = Element('tag', {'name':tag})
@@ -51,7 +46,6 @@ class OkTestcaseWriter(object):
                             model = ",{%s(%s:%s)}"
                         result.text = result.text + model%(val[5], val[1], val[2].upper())
                     else:
-                        print(val[2])
                         model = ",{%s(%s:'%s')!}"
                         if val[4]:
                             model = ",{%s(%s:'%s')}"
@@ -75,10 +69,10 @@ class OkTestcaseWriter(object):
                 tagElement.text = val[2]
                 self.element.append(tagElement)
         result = self.root.find("./testcase[@id='%s']/steps"% id)
+        print(result)
         result.append(self.element)
-        self.writeXml('testcase/output.xml')
+        self.writeXml('testcase/testcase.xml')
         
-    
     def writeXml(self, file):
         self.tree.write(file, encoding="UTF-8")
 

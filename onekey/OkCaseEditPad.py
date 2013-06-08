@@ -83,6 +83,7 @@ class OkCaseEditPad(QtGui.QWidget):
             return
         writer = OkTestcaseWriter('testcase/testcase.xml')
         writer.makeupElement(data, self.caseData['id'])
+        self.close()
         
     def paintEvent(self, event):
         self.setGeometry(QtCore.QRect(200, 0, self.parent().width() - 200 ,  self.parent().height()))

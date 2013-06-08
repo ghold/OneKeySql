@@ -8,6 +8,7 @@ from OkInfoWidget import OkInfoWidget
 from OkListItem import OkListItem
 from OkCaseEditPad import OkCaseEditPad
 from OkArgSetPad import OkArgSetPad
+from OkAddCase import OkAddCase
 
 class MainWindow(QtGui.QFrame):
     editWidget = None
@@ -82,11 +83,27 @@ class MainWindow(QtGui.QFrame):
         caseList.itemDoubleClicked.connect(self.openEditMode)
         stepList = self.model.makeupStepList(caseList.item(0))
         
-        caseWidget = QtGui.QWidget()
-        lineEdit = QtGui.QLineEdit()
+        searchEdit = QtGui.QLineEdit()
+        addButton = QtGui.QPushButton("+")
+        addButton.pressed.connect(self.showAddCase)
+        searchLayout = QtGui.QHBoxLayout()
+        searchLayout.addWidget(searchEdit)
+        searchLayout.addWidget(addButton)
+        
+        #
+        self.addingWidget = OkAddCase()
+        self.addingWidget.hide()
+        #
+        topLayout = QtGui.QVBoxLayout()
+        topLayout.addLayout(searchLayout)
+        topLayout.addWidget(self.addingWidget)
+        
+        #
         caseLayout = QtGui.QVBoxLayout()
-        caseLayout.addWidget(lineEdit)
+        caseLayout.addLayout(topLayout)
         caseLayout.addWidget(caseList)
+        
+        caseWidget = QtGui.QWidget()
         caseWidget.setLayout(caseLayout)
         moduleSplitter.addWidget(caseWidget)
         moduleSplitter.addWidget(stepList)
@@ -184,6 +201,13 @@ class MainWindow(QtGui.QFrame):
     def showCaseEditPad(self, item, data):
         self.editWidget = OkCaseEditPad(item.data(Qt.Qt.UserRole), data, self)
         self.editWidget.show()
+        
+    @pyqtSlot()    
+    def showAddCase(self):
+        if self.addingWidget.isHidden():
+            self.addingWidget.show()
+        else:
+            self.addingWidget.hide()
 
     def mousePressEvent(self,event):
        if event.button() == QtCore.Qt.LeftButton:
