@@ -5,9 +5,9 @@
         <file>images/pencil_18x18_gray.png</file>
         <file>images/pencil_18x18_blue.png</file>
         <file>images/putin_24x24_gray.png</file>
-        <file>images/itembg_1x40.png</file>
         <file>images/xmark_24x24_gray.png</file>
         <file>images/xmark_24x24_white.png</file>
+        <file>images/xmark_24x24_red.png</file>
         <file>images/max_24x24_gray.png</file>
         <file>images/max_24x24_white.png</file>
         <file>images/min_24x24_gray.png</file>
@@ -16,5 +16,7 @@
         <file>images/resize_24x24_white.png</file>
         <file>images/back_40x38_gray.png</file>
         <file>images/back_40x38_white.png</file>
+        <file>images/plus_24x24_gray.png</file>
+        <file>images/plus_24x24_blue.png</file>
     </qresource>
 </RCC>

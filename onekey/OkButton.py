@@ -41,3 +41,33 @@ class OkExecButton(QtGui.QPushButton):
                     "border:1px solid #7ECEFD;"              
                 "}")
         
+class windowButton(QtGui.QPushButton):
+    def __init__(self, parent=None):
+        QtGui.QPushButton.__init__(self, parent)
+        self.setFocusPolicy(Qt.Qt.NoFocus)
+        self.setMaximumSize(26, 26)
+        self.setFlat(1)
+    
+class OkAddCaseButton(windowButton):
+    def __init__(self, parent=None):
+        windowButton.__init__(self, parent)
+        self.setStyleSheet("windowButton{"
+                    "height: 24px;"
+                    "width: 24px;"
+                    "background: url(:/images/plus_24x24_gray.png)"
+                "}"
+                "windowButton:hover {"
+                    "background: url(:/images/plus_24x24_blue.png)"
+                "}")
+                
+class OkCancelButton(windowButton):
+    def __init__(self, parent=None):
+        windowButton.__init__(self, parent)
+        self.setStyleSheet("windowButton{"
+                    "height: 24px;"
+                    "width: 24px;"
+                    "background: url(:/images/xmark_24x24_gray.png)"
+                "}"
+                "windowButton:hover {"
+                    "background: url(:/images/xmark_24x24_red.png)"
+                "}")

@@ -12,11 +12,12 @@ class OkCaseEditPad(QtGui.QWidget):
     editWidget = None
     caseData = {}
     insertData = {}
-    def __init__(self, casedata, insertdata, parent=None):
+    def __init__(self, item, insertdata, parent=None):
         QtGui.QWidget.__init__(self,  parent)
         self.setWindowFlags(Qt.Qt.FramelessWindowHint)
         self.setGeometry(QtCore.QRect(200, 0, self.parent().width() - 200 ,  self.parent().height()))
-        self.caseData = casedata
+        self.item = item
+        self.caseData = self.item.data(Qt.Qt.UserRole)
         self.insertData = insertdata
         #add toolBar
         self.toolBar = OkEditToolBar(self)
@@ -60,6 +61,8 @@ class OkCaseEditPad(QtGui.QWidget):
         
     def setupTag(self):
         tagList = []
+        if len(self.caseData['data']['var']) == 0:
+            return tagList
         #match the form like {type_name(tag_name:default_val)}
         tag_pattern = r"\{([0-9a-zA-Z_]+)\(([0-9a-zA-Z_]+)(?:|\:(?P<def>.+))\)(?:|(?P<view>!))\}"
         tag_compiler = re.compile(tag_pattern)
@@ -83,6 +86,7 @@ class OkCaseEditPad(QtGui.QWidget):
             return
         writer = OkTestcaseWriter('testcase/testcase.xml')
         writer.makeupElement(data, self.caseData['id'])
+        self.parent().model.update()
         self.close()
         
     def paintEvent(self, event):

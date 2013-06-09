@@ -5,15 +5,19 @@ from OkListWidget import *
 from OkListItem import *
 
 class OkModel(object):
-    data = {}
-    
     def __init__(self,  *args):
-        for val in args:
+        self.data = {}
+        if len(args) > 0:
+            self.args = args
+        for val in self.args:
             handler = val[1]()
             parse(val[0], handler)
             if self.data.get(val[2]) is None:
                 self.data[val[2]] = []
             self.data[val[2]] = handler.getXmlData()
+            
+    def update(self):
+        self.__init__()
         
     def makeupExecList(self):
         self.test_list = OkCaseWidget()

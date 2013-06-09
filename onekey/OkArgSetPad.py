@@ -59,6 +59,8 @@ class OkArgSetPad(QtGui.QWidget):
         self.setLayout(gridLayout)
         
     def setupLabel(self):
+        if len(self.data['data']['var']) == 0:
+            return None
         #setting layout
         settingWidget = OkScrollArea()
         #label layout
@@ -101,6 +103,9 @@ class OkArgSetPad(QtGui.QWidget):
     
     @pyqtSlot()
     def sqlExec(self):
+        if len(self.previewWidget.toPlainText())  == 0:
+            self.close()
+            return
         self.comfirmButton.setDisabled(True)
         step_pattern = r";\n/\*Step [0-9 ]+\*/\n"
         step_compiler = re.compile(step_pattern)

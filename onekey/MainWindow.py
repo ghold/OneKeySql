@@ -1,6 +1,6 @@
 from PyQt4 import QtGui, QtCore, Qt
 from PyQt4.QtCore import pyqtSlot
-from OkButton import OkModuleButton
+from OkButton import *
 from OkToolBar import OkMainToolBar
 from OkModel import OkModel
 from OkXmlHandler import OkTestcaseHandler, OkTestunitHandler
@@ -9,6 +9,7 @@ from OkListItem import OkListItem
 from OkCaseEditPad import OkCaseEditPad
 from OkArgSetPad import OkArgSetPad
 from OkAddCase import OkAddCase
+from OkXmlWriter import OkTestcaseWriter
 
 class MainWindow(QtGui.QFrame):
     editWidget = None
@@ -66,11 +67,6 @@ class MainWindow(QtGui.QFrame):
         self.mainSplitter.addWidget(self.caseExecModule())
         self.mainSplitter.setStretchFactor(1, 1)
         
-    def setupModel(self):
-        pass
-        #self.caseList.itemClicked.connect(self.updateStepList)
-        #self.stepList = self.model.makeupStepList(self.caseList.item(0))
-        
     def caseEditModule(self):
         #moduleSplitter
         moduleSplitter = QtGui.QSplitter()
@@ -78,17 +74,22 @@ class MainWindow(QtGui.QFrame):
         moduleSplitter.setChildrenCollapsible(False)
         
         #setup case list
-        caseList = self.model.makeupCaseList()
-        caseList.itemPressed.connect(self.updateStepList)
-        caseList.itemDoubleClicked.connect(self.openEditMode)
-        stepList = self.model.makeupStepList(caseList.item(0))
+        self.caseList = self.model.makeupCaseList()
+        self.caseList.itemPressed.connect(self.updateStepList)
+        self.caseList.itemDoubleClicked.connect(self.openEditMode)
+        stepList = self.model.makeupStepList(self.caseList.item(0))
         
         searchEdit = QtGui.QLineEdit()
-        addButton = QtGui.QPushButton("+")
-        addButton.pressed.connect(self.showAddCase)
+        addButton = OkAddCaseButton()
+        addButton.pressed.connect(self.pushAddCase)
+        self.cancelButton = OkCancelButton()
+        self.cancelButton.pressed.connect(self.pushCancel)
+        
         searchLayout = QtGui.QHBoxLayout()
         searchLayout.addWidget(searchEdit)
         searchLayout.addWidget(addButton)
+        searchLayout.addWidget(self.cancelButton)
+        self.cancelButton.hide()
         
         #
         self.addingWidget = OkAddCase()
@@ -101,7 +102,7 @@ class MainWindow(QtGui.QFrame):
         #
         caseLayout = QtGui.QVBoxLayout()
         caseLayout.addLayout(topLayout)
-        caseLayout.addWidget(caseList)
+        caseLayout.addWidget(self.caseList)
         
         caseWidget = QtGui.QWidget()
         caseWidget.setLayout(caseLayout)
@@ -117,7 +118,7 @@ class MainWindow(QtGui.QFrame):
         moduleSplitter.setHandleWidth(1)
         moduleSplitter.setChildrenCollapsible(False)
         #setup exec list
-        caseList = self.model.makeupExecList()
+        self.caseList = self.model.makeupExecList()
         #completer
         wordList = ["中转" ,  "运输" ,  "散货" ,  "收仓"]
         completer = QtGui.QCompleter(wordList)
@@ -125,15 +126,15 @@ class MainWindow(QtGui.QFrame):
         caseWidget = QtGui.QWidget()
         lineEdit = QtGui.QLineEdit()
         lineEdit.setCompleter(completer)
-        lineEdit.textChanged.connect(caseList.search)
+        lineEdit.textChanged.connect(self.caseList.search)
         caseLayout = QtGui.QVBoxLayout()
         caseLayout.addWidget(lineEdit)
-        caseLayout.addWidget(caseList)
+        caseLayout.addWidget(self.caseList)
         caseWidget.setLayout(caseLayout)
         moduleSplitter.addWidget(caseWidget)
         #infoWidget
         okInfoWidget = OkInfoWidget()
-        caseList.setOkInfo(okInfoWidget)
+        self.caseList.setOkInfo(okInfoWidget)
         moduleSplitter.addWidget(okInfoWidget)
         moduleSplitter.setStretchFactor(1, 1)
         return moduleSplitter
@@ -199,15 +200,31 @@ class MainWindow(QtGui.QFrame):
         self.editWidget.show()
         
     def showCaseEditPad(self, item, data):
-        self.editWidget = OkCaseEditPad(item.data(Qt.Qt.UserRole), data, self)
+        self.editWidget = OkCaseEditPad(item, data, self)
         self.editWidget.show()
         
     @pyqtSlot()    
-    def showAddCase(self):
+    def pushAddCase(self):
         if self.addingWidget.isHidden():
+            self.cancelButton.show()
             self.addingWidget.show()
         else:
-            self.addingWidget.hide()
+            name, desc = self.addingWidget.getNameAndDesc()
+            if len(name.strip()) >0:
+                writer = OkTestcaseWriter('testcase/testcase.xml')
+                writer.createCase(name, desc)
+                self.cancelButton.hide()
+                self.addingWidget.hide()
+                self.model.update()
+                self.moduleChange(self.moduleGroup.button(2))
+            else:
+                self.addingWidget.nameEdit.setFocus()
+    
+    @pyqtSlot()
+    def pushCancel(self):
+        self.cancelButton.hide()
+        self.cancelButton.setDown(False)
+        self.addingWidget.hide()
 
     def mousePressEvent(self,event):
        if event.button() == QtCore.Qt.LeftButton:
