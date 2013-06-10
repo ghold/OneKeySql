@@ -87,6 +87,9 @@ class OkCaseEditPad(QtGui.QWidget):
         writer = OkTestcaseWriter('testcase/testcase.xml')
         writer.makeupElement(data, self.caseData['id'])
         self.parent().model.update()
+        self.parent().model.updateCaseItem(self.item)
+        self.parent().updateStepList(self.item)
+        self.parent().cover.hide()
         self.close()
         
     def paintEvent(self, event):

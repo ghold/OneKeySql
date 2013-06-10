@@ -10,6 +10,7 @@ from OkCaseEditPad import OkCaseEditPad
 from OkArgSetPad import OkArgSetPad
 from OkAddCase import OkAddCase
 from OkXmlWriter import OkTestcaseWriter
+from OkCover import OkCover
 
 class MainWindow(QtGui.QFrame):
     editWidget = None
@@ -32,17 +33,15 @@ class MainWindow(QtGui.QFrame):
         
         # Set up the widgets.
         self.Spacer = QtGui.QSpacerItem(20, 30)
-        tcLogo = QtGui.QImage(":/images/tc.png")
-        tuLogo = QtGui.QImage(":/images/tu.png")
-        txButton = OkModuleButton("测试执行", tcLogo)
-        tcButton = OkModuleButton("测试用例", tcLogo)
-        tuButton = OkModuleButton("测试单元", tuLogo)
+        txButton = OkModuleButton("测试执行", ":/images/tx_35x35.png")
+        txButton.setChecked(True)
+        tcButton = OkModuleButton("测试用例", ":/images/tc_35x35.png")
         #buttonGroup
         self.moduleGroup = QtGui.QButtonGroup()
         self.moduleGroup.addButton(txButton, 1)
         self.moduleGroup.addButton(tcButton, 2)
-        self.moduleGroup.addButton(tuButton, 3)
         self.moduleGroup.buttonClicked.connect(self.moduleChange)
+        
         #mainSplitter
         self.mainSplitter = QtGui.QSplitter()
         self.mainSplitter.setHandleWidth(1)
@@ -51,8 +50,7 @@ class MainWindow(QtGui.QFrame):
         moduleWidget = QtGui.QWidget()
         moduleLayout = QtGui.QVBoxLayout(moduleWidget)
         moduleLayout.addWidget(txButton, 0, Qt.Qt.AlignTop)
-        moduleLayout.addWidget(tcButton, 0, Qt.Qt.AlignTop)
-        moduleLayout.addWidget(tuButton, 1, Qt.Qt.AlignTop)
+        moduleLayout.addWidget(tcButton, 1, Qt.Qt.AlignTop)
         self.mainSplitter.addWidget(moduleWidget)
         #mainLayout
         gridLayout = QtGui.QGridLayout()
@@ -196,11 +194,15 @@ class MainWindow(QtGui.QFrame):
             item.setItemSelected(item)
             
     def showArgSetPad(self, item):
+        self.cover = OkCover(self)
         self.editWidget = OkArgSetPad(item.data(Qt.Qt.UserRole), self)
+        self.cover.show()
         self.editWidget.show()
         
     def showCaseEditPad(self, item, data):
+        self.cover = OkCover(self)
         self.editWidget = OkCaseEditPad(item, data, self)
+        self.cover.show()
         self.editWidget.show()
         
     @pyqtSlot()    

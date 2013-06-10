@@ -210,6 +210,7 @@ class backButton(windowButton):
         
     def mousePressEvent(self, event):
         self.topLevelWidget().dragPosition = event.globalPos() - self.topLevelWidget().frameGeometry().topLeft()
+        self.topLevelWidget().cover.hide()
         self.parent().parent().close()
         self.topLevelWidget().toolBar.maxOrResizeButton.updateStyle()
         event.accept()

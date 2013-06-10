@@ -117,6 +117,7 @@ class OkArgSetPad(QtGui.QWidget):
             #Don't need to add " at start or at end
             OkSqlHandler.insertAction(val.strip())
         self.previewWidget.config.save()
+        self.parent().cover.close()
         self.close()
         
     def paintEvent(self, event):

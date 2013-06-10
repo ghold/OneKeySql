@@ -20,30 +20,30 @@ class OkModel(object):
         self.__init__()
         
     def makeupExecList(self):
-        self.test_list = OkCaseWidget()
+        self.exec_list = OkCaseWidget()
         for key,  val in self.data['case'].items():
-            item = OkListItem(val["data"]["name"], self.test_list)
+            item = OkListItem(val["data"]["name"], self.exec_list)
             item.setData(Qt.Qt.UserRole, val)
-            self.test_list.addItem(item)
-            self.test_list.setItemWidget(item, OkExecAddon(val["data"]["desc"], item, self.test_list))
-        return self.test_list
+            self.exec_list.addItem(item)
+            self.exec_list.setItemWidget(item, OkExecAddon(val["data"]["desc"], item, self.exec_list))
+        return self.exec_list
         
     def makeupCaseList(self):
-        self.test_list = OkCaseWidget()
+        self.case_list = OkCaseWidget()
         for key,  val in self.data['case'].items():
-            item = OkListItem(val["data"]["name"], self.test_list)
+            item = OkListItem(val["data"]["name"], self.case_list)
             item.setData(Qt.Qt.UserRole, val)
-            self.test_list.addItem(item)
-            self.test_list.setItemWidget(item, OkCaseAddon(val["data"]["desc"], item, self.test_list))
-        return self.test_list
+            self.case_list.addItem(item)
+            self.case_list.setItemWidget(item, OkCaseAddon(val["data"]["desc"], item, self.case_list))
+        return self.case_list
         
     def makeupUnitList(self):
-        self.test_list = OkUnitWidget()
+        self.unit_list = OkUnitWidget()
         for key,  val in self.data['unit'].items():
-            item = OkListItem(val["data"]["name"], self.test_list)
+            item = OkListItem(val["data"]["name"], self.unit_list)
             item.setData(Qt.Qt.UserRole, val)
-            self.test_list.addItem(item)
-        return self.test_list
+            self.unit_list.addItem(item)
+        return self.unit_list
             
     def makeupStepList(self, item):
         self.step_list = OkStepWidget(item)
@@ -56,3 +56,8 @@ class OkModel(object):
             item.setData(Qt.Qt.UserRole, val)
             self.step_list.addItem(item)
         return self.step_list
+        
+    def updateCaseItem(self, item):
+        data = item.data(Qt.Qt.UserRole)
+        key = "testcase_%s" % data['id']
+        item.setData(Qt.Qt.UserRole, self.data['case'][key])

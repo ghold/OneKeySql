@@ -5,20 +5,30 @@ class OkModuleButton(QtGui.QPushButton):
         QtGui.QPushButton.__init__(self, text, parent)
         self.setMinimumSize(200, 35)
         self.image = image
+        self.setFlat(1)
+        self.setCheckable(True)
+        self.setFocusPolicy(Qt.Qt.NoFocus)
         
-    def paintEvent(self,  event):
-        tmpPainter = QtGui.QPainter()
-        tmpPainter.begin(self)
-        tmpBrush = QtGui.QBrush(QtGui.QColor(33,  133,  197))
-        tmpPainter.fillRect(QtCore.QRectF(self.rect().left() + 36,  self.rect().top(),  self.rect().width(),
-                self.rect().height()), tmpBrush)
-        tmpPainter.drawImage(QtCore.QPoint(0, 0), self.image.scaled(35, 35))
-        tmpPainter.setFont(QtGui.QFont("微软雅黑", 14))
-        tmpPainter.setPen(QtGui.QColor(255,  255,  255))
-        tmpPainter.drawText(QtCore.QRectF(self.rect().left() + 50,  self.rect().top(),  self.rect().width(),
-                self.rect().height()),  Qt.Qt.AlignVCenter, self.text())
-        tmpPainter.end()
-        event.accept()
+        self.setStyleSheet("QPushButton{"
+                    "border: 0px;"
+                    "color: #2e2e2e;"
+                    "padding-left: 36px;"
+                    "font-size: 18px;"
+                    "font-family: '微软雅黑';"
+                    "background: #fff url("+self.image+") no-repeat"
+                "}"
+                "QPushButton:checked{"
+                    "color: #fff;"
+                    "border: 0px;"
+                    "padding-left: 36px;"
+                    "background: #2185c5 url("+self.image+") no-repeat"
+                "}"
+                "QPushButton:hover{"
+                    "color: #fff;"
+                    "border: 0px;"
+                    "padding-left: 36px;"
+                    "background: #4da6ea url("+self.image+") no-repeat"
+                "}")
         
 class OkExecButton(QtGui.QPushButton):
     def __init__(self,  text, parent=None):
