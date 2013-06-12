@@ -52,12 +52,15 @@ class OkTestcaseHandler(ContentHandler):
             for key,  val in attrs.items():
                 self.testcases[self.testcase_id]['data']['steps'][self.step][key] = val
             self.testcases[self.testcase_id]['data']['steps'][self.step]['tags'] = {}
+            self.testcases[self.testcase_id]['data']['steps'][self.step]['tag_type'] = {}
         elif name == 'tag':
             self.tagname = attrs['name']
+            self.tagtype = attrs['type']
                         
     def endElement(self,  name):
         if name == 'tag':
             self.testcases[self.testcase_id]['data']['steps'][self.step]['tags'][self.tagname] = self.data
+            self.testcases[self.testcase_id]['data']['steps'][self.step]['tag_type'][self.tagname] = self.tagtype
         elif name == 'name' or name == 'desc'or name == 'var':
             self.testcases[self.testcase_id]['data'][name] = self.data
         elif name == 'step':
@@ -72,6 +75,6 @@ class OkTestcaseHandler(ContentHandler):
         return self.testcases
 
 #test = OkTestcaseHandler()
-#parse('testcase.xml', test)
+#parse('testcase/testcase.xml', test)
 #jsonDumpsIndentStr = json.dumps(test.getXmlData(), indent=1)
 #print(jsonDumpsIndentStr)

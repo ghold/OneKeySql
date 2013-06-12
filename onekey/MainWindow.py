@@ -11,6 +11,8 @@ from OkArgSetPad import OkArgSetPad
 from OkAddCase import OkAddCase
 from OkXmlWriter import OkTestcaseWriter
 from OkCover import OkCover
+from OkSplitter import OkSplitter
+from OkBasket import OkBasket
 
 class MainWindow(QtGui.QFrame):
     editWidget = None
@@ -41,16 +43,17 @@ class MainWindow(QtGui.QFrame):
         self.moduleGroup.addButton(txButton, 1)
         self.moduleGroup.addButton(tcButton, 2)
         self.moduleGroup.buttonClicked.connect(self.moduleChange)
-        
+        #basket
+        self.basket = OkBasket()
+        self.basket.hide()
         #mainSplitter
-        self.mainSplitter = QtGui.QSplitter()
-        self.mainSplitter.setHandleWidth(1)
-        self.mainSplitter.setChildrenCollapsible(False)
+        self.mainSplitter =OkSplitter()
         #moduleWidget
         moduleWidget = QtGui.QWidget()
         moduleLayout = QtGui.QVBoxLayout(moduleWidget)
         moduleLayout.addWidget(txButton, 0, Qt.Qt.AlignTop)
         moduleLayout.addWidget(tcButton, 1, Qt.Qt.AlignTop)
+        moduleLayout.addWidget(self.basket, 1, Qt.Qt.AlignBottom)
         self.mainSplitter.addWidget(moduleWidget)
         #mainLayout
         gridLayout = QtGui.QGridLayout()
@@ -67,25 +70,31 @@ class MainWindow(QtGui.QFrame):
         
     def caseEditModule(self):
         #moduleSplitter
-        moduleSplitter = QtGui.QSplitter()
-        moduleSplitter.setHandleWidth(1)
-        moduleSplitter.setChildrenCollapsible(False)
+        moduleSplitter = OkSplitter()
         
         #setup case list
         self.caseList = self.model.makeupCaseList()
         self.caseList.itemPressed.connect(self.updateStepList)
         self.caseList.itemDoubleClicked.connect(self.openEditMode)
-        stepList = self.model.makeupStepList(self.caseList.item(0))
+#        stepList = self.model.makeupStepList(self.caseList.item(0))
         
+        #completer
+        wordList = ["中转" ,  "运输" ,  "散货" ,  "收仓"]
+        completer = QtGui.QCompleter(wordList)
+        
+        #
         searchEdit = QtGui.QLineEdit()
-        addButton = OkAddCaseButton()
-        addButton.pressed.connect(self.pushAddCase)
+        searchEdit.setCompleter(completer)
+        searchEdit.textChanged.connect(self.caseList.search)
+        
+        self.addButton = OkAddCaseButton()
+        self.addButton.pressed.connect(self.pushAddCase)
         self.cancelButton = OkCancelButton()
         self.cancelButton.pressed.connect(self.pushCancel)
         
         searchLayout = QtGui.QHBoxLayout()
         searchLayout.addWidget(searchEdit)
-        searchLayout.addWidget(addButton)
+        searchLayout.addWidget(self.addButton)
         searchLayout.addWidget(self.cancelButton)
         self.cancelButton.hide()
         
@@ -105,16 +114,14 @@ class MainWindow(QtGui.QFrame):
         caseWidget = QtGui.QWidget()
         caseWidget.setLayout(caseLayout)
         moduleSplitter.addWidget(caseWidget)
-        moduleSplitter.addWidget(stepList)
-        moduleSplitter.setStretchFactor(1, 1)
+#        moduleSplitter.addWidget(stepList)
+#        moduleSplitter.setStretchFactor(1, 1)
 
         return moduleSplitter
         
     def caseExecModule(self):
         #moduleSplitter
-        moduleSplitter = QtGui.QSplitter()
-        moduleSplitter.setHandleWidth(1)
-        moduleSplitter.setChildrenCollapsible(False)
+        moduleSplitter = OkSplitter()
         #setup exec list
         self.caseList = self.model.makeupExecList()
         #completer
@@ -150,9 +157,11 @@ class MainWindow(QtGui.QFrame):
     
     @pyqtSlot(OkListItem)
     def updateStepList(self, item):
-        stepList = self.model.makeupStepList(item)
-        self.mainSplitter.widget(1).widget(1).setParent(None)
-        self.mainSplitter.widget(1).addWidget(stepList)
+        self.stepList = self.model.makeupStepList(item)
+        self.stepList.itemPressed.connect(self.stepList.pressItem)
+        if self.mainSplitter.widget(1).widget(1) is not None:
+            self.mainSplitter.widget(1).widget(1).setParent(None)
+        self.mainSplitter.widget(1).addWidget(self.stepList)
         self.mainSplitter.widget(1).setStretchFactor(1, 1)
     
     @pyqtSlot(OkListItem)
@@ -162,6 +171,9 @@ class MainWindow(QtGui.QFrame):
             item.listWidget().itemPressed.disconnect(item.listWidget().pressItem)
             self.mainSplitter.widget(2).setParent(None)
             self.mainSplitter.widget(1).setStretchFactor(1, 1)
+            for btn in self.moduleGroup.buttons():
+                btn.setEnabled(True)
+            self.addButton.setEnabled(True)
             item.listWidget().editState = False
             #change background
             image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
@@ -178,9 +190,26 @@ class MainWindow(QtGui.QFrame):
             self.updateStepList(item)
             item.listWidget().itemPressed.disconnect(self.updateStepList)
             item.listWidget().itemPressed.connect(item.listWidget().pressItem)
+            #setup unitList
             unitList = self.model.makeupUnitList()
             unitList.itemPressed.connect(unitList.pressItem)
-            self.mainSplitter.addWidget(unitList)
+            #completer
+            wordList = ["中转" ,  "运输" ,  "散货" ,  "收仓"]
+            completer = QtGui.QCompleter(wordList)
+            #unitWidget
+            unitWidget = QtGui.QWidget()
+            lineEdit = QtGui.QLineEdit()
+            lineEdit.setCompleter(completer)
+            lineEdit.textChanged.connect(unitList.search)
+            unitLayout = QtGui.QVBoxLayout()
+            unitLayout.addWidget(lineEdit)
+            unitLayout.addWidget(unitList)
+            unitWidget.setLayout(unitLayout)
+            
+            self.mainSplitter.addWidget(unitWidget)
+            for btn in self.moduleGroup.buttons():
+                btn.setEnabled(False)
+            self.addButton.setEnabled(False)
             item.listWidget().editState = True
             #change background
             image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
@@ -236,7 +265,11 @@ class MainWindow(QtGui.QFrame):
     def mouseMoveEvent(self,event):
         if event.buttons() ==QtCore.Qt.LeftButton and not self.isMaximized():
             #self.move(event.globalPos() - self.dragPosition)
-            event.accept() 
+            event.accept()
+            
+    def updateCaseList(self):
+        self.model.update()
+        self.moduleChange(self.moduleGroup.button(2))
         
     def exit(self):
         self.close()

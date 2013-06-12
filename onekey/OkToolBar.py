@@ -214,3 +214,4 @@ class backButton(windowButton):
         self.parent().parent().close()
         self.topLevelWidget().toolBar.maxOrResizeButton.updateStyle()
         event.accept()
+        

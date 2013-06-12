@@ -48,6 +48,7 @@ class OkTestcaseWriter(object):
         element = Element('step', data)
         #tags
         for tag, val in tags.items():
+            print(val)
             if val[0] == 2:
                 if val[4] == 1:
                     for ind in range(len(varList)):
@@ -61,7 +62,7 @@ class OkTestcaseWriter(object):
                             varList[ind] = varList[ind].replace('}','!}')
                         result.text = ','.join(varList)
                         break
-                tagElement = Element('tag', {'name':tag})
+                tagElement = Element('tag', {'name':tag, 'type':("%d"%val[0])})
                 if len(val[3]) > 0:
                     tagElement.text = "{%s(%s)}"%(val[1], val[3])
                 elif val[5] == 'increment':
@@ -89,7 +90,7 @@ class OkTestcaseWriter(object):
                         model = "{%s(%s)}"
                     result.text = result.text + model%(val[5], val[1])
                     
-                tagElement = Element('tag', {'name':tag})
+                tagElement = Element('tag', {'name':tag, 'type':("%d"%val[0])})
                 if val[3] is not None and len(val[3]) > 0:
                     tagElement.text = "{%s(%s)}"%(val[1], val[3])
                 elif val[5] == 'increment':
@@ -98,11 +99,16 @@ class OkTestcaseWriter(object):
                     tagElement.text = "{%s}"% val[1]
                 element.append(tagElement)    
             else:
-                tagElement = Element('tag', {'name':tag})
+                tagElement = Element('tag', {'name':tag, 'type':("%d"%val[0])})
                 tagElement.text = val[2]
                 element.append(tagElement)
         result = self.root.find("./testcase[@id='%s']/steps"% id)
         result.append(element)
+        self.writeXml('testcase/testcase.xml')
+        
+    def deleteCase(self, id):
+        result = self.root.find("./testcase[@id='%s']"% id)
+        self.root.remove(result)
         self.writeXml('testcase/testcase.xml')
         
     def writeXml(self, file):
