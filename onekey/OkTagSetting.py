@@ -216,7 +216,7 @@ class OkTagNameDelegate(QtGui.QStyledItemDelegate):
                     self.parent().typeChanged(2)
                     model.setData(typeIndex, "标签引用", QtCore.Qt.DisplayRole)
                     model.setData(typeIndex, 2, QtCore.Qt.UserRole)
-                elif self.customTagsOwner[index.row()] != value and len(self.customTagsOwner[index.row()])>0:
+                elif self.customTagsOwner[index.row()] != value and len(self.customTagsOwner[index.row()])>0 and self.customTagsOwner[index.row()] in self.customTags.get(self.tagList[index.row()][0]):
                     self.customTags.get(self.tagList[index.row()][0]).remove(self.customTagsOwner[index.row()])
                     self.parent().typeChanged(2)
                     model.setData(typeIndex, "标签引用", QtCore.Qt.DisplayRole)
@@ -446,7 +446,8 @@ class OkTagSetting(QtGui.QTableView):
                 self.customTagsUser.pop(tag)
             if self.tagConn.get(tag, None) is not None: 
                 for row in needRemove:
-                    self.tagConn[tag].remove(row)
+                    if row in self.tagConn[tag]:
+                        self.tagConn[tag].remove(row)
         
         for row in needRemove:
             if type == 0:

@@ -38,57 +38,37 @@ class OkTestcaseWriter(object):
     def makeupElement(self, data, id):
         #vars
         result = self.root.find("./testcase[@id='%s']/var"% id)
+        varList = []
         if result.text is not None:
             varList = [i.strip() for i in result.text.split(',')]
         else:
             result.text = ''
-            varList = []
+        #usedVarList
+        usedVarItem = {}
         #step
         tags = data.pop('tags')
         element = Element('step', data)
         #tags
         for tag, val in tags.items():
-            print(val)
             if val[0] == 2:
-                if val[4] == 1:
-                    for ind in range(len(varList)):
-                        if varList[ind].find("{%s(%s:"%(val[5], val[1])) >= 0 or varList[ind].find("{%s(%s)"%(val[5], val[1])) >= 0:
-                            varList[ind] = varList[ind].replace('!}','}')
-                        result.text = ','.join(varList)
-                        break
-                if val[4] == 2:
-                    for ind in range(len(varList)):
-                        if varList[ind].find("{%s(%s:"%(val[5], val[1])) >= 0 or varList[ind].find("{%s(%s)"%(val[5], val[1])) >= 0:
-                            varList[ind] = varList[ind].replace('}','!}')
-                        result.text = ','.join(varList)
-                        break
-                tagElement = Element('tag', {'name':tag, 'type':("%d"%val[0])})
-                if len(val[3]) > 0:
-                    tagElement.text = "{%s(%s)}"%(val[1], val[3])
-                elif val[5] == 'increment':
-                    tagElement.text = "{%s(%s)}"%(val[1], '+0')
-                else:
-                    tagElement.text = "{%s}"% val[1]
-                element.append(tagElement)
+                usedVarItem[tag] = val
             elif val[0] == 1:
-                if len(result.text)>0:
-                    result.text = result.text + ','
                 if val[2] is not None and len(val[2])>0:
                     if self.config.callback(val[2].upper()) is not None:
                         model = "{%s(%s:%s)!}"
                         if val[4]:
                             model = "{%s(%s:%s)}"
-                        result.text = result.text + model%(val[5], val[1], val[2].upper())
+                        varList.append(model%(val[5], val[1], val[2].upper()))
                     else:
                         model = "{%s(%s:'%s')!}"
                         if val[4]:
                             model = "{%s(%s:'%s')}"
-                        result.text = result.text + model%(val[5], val[1], val[2])
+                        varList.append(model%(val[5], val[1], val[2]))
                 else:
                     model = "{%s(%s)!}"
                     if val[4]:
                         model = "{%s(%s)}"
-                    result.text = result.text + model%(val[5], val[1])
+                    varList.append(model%(val[5], val[1]))
                     
                 tagElement = Element('tag', {'name':tag, 'type':("%d"%val[0])})
                 if val[3] is not None and len(val[3]) > 0:
@@ -102,6 +82,29 @@ class OkTestcaseWriter(object):
                 tagElement = Element('tag', {'name':tag, 'type':("%d"%val[0])})
                 tagElement.text = val[2]
                 element.append(tagElement)
+        result.text = ','.join(varList)
+        for tag, val in usedVarItem.items():
+            if val[4] == 1:
+                for ind in range(len(varList)):
+                    if varList[ind].find("{%s(%s:"%(val[5], val[1])) >= 0 or varList[ind].find("{%s(%s)"%(val[5], val[1])) >= 0:
+                        varList[ind] = varList[ind].replace('!}','}')
+                    result.text = ','.join(varList)
+                    break
+            if val[4] == 2:
+                for ind in range(len(varList)):
+                    if varList[ind].find("{%s(%s:"%(val[5], val[1])) >= 0 or varList[ind].find("{%s(%s)"%(val[5], val[1])) >= 0:
+                        varList[ind] = varList[ind].replace('}','!}')
+                    result.text = ','.join(varList)
+                    break
+            tagElement = Element('tag', {'name':tag, 'type':("%d"%val[0])})
+            if val[3] is not None and len(val[3]) > 0:
+                tagElement.text = "{%s(%s)}"%(val[1], val[3])
+            elif val[5] == 'increment':
+                tagElement.text = "{%s(%s)}"%(val[1], '+0')
+            else:
+                tagElement.text = "{%s}"% val[1]
+            element.append(tagElement)
+                
         result = self.root.find("./testcase[@id='%s']/steps"% id)
         result.append(element)
         self.writeXml('testcase/testcase.xml')
@@ -109,6 +112,33 @@ class OkTestcaseWriter(object):
     def deleteCase(self, id):
         result = self.root.find("./testcase[@id='%s']"% id)
         self.root.remove(result)
+        self.writeXml('testcase/testcase.xml')
+        
+    def deleteLastStep(self, id):
+        case = self.root.find("./testcase[@id='%s']"% id)
+        varEle = case.find("./var")
+        steps = case.find("./steps")
+        lastStep = steps.find("./step[last()]")
+        tags = lastStep.findall("./tag")
+        
+        varList = []
+        if varEle.text is not None:
+            varList = [i.strip() for i in varEle.text.split(',')]
+        else:
+            varEle.text = ''
+        
+        for item in tags:
+            if item.get("type") == "1":
+                tag_hasArg = "(%s:" % item.text.strip('{} ').split('(')[0]
+                tag_noArg = "(%s)" % item.text.strip('{} ').split('(')[0]
+                for var in varList:
+                    if tag_hasArg in var or tag_noArg in var:
+                        varList.remove(var)
+                        break
+                        
+        varEle.text = ','.join(varList)
+        
+        steps.remove(lastStep)
         self.writeXml('testcase/testcase.xml')
         
     def writeXml(self, file):

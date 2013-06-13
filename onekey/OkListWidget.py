@@ -32,6 +32,7 @@ class OkCaseWidget(OkListWidget):
         self.setAcceptDrops(False)
         self.infoWidget = None
         self.editState = False
+        self.setSortingEnabled(True)
         
     def setOkInfo(self, widget):
         self.infoWidget = widget
@@ -53,7 +54,7 @@ class OkCaseWidget(OkListWidget):
     def pressItem(self, item):
         self.topLevelWidget().basket.show()
         
-        itemdata = repr(item.data(Qt.Qt.UserRole))
+        #itemdata = repr(item.data(Qt.Qt.UserRole))
         
         mimeData = QtCore.QMimeData()
         mimeData.setText(item.text())
@@ -120,34 +121,37 @@ class OkStepWidget(OkListWidget):
             
     @pyqtSlot(OkListItem)
     def pressItem(self, item):
-        self.topLevelWidget().basket.show()
-        itemdata = repr(item.data(Qt.Qt.UserRole))
+        row = item.listWidget().row(item)
+        if item.listWidget().count() - 1 == row:
+            self.topLevelWidget().basket.show()
+            #itemdata = repr(item.data(Qt.Qt.UserRole))
         
-        mimeData = QtCore.QMimeData()
-        mimeData.setText(item.text())
-        mimeData.setData('application/ok-step', itemdata.encode("utf-8"))
-
-        itemIndex = self.indexFromItem(item)
-        itemRect = self.visualRect(itemIndex)
-        pixmap = QtGui.QPixmap(itemRect.size())
-        self.render(pixmap, QtCore.QPoint(0, 0), QtGui.QRegion(itemRect))
-
-        drag = QtGui.QDrag(self)
-        drag.setMimeData(mimeData)
-        drag.setHotSpot(QtCore.QPoint(pixmap.width()/2, pixmap.height()/2))
-        drag.setPixmap(pixmap)
-
-        dropAction = drag.exec_(QtCore.Qt.CopyAction | QtCore.Qt.MoveAction, QtCore.Qt.CopyAction)
-        self.topLevelWidget().basket.hide()
-
-        if dropAction == QtCore.Qt.MoveAction:
-            self.close()
-            self.update()
+            mimeData = QtCore.QMimeData()
+            mimeData.setText(item.text())
+            mimeData.setData('application/ok-step', '%d'% row)
+    
+            itemIndex = self.indexFromItem(item)
+            itemRect = self.visualRect(itemIndex)
+            pixmap = QtGui.QPixmap(itemRect.size())
+            self.render(pixmap, QtCore.QPoint(0, 0), QtGui.QRegion(itemRect))
+    
+            drag = QtGui.QDrag(self)
+            drag.setMimeData(mimeData)
+            drag.setHotSpot(QtCore.QPoint(pixmap.width()/2, pixmap.height()/2))
+            drag.setPixmap(pixmap)
+    
+            dropAction = drag.exec_(QtCore.Qt.CopyAction | QtCore.Qt.MoveAction, QtCore.Qt.CopyAction)
+            self.topLevelWidget().basket.hide()
+    
+            if dropAction == QtCore.Qt.MoveAction:
+                self.close()
+                self.update()
         
 class OkUnitWidget(OkListWidget):
     def __init__(self, parent=None):
         OkListWidget.__init__(self, parent)
         self.setAcceptDrops(False)
+        self.setSortingEnabled(True)
         
         self.setStyleSheet("OkUnitWidget::item:hover{"
                 "background: #4da6ea;"

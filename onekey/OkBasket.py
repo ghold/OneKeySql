@@ -43,6 +43,14 @@ class OkBasket(QtGui.QListWidget):
             event.accept()
         elif event.mimeData().hasFormat('application/ok-step'):
             event.setDropAction(QtCore.Qt.CopyAction)
+            writer = OkTestcaseWriter('testcase/testcase.xml')
+            row = bytes(event.mimeData().data('application/ok-step')).decode("utf-8")
+            selectedItem = self.topLevelWidget().caseList.selectedItem
+            parentId = selectedItem.data(Qt.Qt.UserRole)['id']
+            writer.deleteLastStep(parentId)
+            self.topLevelWidget().stepList.takeItem(int(row))
+            self.topLevelWidget().model.update()
+            self.topLevelWidget().model.updateCaseItem(selectedItem)
             event.accept()
         else:
             event.ignore()

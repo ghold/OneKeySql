@@ -22,7 +22,7 @@ class OkModel(object):
     def makeupExecList(self):
         self.exec_list = OkCaseWidget()
         for key,  val in self.data['case'].items():
-            item = OkListItem(val["data"]["name"], self.exec_list)
+            item = OkListItem("%s_%s"%(val["id"], val["data"]["name"]), self.exec_list)
             item.setData(Qt.Qt.UserRole, val)
             self.exec_list.addItem(item)
             self.exec_list.setItemWidget(item, OkExecAddon(val["data"]["desc"], item, self.exec_list))
@@ -31,7 +31,7 @@ class OkModel(object):
     def makeupCaseList(self):
         self.case_list = OkCaseWidget()
         for key,  val in self.data['case'].items():
-            item = OkListItem(val["data"]["name"], self.case_list)
+            item = OkListItem("%s_%s"%(val["id"], val["data"]["name"]), self.case_list)
             item.setData(Qt.Qt.UserRole, val)
             self.case_list.addItem(item)
             self.case_list.setItemWidget(item, OkCaseAddon(val["data"]["desc"], item, self.case_list))
@@ -40,7 +40,7 @@ class OkModel(object):
     def makeupUnitList(self):
         self.unit_list = OkUnitWidget()
         for key,  val in self.data['unit'].items():
-            item = OkListItem(val["data"]["name"], self.unit_list)
+            item = OkListItem("%s_%s"%(val["id"], val["data"]["name"]), self.unit_list)
             item.setData(Qt.Qt.UserRole, val)
             self.unit_list.addItem(item)
         return self.unit_list
