@@ -35,7 +35,3 @@ class OkConfig(object):
             for val in self.config.items(section):
                 self.config.set(section, val[0], self.callback(val[0].upper()))
         self.config.write(open("config.conf", "w"))
-
-if __name__ == "__main__":
-    hello = OkConfig()
-    print(hello.callback("BAR_RECORD_ID"))
