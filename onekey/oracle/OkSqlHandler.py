@@ -1,11 +1,13 @@
 import cx_Oracle
 import logging
+import os  
+os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.UTF8' 
 
 class OkSqlHandler(object):
     @classmethod
     def setupConn(cls):
         dsn = cx_Oracle.makedsn("10.0.44.99", "1521", "ompdb")
-        conn = cx_Oracle.connect('omp', 'omp', dsn, encoding='gbk')
+        conn = cx_Oracle.connect('omp', 'omp', dsn)
         return conn
         
     @classmethod
