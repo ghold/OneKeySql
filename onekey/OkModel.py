@@ -3,6 +3,7 @@ from OkListItem import OkListItem
 from xml.sax import parse
 from OkListWidget import *
 from OkListItem import *
+#import json
 
 class OkModel(object):
     def __init__(self,  *args):
@@ -61,3 +62,5 @@ class OkModel(object):
         data = item.data(Qt.Qt.UserRole)
         key = "testcase_%s" % data['id']
         item.setData(Qt.Qt.UserRole, self.data['case'][key])
+
+model = OkModel()

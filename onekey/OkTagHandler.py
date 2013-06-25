@@ -38,6 +38,20 @@ class OkTagHandler(object):
         return OkIncrementEdit(name, default, parent)
         
     @classmethod
+    def minute(cls, *args):
+        from OkEdit import OkMinuteEdit
+        name, default, parent = args
+        return OkMinuteEdit(name, default, parent)
+        
+    @classmethod
+    def minute_arg(cls, *args):
+        number, arg, default, config = args
+        try:
+            return "%d"%(int(number) + int(arg))
+        except ValueError:
+            return number.strip("}") + "(" + arg + ")}"
+    
+    @classmethod
     def datetime_arg(cls, *args):
         datetime, arg, default, config = args
         return QtCore.QDateTime.fromString(datetime, "yyyy-MM-dd hh:mm:ss").addMSecs(float(arg) * 1000 * 60).toString("yyyy-MM-dd hh:mm:ss")

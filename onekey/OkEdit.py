@@ -39,7 +39,19 @@ class OkTextEdit(QtGui.QLineEdit):
             text = '{' + self.name + '}'
         #send the singal
         self.ValueChanged.emit(self.name, text, "text", self.default)
-    
+
+class OkMinuteEdit(OkTextEdit):
+    def __init__(self, name=None, default=None, parent=None):
+        OkTextEdit.__init__(self, name, default, parent)
+        
+    @pyqtSlot(str)
+    def changeValue(self, text):
+        if self.name is None:
+            return
+        if text == '':
+            text = '{' + self.name + '}'
+        self.ValueChanged.emit(self.name, text, "minute", self.default)
+        
 class OkIncrementEdit(OkTextEdit):
     def __init__(self, name=None, default=None, parent=None):
         OkTextEdit.__init__(self, name, default, parent)
