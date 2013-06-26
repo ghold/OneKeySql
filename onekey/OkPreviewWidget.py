@@ -31,9 +31,10 @@ class OkPreviewWidget(QtGui.QTextEdit):
     def setupData(self, data):
         self.data = data
         for step in range(0, len(data)):
-            self.titleFormat(step + 1)
+            
             key =  "%s_%s" %(data[step]["type"], data[step]["from"])
             model = self.cache.get(key)
+            
             if  model is not None:
                 pass
             else:
@@ -42,13 +43,18 @@ class OkPreviewWidget(QtGui.QTextEdit):
                 handler = getattr(OkXmlHandler, handler_type, None)
                 model = OkModel((xml_filename, handler, 'unit'))
                 self.cache[key] = model
-                
+            
             data_id = data[step]["type"] + "_" + data[step]["data_id"]
             step_data = model.data['unit'][data_id]["data"]
             
-            tp_sql = "INSERT INTO\n%s(%s)\n" % (step_data["table"], step_data["column"])
-            self.contentFormat(tp_sql)
-            self.subTag(data[step]["tags"], step_data["value"])
+            self.titleFormat(step + 1, step_data['desc'])
+            
+            if (step_data.get("table", None) is not None and step_data.get("column", None) is not None):
+                tp_sql = "INSERT INTO\n%s(%s)\n" % (step_data["table"], step_data["column"])
+                self.contentFormat(tp_sql)
+                self.subTag(data[step]["tags"], step_data["value"], False)
+            else:
+                self.subTag(data[step]["tags"], step_data["value"], True)
         self.cursor.movePosition(QtGui.QTextCursor.Start)
     
     @pyqtSlot(str, str, str, str)
@@ -68,8 +74,11 @@ class OkPreviewWidget(QtGui.QTextEdit):
                 ac_text = OkTagHandler.callback(type + "_arg", ac_text, val[2], default, self.config)
             self.tagFormat(ac_text)
         
-    def subTag(self, tags, data):
-        self.cursor.insertText("VALUES( ", OkContentFormat())
+    def subTag(self, tags, data, spec):
+        if spec:
+            pass
+        else:
+            self.cursor.insertText("VALUES( ", OkContentFormat())
         tag_pattern = r'\{[0-9a-zA-Z_]+\((?P<name>[0-9a-zA-Z_]+)\)\}'
         tag_compiler =re.compile(tag_pattern)
         tag_list = tag_compiler.split(data)
@@ -86,10 +95,14 @@ class OkPreviewWidget(QtGui.QTextEdit):
                 order += 1
             else:
                 self.contentFormat(val)
-        self.cursor.insertText(");\n", OkContentFormat())
+                
+        if spec:
+            self.cursor.insertText(";\n", OkContentFormat())
+        else:
+            self.cursor.insertText(");\n", OkContentFormat())
         
-    def titleFormat(self, step):
-        self.cursor.insertText("/*Step %d */\n" % step, OkTitleFormat())
+    def titleFormat(self, step, desc):
+        self.cursor.insertText("/*Step %d：%s*/\n" % (step, desc), OkTitleFormat())
         
     def contentFormat(self, sql):
         self.cursor.insertText("%s" % sql, OkContentFormat())

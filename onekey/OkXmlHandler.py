@@ -74,7 +74,7 @@ class OkTestcaseHandler(ContentHandler):
     def getXmlData(self):
         return self.testcases
 
-#test = OkTestcaseHandler()
-#parse('testcase/testcase.xml', test)
+#test = OkTestunitHandler()
+#parse('testunit/spec.xml', test)
 #jsonDumpsIndentStr = json.dumps(test.getXmlData(), indent=1)
 #print(jsonDumpsIndentStr)

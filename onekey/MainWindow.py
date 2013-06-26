@@ -31,7 +31,9 @@ class MainWindow(QtGui.QFrame):
         self.setWindowTitle("OneKeySql")
         
         # Set up the model.
-        self.model = OkModel(("testcase/testcase.xml", OkTestcaseHandler, 'case'), ("testunit/testunit.xml", OkTestunitHandler, 'unit'))
+        self.model = OkModel(("testcase/testcase.xml", OkTestcaseHandler, 'case'), 
+                            ("testunit/testunit.xml", OkTestunitHandler, 'unit'), 
+                            ("testunit/spec.xml", OkTestunitHandler, 'unit'))
         
         # Set up the widgets.
         self.Spacer = QtGui.QSpacerItem(20, 30)

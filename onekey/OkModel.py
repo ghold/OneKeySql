@@ -3,6 +3,7 @@ from OkListItem import OkListItem
 from xml.sax import parse
 from OkListWidget import *
 from OkListItem import *
+#from OkXmlHandler import OkTestcaseHandler, OkTestunitHandler
 #import json
 
 class OkModel(object):
@@ -14,8 +15,8 @@ class OkModel(object):
             handler = val[1]()
             parse(val[0], handler)
             if self.data.get(val[2]) is None:
-                self.data[val[2]] = []
-            self.data[val[2]] = handler.getXmlData()
+                self.data[val[2]] = {}
+            self.data[val[2]].update(handler.getXmlData())
             
     def update(self):
         self.__init__()
@@ -63,4 +64,8 @@ class OkModel(object):
         key = "testcase_%s" % data['id']
         item.setData(Qt.Qt.UserRole, self.data['case'][key])
 
-model = OkModel()
+#model = OkModel(("testcase/testcase.xml", OkTestcaseHandler, 'case'),
+#                ("testunit/testunit.xml", OkTestunitHandler, 'unit'), 
+#                ("testunit/spec.xml", OkTestunitHandler, 'unit'))
+#jsonDumpsIndentStr = json.dumps(model.data, indent=1)
+#print(jsonDumpsIndentStr)

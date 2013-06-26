@@ -518,7 +518,11 @@ class OkTagSetting(QtGui.QTableView):
     def setupModelDict(self):
         modelDict = {}
         modelDict['data_id'] = self.data['id']
-        modelDict['from'] = 'testunit'
+        try:
+            int(id)
+            modelDict['from'] = 'testunit'
+        except TypeError:
+            modelDict['from'] = 'spec'
         modelDict['type'] = 'testunit'
         modelDict['tags'] = {}
         for row in range(self.settingRow):
