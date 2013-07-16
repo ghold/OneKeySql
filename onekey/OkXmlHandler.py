@@ -9,7 +9,7 @@ class OkTestunitHandler(ContentHandler):
         self.testunit_id = ''
         self.prifix = ''
         
-    def startElement(self,  name,  attrs):
+    def startElement(self, name, attrs):
         if name == 'testunit':
             self.testunit_id = 'testunit_' + attrs['id']
             self.testunits[self.testunit_id] = {}

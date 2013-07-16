@@ -16,6 +16,36 @@ class OkTypeBox(QtGui.QComboBox):
     def typeChanged(self, type):
         self.changeType.emit(type, self.parent().parent().currentIndex())
         
+class OkDefaultValBox(QtGui.QWidget):
+#    closeEditor = pyqtSignal(QtGui.QWidget, QtGui.QAbstractItemDelegate.EndEditHint)
+#    commitData = pyqtSignal(QtGui.QWidget)
+    def __init__(self, subeditor, parent=None):
+        QtGui.QWidget.__init__(self, parent)
+        self.subeditor = OkTagHandler.callback(subeditor, None, None, self)
+#        self.subeditor.editingFinished.connect(self.dataCommit)
+        
+        self.comboBox = QtGui.QComboBox()
+        strList = ["全局变量", "固定值"]
+        self.comboBox.addItems(strList)
+        self.comboBox.currentIndexChanged.connect(self.typeChanged)
+        
+        self.layout = QtGui.QVBoxLayout()
+        self.layout.setSpacing(0)
+        self.layout.setMargin(0)
+        self.layout.addWidget(self.comboBox)
+        self.setLayout(self.layout)
+        
+    @pyqtSlot(int)
+    def typeChanged(self, type):
+        print(self.layout.count())
+        self.layout.takeAt(0)
+        self.layout.addWidget(self.subeditor)
+        
+#    @pyqtSlot()
+#    def dataCommit(self):
+#        self.commitData.emit(self)
+#        self.closeEditor.emit(self, QtGui.QAbstractItemDelegate.NoHint)
+        
 class OkParamBox(QtGui.QWidget):
     closeEditor = pyqtSignal(QtGui.QWidget, QtGui.QAbstractItemDelegate.EndEditHint)
     commitData = pyqtSignal(QtGui.QWidget)
@@ -262,15 +292,22 @@ class OkDefaultValDelegate(QtGui.QStyledItemDelegate):
         
     def createEditor(self, parent, option, index):
         row = index.row()
-        editor = OkTagHandler.callback(self.tagList[row][0], None, None, parent)
+#        subeditor = OkTagHandler.callback(self.tagList[row][0], None, None, parent)
+        editor = OkDefaultValBox(self.tagList[row][0], parent)
+        
+        #overload this two signal can make sure data saved and widget closed
+#        editor.commitData.connect(parent.parent().commitData)
+#        editor.closeEditor.connect(parent.parent().closeEditor)
         return editor
         
     def setEditorData(self, tagEdit, index):
-        value = index.model().data(index, QtCore.Qt.EditRole)
-        tagEdit.setValue("%s"%value)
+        #value = index.model().data(index, QtCore.Qt.EditRole)
+        row = index.row()
+        #tagEdit.setValue("%s"%value)
         
     def setModelData(self, tagEdit, model, index):
-        value = tagEdit.getValue()
+#        value = tagEdit.getValue()
+        value = '固定值'
         model.setData(index, value, QtCore.Qt.EditRole)
         model.setData(index, value, QtCore.Qt.UserRole)
         

@@ -7,6 +7,9 @@ class OkBaseRequestHandler(socketserver.BaseRequestHandler):
         cur_thread = threading.current_thread()
         response = bytes("{%s}:{%s}"%(cur_thread.name, data), 'ascii')
         self.request.sendall(response)
+        
+    def requestConfig(self):
+        
 
 class ThreadedTCPServer(socketserver.ThreadingMixIn, socketserver.TCPServer):
     pass
