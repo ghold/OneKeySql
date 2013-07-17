@@ -85,9 +85,9 @@ class OkDatetimeEdit(QtGui.QDateTimeEdit):
                 "QDateTimeEdit:focus{"
                     "border:1px solid #7ECEFD;"              
                 "}")
-        calendar = QtGui.QCalendarWidget()
-        self.setCalendarPopup(True)
-        self.setCalendarWidget(calendar)
+        #calendar = QtGui.QCalendarWidget()
+        self.setCalendarPopup(False)
+        #self.setCalendarWidget(calendar)
         self.dateTimeChanged.connect(self.changeValue)
         
     def setValue(self, datetime):
@@ -123,10 +123,10 @@ class OkDateEdit(QtGui.QDateEdit):
                 "QDateEdit:focus{"
                     "border:1px solid #7ECEFD;"              
                 "}")
-        calendar = QtGui.QCalendarWidget()
+        #calendar = QtGui.QCalendarWidget()
         #self.setDate(QtCore.QDate.currentDate())
-        self.setCalendarPopup(True)
-        self.setCalendarWidget(calendar)
+        self.setCalendarPopup(False)
+        #self.setCalendarWidget(calendar)
         self.dateChanged.connect(self.changeValue)
         
     def setValue(self, date):

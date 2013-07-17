@@ -2,6 +2,7 @@ from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import pyqtSignal, pyqtSlot
 from OkTagHandler import OkTagHandler
 from OkScroll import OkScrollBar
+from OkConfig import OkConfig
 
 class OkTypeBox(QtGui.QComboBox):
     changeType = pyqtSignal(int, QtCore.QModelIndex)
@@ -17,34 +18,85 @@ class OkTypeBox(QtGui.QComboBox):
         self.changeType.emit(type, self.parent().parent().currentIndex())
         
 class OkDefaultValBox(QtGui.QWidget):
-#    closeEditor = pyqtSignal(QtGui.QWidget, QtGui.QAbstractItemDelegate.EndEditHint)
-#    commitData = pyqtSignal(QtGui.QWidget)
-    def __init__(self, subeditor, parent=None):
+    closeEditor = pyqtSignal(QtGui.QWidget, QtGui.QAbstractItemDelegate.EndEditHint)
+    commitData = pyqtSignal(QtGui.QWidget)
+    def __init__(self, subtype, config, parent=None):
         QtGui.QWidget.__init__(self, parent)
-        self.subeditor = OkTagHandler.callback(subeditor, None, None, self)
-#        self.subeditor.editingFinished.connect(self.dataCommit)
+        self.subtype = subtype
+        self.config = config
+        self.defGlobalVal = None
+        self.defCustomVal = None
+        self.subeditor = None
         
         self.comboBox = QtGui.QComboBox()
-        strList = ["全局变量", "固定值"]
+        strList = ["","全局变量", "固定值"]
         self.comboBox.addItems(strList)
-        self.comboBox.currentIndexChanged.connect(self.typeChanged)
+        self.comboBox.setCurrentIndex(0)
+        self.comboBox.activated.connect(self.typeActivated)
         
-        self.layout = QtGui.QVBoxLayout()
-        self.layout.setSpacing(0)
-        self.layout.setMargin(0)
-        self.layout.addWidget(self.comboBox)
-        self.setLayout(self.layout)
+        layout = QtGui.QVBoxLayout()
+        layout.setSpacing(0)
+        layout.setMargin(0)
+        layout.addWidget(self.comboBox)
+        self.setLayout(layout)
+        
+    def setValue(self, text):
+        if text is not None and len(text) > 0:
+            if self.config.GLOBAL_DICT.get(self.subtype, None) is not None and text in self.config.GLOBAL_DICT[self.subtype]:
+                self.defGlobalVal = text
+                self.comboBox.setItemText(0, text)
+            else:
+                self.customVal = text
+                self.comboBox.setItemText(0,text)
+        
+    def getValue(self):
+        if self.defGlobalVal is not None:
+            return self.defGlobalVal
+        elif self.defCustomVal is not None:
+            return self.defCustomVal
+        return self.comboBox.itemText(0)
         
     @pyqtSlot(int)
-    def typeChanged(self, type):
-        print(self.layout.count())
-        self.layout.takeAt(0)
-        self.layout.addWidget(self.subeditor)
+    def typeActivated(self, type):
+        if type == 1:
+            self.defCustomVal = None
+            self.subeditor = QtGui.QComboBox()
+            self.subeditor.setStyleSheet("QComboBox{"
+                    "border:1px solid #000000;"
+                    "height: 25px;"
+                    "font-size: 14px;"
+                "}")
+            if self.config.GLOBAL_DICT.get(self.subtype, None) is not None:
+                self.subeditor.addItems(self.config.GLOBAL_DICT[self.subtype])
+                self.subeditor.activated.connect(self.dataCommit)
+                if self.defGlobalVal is not None:
+                    idx = self.subeditor.findText(self.defGlobalVal)
+                    self.subeditor.setCurrentIndex(idx)
+                else:
+                    self.subeditor.setCurrentIndex(-1)
+        elif type == 2:
+            self.defGlobalVal = None
+            self.subeditor = OkTagHandler.callback(self.subtype, None, None, None)
+            self.subeditor.editingFinished.connect(self.dataCommit)
+            if self.defCustomVal is not None:
+                self.subeditor.setValue(self.defCustomVal)
+        else:
+            self.dataCommit()
+            return
+        self.layout().addWidget(self.subeditor)
+        self.subeditor.setFocus(True)
+        self.layout().removeWidget(self.comboBox)
         
-#    @pyqtSlot()
-#    def dataCommit(self):
-#        self.commitData.emit(self)
-#        self.closeEditor.emit(self, QtGui.QAbstractItemDelegate.NoHint)
+    @pyqtSlot()
+    @pyqtSlot(int)
+    def dataCommit(self):
+        if self.subeditor is not None:
+            try:
+                self.defCustomVal = self.subeditor.getValue()
+            except AttributeError:
+                self.defGlobalVal = self.subeditor.currentText()
+        self.commitData.emit(self)
+        self.closeEditor.emit(self, QtGui.QAbstractItemDelegate.NoHint)
         
 class OkParamBox(QtGui.QWidget):
     closeEditor = pyqtSignal(QtGui.QWidget, QtGui.QAbstractItemDelegate.EndEditHint)
@@ -286,33 +338,32 @@ class OkTagNameDelegate(QtGui.QStyledItemDelegate):
         
 class OkDefaultValDelegate(QtGui.QStyledItemDelegate):
     #if use qss for delegate, please use QStyledItemDelegate
-    def __init__(self, tagList, parent=None):
+    def __init__(self, tagList, config, parent=None):
         QtGui.QStyledItemDelegate.__init__(self, parent)
         self.tagList = tagList
+        self.config = config
         
     def createEditor(self, parent, option, index):
         row = index.row()
 #        subeditor = OkTagHandler.callback(self.tagList[row][0], None, None, parent)
-        editor = OkDefaultValBox(self.tagList[row][0], parent)
+        editor = OkDefaultValBox(self.tagList[row][0], self.config, parent)
         
         #overload this two signal can make sure data saved and widget closed
-#        editor.commitData.connect(parent.parent().commitData)
-#        editor.closeEditor.connect(parent.parent().closeEditor)
+        editor.commitData.connect(parent.parent().commitData)
+        editor.closeEditor.connect(parent.parent().closeEditor)
         return editor
         
-    def setEditorData(self, tagEdit, index):
-        #value = index.model().data(index, QtCore.Qt.EditRole)
-        row = index.row()
-        #tagEdit.setValue("%s"%value)
+    def setEditorData(self, defValEdit, index):
+        value = index.model().data(index, QtCore.Qt.EditRole)
+        defValEdit.setValue(value)
         
-    def setModelData(self, tagEdit, model, index):
-#        value = tagEdit.getValue()
-        value = '固定值'
+    def setModelData(self, defValEdit, model, index):
+        value = defValEdit.getValue()
         model.setData(index, value, QtCore.Qt.EditRole)
         model.setData(index, value, QtCore.Qt.UserRole)
         
-    def updateEditorGeometry(self, editor, option, index):
-        editor.setGeometry(option.rect)
+    def updateEditorGeometry(self, defValEdit, option, index):
+        defValEdit.setGeometry(option.rect)
         
 class OkParamDelegate(QtGui.QStyledItemDelegate):
     #if use qss for delegate, please use QStyledItemDelegate
@@ -349,6 +400,7 @@ class OkTagSetting(QtGui.QTableView):
         self.data = data
         self.customTagsUser = {}
         self.tagConn = {}
+        self.config = OkConfig()
         self.setVerticalScrollBar(OkScrollBar())
         self.setAlternatingRowColors(False)
         self.setShowGrid(False)
@@ -463,7 +515,7 @@ class OkTagSetting(QtGui.QTableView):
             
         delegate = OkTagNameDelegate(self.tagVars, tagNameDict, confDict, self.customTagsUser, self.tagConn, self)
         self.setItemDelegateForColumn(1, delegate)
-        delegate = OkDefaultValDelegate(self.tagVars, self)
+        delegate = OkDefaultValDelegate(self.tagVars, self.config, self)
         self.setItemDelegateForColumn(2, delegate)
         delegate = OkParamDelegate(self.tagVars, self)
         self.setItemDelegateForColumn(3, delegate)
