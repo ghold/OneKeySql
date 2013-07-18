@@ -217,7 +217,7 @@ class OkTagNameDelegate(QtGui.QStyledItemDelegate):
         comboBox.setEditText("%s"%value)
         
     def setModelData(self, comboBox, model, index):
-        value = comboBox.currentText()
+        value = comboBox.currentText().strip()
         if value != '--':
             typeIndex = model.index(index.row(), index.column()-1, QtCore.QModelIndex())
             type = model.data(typeIndex, QtCore.Qt.UserRole)
@@ -345,16 +345,20 @@ class OkDefaultValDelegate(QtGui.QStyledItemDelegate):
         
     def createEditor(self, parent, option, index):
         row = index.row()
-#        subeditor = OkTagHandler.callback(self.tagList[row][0], None, None, parent)
-        editor = OkDefaultValBox(self.tagList[row][0], self.config, parent)
-        
-        #overload this two signal can make sure data saved and widget closed
-        editor.commitData.connect(parent.parent().commitData)
-        editor.closeEditor.connect(parent.parent().closeEditor)
+        typeIndex = index.model().index(index.row(), index.column()-2, QtCore.QModelIndex())
+        type = typeIndex.data(QtCore.Qt.UserRole)
+        if type == 1:
+            editor = OkDefaultValBox(self.tagList[row][0], self.config, parent)
+            
+            #overload this two signal can make sure data saved and widget closed
+            editor.commitData.connect(parent.parent().commitData)
+            editor.closeEditor.connect(parent.parent().closeEditor)
+        else:
+            editor = OkTagHandler.callback(self.tagList[row][0], None, None, parent)
         return editor
         
     def setEditorData(self, defValEdit, index):
-        value = index.model().data(index, QtCore.Qt.EditRole)
+        value = index.data(QtCore.Qt.EditRole)
         defValEdit.setValue(value)
         
     def setModelData(self, defValEdit, model, index):
@@ -512,7 +516,6 @@ class OkTagSetting(QtGui.QTableView):
                 confDict[val[1]] = (0, False)
             else:
                 confDict[val[1]] = (2, True)
-            
         delegate = OkTagNameDelegate(self.tagVars, tagNameDict, confDict, self.customTagsUser, self.tagConn, self)
         self.setItemDelegateForColumn(1, delegate)
         delegate = OkDefaultValDelegate(self.tagVars, self.config, self)
@@ -608,9 +611,9 @@ class OkTagSetting(QtGui.QTableView):
         modelDict = {}
         modelDict['data_id'] = self.data['id']
         try:
-            int(id)
+            int(modelDict['data_id'])
             modelDict['from'] = 'testunit'
-        except TypeError:
+        except (TypeError, ValueError):
             modelDict['from'] = 'spec'
         modelDict['type'] = 'testunit'
         modelDict['tags'] = {}
