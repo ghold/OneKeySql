@@ -50,7 +50,7 @@ class OkMinuteEdit(OkTextEdit):
             return
         if text == '':
             text = '{' + self.name + '}'
-        self.ValueChanged.emit(self.name, text, "minute", self.default)
+        self.ValueChanged.emit(self.name, '%d'%(int(text) * 60), "minute", self.default)
         
 class OkIncrementEdit(OkTextEdit):
     def __init__(self, name=None, default=None, parent=None):
