@@ -73,7 +73,9 @@ class OkTagHandler(object):
             if config.INCREMENT is None:
                 config.INCREMENT = number
             config.INCREMENT = int(config.INCREMENT) + int(arg)
-            setattr(config, default, "%d"%config.INCREMENT)
+            model = "%"+"0%dd"%len(number)
+            config.INCREMENT = model%config.INCREMENT
+            setattr(config, default, config.INCREMENT)
             return config.INCREMENT
         except ValueError:
             return number.strip("}") + "(" + arg + ")}"
