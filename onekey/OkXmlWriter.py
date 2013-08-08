@@ -36,7 +36,6 @@ class OkTestcaseWriter(object):
         self.writeXml('testcase/testcase.xml')
         
     def makeupElement(self, data, id):
-        print(data)
         #vars
         result = self.root.find("./testcase[@id='%s']/var"% id)
         varList = []
