@@ -87,7 +87,7 @@ class MainWindow(QtGui.QFrame):
         #
         searchEdit = QtGui.QLineEdit()
         searchEdit.setCompleter(completer)
-        searchEdit.textChanged.connect(self.caseList.search)
+        #searchEdit.textChanged.connect(self.caseList.search)
         
         self.addButton = OkAddCaseButton()
         self.addButton.pressed.connect(self.pushAddCase)

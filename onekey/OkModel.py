@@ -3,6 +3,8 @@ from OkListItem import OkListItem
 from xml.sax import parse
 from OkListWidget import *
 from OkListItem import *
+from OkTreeWidget import *
+from OkTreeItem import *
 #from OkXmlHandler import OkTestcaseHandler, OkTestunitHandler
 #import json
 
@@ -30,13 +32,23 @@ class OkModel(object):
             self.exec_list.setItemWidget(item, OkExecAddon(val["data"]["desc"], item, self.exec_list))
         return self.exec_list
         
+#    def makeupCaseList(self):
+#        self.case_list = OkCaseWidget()
+#        for key,  val in self.data['case'].items():
+#            item = OkListItem("%s_%s"%(val["id"], val["data"]["name"]), self.case_list)
+#            item.setData(Qt.Qt.UserRole, val)
+#            self.case_list.addItem(item)
+#            self.case_list.setItemWidget(item, OkCaseAddon(val["data"]["desc"], item, self.case_list))
+#        return self.case_list
+
     def makeupCaseList(self):
-        self.case_list = OkCaseWidget()
+        self.case_list = OkCaseTreeWidget()
+        parent_item = OkTreeItem(self.case_list)
         for key,  val in self.data['case'].items():
-            item = OkListItem("%s_%s"%(val["id"], val["data"]["name"]), self.case_list)
-            item.setData(Qt.Qt.UserRole, val)
-            self.case_list.addItem(item)
-            self.case_list.setItemWidget(item, OkCaseAddon(val["data"]["desc"], item, self.case_list))
+            parent_item.addChild(OkTreeItem())
+#            item.setData(Qt.Qt.UserRole, val)
+#            self.case_list.addItem(item)
+#            self.case_list.setItemWidget(item, OkCaseAddon(val["data"]["desc"], item, self.case_list))
         return self.case_list
         
     def makeupUnitList(self):
