@@ -61,7 +61,7 @@ class OkTestcaseHandler(ContentHandler):
         if name == 'tag':
             self.testcases[self.testcase_id]['data']['steps'][self.step]['tags'][self.tagname] = self.data
             self.testcases[self.testcase_id]['data']['steps'][self.step]['tag_type'][self.tagname] = self.tagtype
-        elif name == 'name' or name == 'desc'or name == 'var':
+        elif name == 'name' or name == 'desc'or name == 'var' or name == 'cate':
             self.testcases[self.testcase_id]['data'][name] = self.data
         elif name == 'step':
             self.step += 1

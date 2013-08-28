@@ -4,7 +4,7 @@
 		<name>等待时长</name >
 		<desc>上一步执行完成后等待时长</desc>
 		<value>
-			time.sleep({minute(wait_t)}* 60)
+			time.sleep({minute(wait_t)})
 		</value>
 	</testunit>
 </testunits>

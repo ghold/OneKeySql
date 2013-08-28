@@ -43,9 +43,16 @@ class OkModel(object):
 
     def makeupCaseList(self):
         self.case_list = OkCaseTreeWidget()
-        parent_item = OkTreeItem(self.case_list)
         for key,  val in self.data['case'].items():
-            parent_item.addChild(OkTreeItem())
+            parent_item_list = self.case_list.findItems(val["data"]["cate"], Qt.Qt.MatchExactly)
+
+            if len(parent_item_list) == 0:
+                parent_item = OkTreeItem(val["data"]["cate"], self.case_list)
+            else:
+                parent_item = parent_item_list[0]
+
+            item = OkTreeItem("%s_%s"%(val["id"], val["data"]["name"]), parent_item)
+            item.setData(0, Qt.Qt.UserRole, val)
 #            item.setData(Qt.Qt.UserRole, val)
 #            self.case_list.addItem(item)
 #            self.case_list.setItemWidget(item, OkCaseAddon(val["data"]["desc"], item, self.case_list))
