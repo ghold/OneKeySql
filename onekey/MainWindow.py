@@ -6,6 +6,7 @@ from OkModel import OkModel
 from OkXmlHandler import OkTestcaseHandler, OkTestunitHandler
 from OkInfoWidget import OkInfoWidget
 from OkListItem import OkListItem
+from OkTreeItem import OkTreeItem
 from OkCaseEditPad import OkCaseEditPad
 from OkArgSetPad import OkArgSetPad
 from OkAddCase import OkAddCase
@@ -87,7 +88,7 @@ class MainWindow(QtGui.QFrame):
         #
         searchEdit = QtGui.QLineEdit()
         searchEdit.setCompleter(completer)
-        #searchEdit.textChanged.connect(self.caseList.search)
+        searchEdit.textChanged.connect(self.caseList.search)
         
         self.addButton = OkAddCaseButton()
         self.addButton.pressed.connect(self.pushAddCase)
@@ -157,72 +158,83 @@ class MainWindow(QtGui.QFrame):
             self.mainSplitter.addWidget(self.caseEditModule())
             self.mainSplitter.setStretchFactor(1, 1)
     
-    @pyqtSlot(OkListItem)
+#    @pyqtSlot(OkListItem)
+#    def updateStepList(self, item):
+#        self.stepList = self.model.makeupStepList(item)
+#        self.stepList.itemPressed.connect(self.stepList.pressItem)
+#        if self.mainSplitter.widget(1).widget(1) is not None:
+#            self.mainSplitter.widget(1).widget(1).setParent(None)
+#        self.mainSplitter.widget(1).addWidget(self.stepList)
+#        self.mainSplitter.widget(1).setStretchFactor(1, 1)
+
+    @pyqtSlot(OkTreeItem)
     def updateStepList(self, item):
-        self.stepList = self.model.makeupStepList(item)
-        self.stepList.itemPressed.connect(self.stepList.pressItem)
-        if self.mainSplitter.widget(1).widget(1) is not None:
-            self.mainSplitter.widget(1).widget(1).setParent(None)
-        self.mainSplitter.widget(1).addWidget(self.stepList)
-        self.mainSplitter.widget(1).setStretchFactor(1, 1)
+        if item.childCount() == 0:
+            self.stepList = self.model.makeupStepList(item)
+            self.stepList.itemPressed.connect(self.stepList.pressItem)
+            if self.mainSplitter.widget(1).widget(1) is not None:
+                self.mainSplitter.widget(1).widget(1).setParent(None)
+            self.mainSplitter.widget(1).addWidget(self.stepList)
+            self.mainSplitter.widget(1).setStretchFactor(1, 1)
     
     @pyqtSlot(OkListItem)
     def openEditMode(self, item):
-        if item.listWidget().editState and item == item.listWidget().selectedItem:
-            item.listWidget().itemPressed.connect(self.updateStepList)
-            item.listWidget().itemPressed.disconnect(item.listWidget().pressItem)
-            self.mainSplitter.widget(2).setParent(None)
-            self.mainSplitter.widget(1).setStretchFactor(1, 1)
-            for btn in self.moduleGroup.buttons():
-                btn.setEnabled(True)
-            self.addButton.setEnabled(True)
-            item.listWidget().editState = False
-            #change background
-            image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
-            image.fill(QtGui.QColor(238,  238,  238))
-            image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
-            brush = QtGui.QBrush()
-            brush.setTextureImage(image)
-            item.setBackground(brush)
-            item.setTextColor(QtGui.QColor(110,  110,  110))
-            item.state = False
-            item.listWidget().selectedItem = None
-            
-        elif not item.listWidget().editState:
-            self.updateStepList(item)
-            item.listWidget().itemPressed.disconnect(self.updateStepList)
-            item.listWidget().itemPressed.connect(item.listWidget().pressItem)
-            #setup unitList
-            unitList = self.model.makeupUnitList()
-            unitList.itemPressed.connect(unitList.pressItem)
-            #completer
-            wordList = ["中转" ,  "运输" ,  "散货" ,  "收仓"]
-            completer = QtGui.QCompleter(wordList)
-            #unitWidget
-            unitWidget = QtGui.QWidget()
-            lineEdit = QtGui.QLineEdit()
-            lineEdit.setCompleter(completer)
-            lineEdit.textChanged.connect(unitList.search)
-            unitLayout = QtGui.QVBoxLayout()
-            unitLayout.addWidget(lineEdit)
-            unitLayout.addWidget(unitList)
-            unitWidget.setLayout(unitLayout)
-            
-            self.mainSplitter.addWidget(unitWidget)
-            for btn in self.moduleGroup.buttons():
-                btn.setEnabled(False)
-            self.addButton.setEnabled(False)
-            item.listWidget().editState = True
-            #change background
-            image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
-            image.fill(QtGui.QColor(221, 221, 221))
-            image.setPixel(0, 39, QtGui.qRgba(33, 133, 197, 255))
-            image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
-            brush = QtGui.QBrush()
-            brush.setTextureImage(image)
-            item.setBackground(brush)
-            item.setTextColor(QtGui.QColor(59,  66,  76))
-            item.setItemSelected(item)
+        if item.childCount() == 0:
+            if item.treeWidget().editState and item == item.treeWidget().selectedItem:
+                item.treeWidget().itemPressed.connect(self.updateStepList)
+                item.treeWidget().itemPressed.disconnect(item.treeWidget().pressItem)
+                self.mainSplitter.widget(2).setParent(None)
+                self.mainSplitter.widget(1).setStretchFactor(1, 1)
+                for btn in self.moduleGroup.buttons():
+                    btn.setEnabled(True)
+                self.addButton.setEnabled(True)
+                item.treeWidget().editState = False
+    #            #change background
+    #            image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
+    #            image.fill(QtGui.QColor(238,  238,  238))
+    #            image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
+    #            brush = QtGui.QBrush()
+    #            brush.setTextureImage(image)
+    #            item.setBackground(brush)
+    #            item.setTextColor(QtGui.QColor(110,  110,  110))
+                item.state = False
+                item.treeWidget().selectedItem = None
+                
+            elif not item.treeWidget().editState:
+                self.updateStepList(item)
+                item.treeWidget().itemPressed.disconnect(self.updateStepList)
+                item.treeWidget().itemPressed.connect(item.treeWidget().pressItem)
+                #setup unitList
+                unitList = self.model.makeupUnitList()
+                unitList.itemPressed.connect(unitList.pressItem)
+                #completer
+                wordList = ["中转" ,  "运输" ,  "散货" ,  "收仓"]
+                completer = QtGui.QCompleter(wordList)
+                #unitWidget
+                unitWidget = QtGui.QWidget()
+                lineEdit = QtGui.QLineEdit()
+                lineEdit.setCompleter(completer)
+                lineEdit.textChanged.connect(unitList.search)
+                unitLayout = QtGui.QVBoxLayout()
+                unitLayout.addWidget(lineEdit)
+                unitLayout.addWidget(unitList)
+                unitWidget.setLayout(unitLayout)
+                
+                self.mainSplitter.addWidget(unitWidget)
+                for btn in self.moduleGroup.buttons():
+                    btn.setEnabled(False)
+                self.addButton.setEnabled(False)
+                item.treeWidget().editState = True
+    #            #change background
+    #            image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
+    #            image.fill(QtGui.QColor(221, 221, 221))
+    #            image.setPixel(0, 39, QtGui.qRgba(33, 133, 197, 255))
+    #            image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
+    #            brush = QtGui.QBrush()
+    #            brush.setTextureImage(image)
+    #            item.setBackground(brush)
+    #            item.setTextColor(QtGui.QColor(59,  66,  76))
+                item.setItemSelected(item)
             
     def showArgSetPad(self, item):
         self.cover = OkCover(self)

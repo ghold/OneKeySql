@@ -68,7 +68,7 @@ class OkModel(object):
             
     def makeupStepList(self, item):
         self.step_list = OkStepWidget(item)
-        tmp_data = item.data(Qt.Qt.UserRole)
+        tmp_data = item.data(0, Qt.Qt.UserRole)
         step_count = len(tmp_data["data"]["steps"])
         for i in range(step_count):
             val = tmp_data["data"]["steps"][i]
