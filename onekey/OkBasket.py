@@ -36,7 +36,9 @@ class OkBasket(QtGui.QListWidget):
             data = eval(bytes(event.mimeData().data('application/ok-case')).decode("utf-8"))
             writer.deleteCase(data["id"])
             self.topLevelWidget().openEditMode(self.topLevelWidget().caseList.selectedItem)
-            self.topLevelWidget().caseList.takeItem(int(data["row"]))
+            self.topLevelWidget().caseList.topLevelItem(int(data["tl"])).takeChild(int(data["row"]))
+            if self.topLevelWidget().caseList.topLevelItem(int(data["tl"])).childCount() == 0:
+                self.topLevelWidget().caseList.takeTopLevelItem(int(data["tl"]))
             self.topLevelWidget().model.update()
             if self.topLevelWidget().mainSplitter.widget(1).widget(1) is not None:
                 self.topLevelWidget().mainSplitter.widget(1).widget(1).setParent(None)

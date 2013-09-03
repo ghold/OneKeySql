@@ -15,7 +15,7 @@ class OkTestcaseWriter(object):
             idList.append(int(val.get("id")))
         return max(idList)
         
-    def createCase(self, name, desc):
+    def createCase(self, name, cate, desc):
         #id
         id = self.getMaxId()
         id = "%.5d" % (id + 1)
@@ -24,6 +24,9 @@ class OkTestcaseWriter(object):
         nameElement = Element('name')
         nameElement.text = name
         element.append(nameElement)
+        cateElement = Element('cate')
+        cateElement.text = cate
+        element.append(cateElement)
         descElement = Element('desc')
         descElement.text = desc
         element.append(descElement)

@@ -17,7 +17,7 @@ class OkCaseEditPad(QtGui.QWidget):
         self.setWindowFlags(Qt.Qt.FramelessWindowHint)
         self.setGeometry(QtCore.QRect(200, 0, self.parent().width() - 200 ,  self.parent().height()))
         self.item = item
-        self.caseData = self.item.data(Qt.Qt.UserRole)
+        self.caseData = self.item.data(0, Qt.Qt.UserRole)
         self.insertData = insertdata
         #add toolBar
         self.toolBar = OkEditToolBar(self)

@@ -31,10 +31,43 @@ class OkListItem(QtGui.QListWidgetItem):
             self.listWidget().selectedItem.setTextColor(QtGui.QColor(110,  110,  110))
         self.state = True
         self.listWidget().selectedItem = item
+        
+class OkTreeItem(QtGui.QTreeWidgetItem):
+    def __init__(self, text, parent=None,  type=QtGui.QTreeWidgetItem.Type):
+        QtGui.QTreeWidgetItem.__init__(self, parent, type)
+        self.setText(0, text)
+        
+        #set background
+        image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
+        image.fill(QtGui.QColor(238,  238,  238))
+        image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
+        brush = QtGui.QBrush()
+        brush.setTextureImage(image)
+        self.setBackground(0, brush)
+        
+        self.setFlags(Qt.Qt.ItemIsUserCheckable|Qt.Qt.ItemIsEnabled|Qt.Qt.ItemIsDragEnabled)
+        self.setFont(0, QtGui.QFont("微软雅黑", 12))
+        self.setTextColor(0, QtGui.QColor(110,  110,  110))
+        self.setSizeHint(0, QtCore.QSize(200, 41))
+        
+        self.state = False
+        
+    def setItemSelected(self, item):
+        if self.treeWidget().selectedItem is not None:
+            self.treeWidget().selectedItem.state = False
+            image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
+            image.fill(QtGui.QColor(238,  238,  238))
+            image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
+            brush = QtGui.QBrush()
+            brush.setTextureImage(image)
+            self.treeWidget().selectedItem.setBackground(0, brush)
+            self.treeWidget().selectedItem.setTextColor(0, QtGui.QColor(110,  110,  110))
+        self.state = True
+        self.treeWidget().selectedItem = item
 
 class OkAddonWidget(QtGui.QWidget):
     """
-    work as a cover on OkListItem
+    work as a cover on OkTreeItem
     """
     def __init__(self, tooltip, item, parent=None):
         QtGui.QWidget.__init__(self, parent)
@@ -54,8 +87,8 @@ class OkAddonWidget(QtGui.QWidget):
             image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
             brush = QtGui.QBrush()
             brush.setTextureImage(image)
-            self.item.setBackground(brush)
-            self.item.setTextColor(QtGui.QColor(255,  255,  255))
+            self.item.setBackground(0, brush)
+            self.item.setTextColor(0, QtGui.QColor(255,  255,  255))
             
             #point = self.mapTo(self.topLevelWidget(), self.geometry().topLeft())
             #self.toolTip.setParent(self.topLevelWidget())
@@ -71,8 +104,8 @@ class OkAddonWidget(QtGui.QWidget):
             image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
             brush = QtGui.QBrush()
             brush.setTextureImage(image)
-            self.item.setBackground(brush)
-            self.item.setTextColor(QtGui.QColor(110,  110,  110))
+            self.item.setBackground(0, brush)
+            self.item.setTextColor(0, QtGui.QColor(110,  110,  110))
             event.accept()
 
 class OkCaseAddon(OkAddonWidget):
@@ -83,9 +116,9 @@ class OkCaseAddon(OkAddonWidget):
 class OkExecAddon(OkAddonWidget):
     def __init__(self, tooltip, item, type, parent=None):
         OkAddonWidget.__init__(self, tooltip, item, parent)
-        verticalSpacer = QtGui.QSpacerItem(20, 30, 7, 0)
+        verticalSpacer = QtGui.QSpacerItem(20, 20, 7, 0)
         self.vlayout.addWidget(OkPutinButton())
-        self.vlayout .addSpacerItem(verticalSpacer)
+        self.vlayout.addSpacerItem(verticalSpacer)
         
     def mousePressEvent(self, event):
         if event.buttons() == Qt.Qt.LeftButton and not self.item.state:
@@ -96,11 +129,11 @@ class OkExecAddon(OkAddonWidget):
             image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
             brush = QtGui.QBrush()
             brush.setTextureImage(image)
-            self.item.setBackground(brush)
-            self.item.setTextColor(QtGui.QColor(59,  66,  76))
+            self.item.setBackground(0, brush)
+            self.item.setTextColor(0, QtGui.QColor(59,  66,  76))
             self.item.setItemSelected(self.item)
             #show info
-            infoWidget = self.item.listWidget().infoWidget
+            infoWidget = self.item.treeWidget().infoWidget
             infoWidget.infoGeneratorUTF8(self.item)
             event.accept()
     

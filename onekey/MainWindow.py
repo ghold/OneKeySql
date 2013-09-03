@@ -6,7 +6,7 @@ from OkModel import OkModel
 from OkXmlHandler import OkTestcaseHandler, OkTestunitHandler
 from OkInfoWidget import OkInfoWidget
 from OkListItem import OkListItem
-from OkTreeItem import OkTreeItem
+from OkListItem import OkTreeItem
 from OkCaseEditPad import OkCaseEditPad
 from OkArgSetPad import OkArgSetPad
 from OkAddCase import OkAddCase
@@ -177,7 +177,7 @@ class MainWindow(QtGui.QFrame):
             self.mainSplitter.widget(1).addWidget(self.stepList)
             self.mainSplitter.widget(1).setStretchFactor(1, 1)
     
-    @pyqtSlot(OkListItem)
+    @pyqtSlot(OkTreeItem)
     def openEditMode(self, item):
         if item.childCount() == 0:
             if item.treeWidget().editState and item == item.treeWidget().selectedItem:
@@ -189,14 +189,14 @@ class MainWindow(QtGui.QFrame):
                     btn.setEnabled(True)
                 self.addButton.setEnabled(True)
                 item.treeWidget().editState = False
-    #            #change background
-    #            image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
-    #            image.fill(QtGui.QColor(238,  238,  238))
-    #            image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
-    #            brush = QtGui.QBrush()
-    #            brush.setTextureImage(image)
-    #            item.setBackground(brush)
-    #            item.setTextColor(QtGui.QColor(110,  110,  110))
+                #change background
+                image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
+                image.fill(QtGui.QColor(238,  238,  238))
+                image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
+                brush = QtGui.QBrush()
+                brush.setTextureImage(image)
+                item.setBackground(0, brush)
+                item.setTextColor(0, QtGui.QColor(110,  110,  110))
                 item.state = False
                 item.treeWidget().selectedItem = None
                 
@@ -225,20 +225,20 @@ class MainWindow(QtGui.QFrame):
                     btn.setEnabled(False)
                 self.addButton.setEnabled(False)
                 item.treeWidget().editState = True
-    #            #change background
-    #            image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
-    #            image.fill(QtGui.QColor(221, 221, 221))
-    #            image.setPixel(0, 39, QtGui.qRgba(33, 133, 197, 255))
-    #            image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
-    #            brush = QtGui.QBrush()
-    #            brush.setTextureImage(image)
-    #            item.setBackground(brush)
-    #            item.setTextColor(QtGui.QColor(59,  66,  76))
+                #change background
+                image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
+                image.fill(QtGui.QColor(221, 221, 221))
+                image.setPixel(0, 39, QtGui.qRgba(33, 133, 197, 255))
+                image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
+                brush = QtGui.QBrush()
+                brush.setTextureImage(image)
+                item.setBackground(0, brush)
+                item.setTextColor(0, QtGui.QColor(59,  66,  76))
                 item.setItemSelected(item)
             
     def showArgSetPad(self, item):
         self.cover = OkCover(self)
-        self.editWidget = OkArgSetPad(item.data(Qt.Qt.UserRole), self)
+        self.editWidget = OkArgSetPad(item.data(0, Qt.Qt.UserRole), self)
         self.cover.show()
         self.editWidget.show()
         
@@ -254,10 +254,10 @@ class MainWindow(QtGui.QFrame):
             self.cancelButton.show()
             self.addingWidget.show()
         else:
-            name, desc = self.addingWidget.getNameAndDesc()
-            if len(name.strip()) >0:
+            name, cate, desc = self.addingWidget.getNameAndDesc()
+            if len(name.strip()) >0 and len(cate.strip()) > 0:
                 writer = OkTestcaseWriter('testcase/testcase.xml')
-                writer.createCase(name, desc)
+                writer.createCase(name, cate, desc)
                 self.cancelButton.hide()
                 self.addingWidget.hide()
                 self.model.update()

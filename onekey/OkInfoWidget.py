@@ -14,7 +14,7 @@ class OkInfoWidget(QtGui.QTextEdit):
         self.setDocument(okInfoDocument)
         
     def infoGeneratorUTF8(self, item):
-        data = item.data(Qt.Qt.UserRole)
+        data = item.data(0, Qt.Qt.UserRole)
         self.document().clear()
         self.cursor.setBlockFormat(OkBlockFormat())
         self.cursor.insertText("%s-%s\n"%(data['id'], data['data']['name']), OkTitleFormat())

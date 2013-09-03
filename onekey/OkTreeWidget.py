@@ -1,7 +1,7 @@
 from PyQt4 import QtGui, QtCore, Qt
 from OkScroll import OkScrollBar
 from PyQt4.QtCore import pyqtSlot
-from OkTreeItem import OkTreeItem
+from OkListItem import OkTreeItem
 
 class OkTreeWidget(QtGui.QTreeWidget):
     def __init__(self, parent=None):
@@ -16,6 +16,7 @@ class OkTreeWidget(QtGui.QTreeWidget):
         self.setDragEnabled(True)
         self.setAcceptDrops(True)
         self.setDropIndicatorShown(True)
+        self.itemEntered.connect(self.itemEnter)
         
     @pyqtSlot(str)        
     def search(self, text):
@@ -65,6 +66,11 @@ class OkCaseTreeWidget(OkTreeWidget):
             event.accept()
         else:
             event.ignore()
+            
+    @pyqtSlot(OkTreeItem, int)    
+    def itemEnter(self, item, col):
+        if item != self.selectedItem:
+            item.setBackgroundColor(col, QtGui.QColor(238,  238,  238))
         
     @pyqtSlot(OkTreeItem, int)
     def pressItem(self, item, col):
@@ -80,8 +86,7 @@ class OkCaseTreeWidget(OkTreeWidget):
             id = item.data(col, Qt.Qt.UserRole)['id']
             top_level = self.indexOfTopLevelItem(item.parent())
             row = item.parent().indexOfChild(item)
-            print(top_level, row)
-            mimeData.setData('application/ok-case', '{"id":"%s","row":"%d"}'%(id, row))
+            mimeData.setData('application/ok-case', '{"id":"%s","tl":"%d","row":"%d"}'%(id, top_level, row))
         
         itemIndex = self.indexFromItem(item)
         itemRect = self.visualRect(itemIndex)

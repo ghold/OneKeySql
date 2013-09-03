@@ -6,22 +6,26 @@ class OkAddCase(QtGui.QWidget):
         
         self.nameEdit = QtGui.QLineEdit(self)
         self.nameEdit.setPlaceholderText("名称")
+        self.cateEdit = QtGui.QLineEdit(self)
+        self.cateEdit.setPlaceholderText("分类")
         self.descEdit = OkTextEdit(self)
         
         layout = QtGui.QVBoxLayout()
         layout.setMargin(0)
         layout.addWidget(self.nameEdit)
+        layout.addWidget(self.cateEdit)
         layout.addWidget(self.descEdit)
         
         self.setLayout(layout)
         
     def getNameAndDesc(self):
         if not self.descEdit.state:
-            return (self.nameEdit.text(), self.descEdit.toPlainText())
-        return (self.nameEdit.text(), '')
+            return (self.nameEdit.text(), self.cateEdit.text(), self.descEdit.toPlainText())
+        return (self.nameEdit.text(), self.cateEdit.text(), '')
     
     def hideEvent(self, event):
         self.nameEdit.setText('')
+        self.cateEdit.setText('')
         if not self.descEdit.state:
             self.descEdit.state = True
             self.descEdit.setTextColor(QtGui.QColor.fromRgb(128, 128, 128))
