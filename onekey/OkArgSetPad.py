@@ -7,6 +7,7 @@ from OkButton import OkExecButton
 from OkLabel import OkEditWidgetLabel, OkTagLabel
 from OkPreviewWidget import OkPreviewWidget
 from oracle.OkSqlHandler import OkSqlHandler
+from OkRuntime import OkExecThread
 from OkConfig import OkConfig
 from OkEdit import *
 import re
@@ -107,22 +108,26 @@ class OkArgSetPad(QtGui.QWidget):
         if len(self.previewWidget.toPlainText())  == 0:
             self.close()
             return
-        self.comfirmButton.setDisabled(True)
-        step_pattern = r";\n/\*Step [0-9 ]+.+\*/\n"
-        step_compiler = re.compile(step_pattern)
-        step_list = step_compiler.split(self.previewWidget.toPlainText())
-        sql_pattern = r";\n|/\*Step [0-9 ]+.+\*/\n|\n"
-        sql_compiler = re.compile(sql_pattern)
-        for val in step_list:
-            val = sql_compiler.sub(r' ', val)
-            #Don't need to add " at start or at end
-            if 'INSERT' in val:
-                OkSqlHandler.insertAction(val.strip())
-            else:
-                exec(val.strip())
+          
+        print(QtCore.QThread.currentThread())
+        thread = OkExecThread(self.previewWidget.toPlainText())
+#        self.comfirmButton.setDisabled(True)
+#        step_pattern = r";\n/\*Step [0-9 ]+.+\*/\n"
+#        step_compiler = re.compile(step_pattern)
+#        step_list = step_compiler.split(self.previewWidget.toPlainText())
+#        sql_pattern = r";\n|/\*Step [0-9 ]+.+\*/\n|\n"
+#        sql_compiler = re.compile(sql_pattern)
+#        for val in step_list:
+#            val = sql_compiler.sub(r' ', val)
+#            #Don't need to add " at start or at end
+#            if 'INSERT' in val:
+#                OkSqlHandler.insertAction(val.strip())
+#            else:
+#                exec(val.strip())
         self.previewWidget.config.save()
         self.parent().cover.close()
         self.close()
+        thread.start()
         
     def paintEvent(self, event):
         self.setGeometry(QtCore.QRect(200, 0, self.parent().width() - 200 ,  self.parent().height()))
