@@ -7,7 +7,7 @@ from OkButton import OkExecButton
 from OkLabel import OkEditWidgetLabel, OkTagLabel
 from OkPreviewWidget import OkPreviewWidget
 from oracle.OkSqlHandler import OkSqlHandler
-from OkRuntime import OkExecThread
+from OkRuntime import OkExecProcess
 from OkConfig import OkConfig
 from OkEdit import *
 import re
@@ -108,9 +108,9 @@ class OkArgSetPad(QtGui.QWidget):
         if len(self.previewWidget.toPlainText())  == 0:
             self.close()
             return
-          
-        print(QtCore.QThread.currentThread())
-        thread = OkExecThread(self.previewWidget.toPlainText())
+        
+        thread = OkExecProcess(self.previewWidget.toPlainText())
+        thread.start()
 #        self.comfirmButton.setDisabled(True)
 #        step_pattern = r";\n/\*Step [0-9 ]+.+\*/\n"
 #        step_compiler = re.compile(step_pattern)
@@ -127,7 +127,7 @@ class OkArgSetPad(QtGui.QWidget):
         self.previewWidget.config.save()
         self.parent().cover.close()
         self.close()
-        thread.start()
+        
         
     def paintEvent(self, event):
         self.setGeometry(QtCore.QRect(200, 0, self.parent().width() - 200 ,  self.parent().height()))

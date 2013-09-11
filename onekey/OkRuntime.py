@@ -1,11 +1,11 @@
-from PyQt4 import QtGui, QtCore, Qt
 from oracle.OkSqlHandler import OkSqlHandler
 import re
 import time
+from multiprocessing import Process
 
-class OkExecThread(QtCore.QThread):
-    def __init__(self, sql, parent=None):
-        QtCore.QThread.__init__(self, parent)
+class OkExecProcess(Process):
+    def __init__(self, sql, daemon=False):
+        Process.__init__(self, daemon=daemon)
         self.sql = sql
         
     def run(self):
@@ -21,5 +21,3 @@ class OkExecThread(QtCore.QThread):
                 OkSqlHandler.insertAction(val.strip())
             else:
                 exec(val.strip())
-                
-        
