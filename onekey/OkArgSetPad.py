@@ -77,14 +77,15 @@ class OkArgSetPad(QtGui.QWidget):
         tag_compiler = re.compile(tag_pattern)
         for tag in self.data['data']['var'].split(','):
             result = tag_compiler.match(tag)
-            default_value = result.group("def")
+            tmp_default_value = result.group("def")
+            default_value = ''
             #Globalconfig or user default 
             
-            OkTagWidget = OkTagHandler.callback(result.group(1), result.group(2), default_value, None)
+            OkTagWidget = OkTagHandler.callback(result.group(1), result.group(2), tmp_default_value, None)
             OkTagWidget.ValueChanged.connect(self.previewWidget.tagValue)
             
-            if default_value is not None and default_value[0] == "'":
-                default_value = default_value.strip("'")
+            if tmp_default_value is not None and tmp_default_value[0] == "'":
+                default_value = tmp_default_value.strip("'")
             else:
                 default_value = self.config.callback(result.group("def"))
             
