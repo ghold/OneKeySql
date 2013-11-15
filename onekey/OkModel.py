@@ -4,17 +4,19 @@ from xml.sax import parse
 from OkListWidget import *
 from OkListItem import *
 from OkTreeWidget import *
+import os
 #from OkXmlHandler import OkTestcaseHandler, OkTestunitHandler
 #import json
 
 class OkModel(object):
     def __init__(self,  *args):
         self.data = {}
+        path = os.environ['ONEKEY_HOME']
         if len(args) > 0:
             self.args = args
         for val in self.args:
             handler = val[1]()
-            parse(val[0], handler)
+            parse(path + '\\' + val[0], handler)
             if self.data.get(val[2]) is None:
                 self.data[val[2]] = {}
             self.data[val[2]].update(handler.getXmlData())

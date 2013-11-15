@@ -6,6 +6,8 @@ from OkConfig import OkConfig
 from OkTagHandlerCli import OkTagHandler
 #import json
 import re
+import os
+import multiprocessing
 from OkXmlHandler import OkTestcaseHandler
 from OkRuntime import OkExecProcess
 
@@ -130,7 +132,8 @@ def isArgSet(data, options):
 
 def init(id, option):
     handler = OkTestcaseHandler()
-    parse('testcase/testcase.xml', handler)
+    path =  os.environ['ONEKEY_HOME']
+    parse(path + '/testcase/testcase.xml', handler)
     data = handler.getXmlData()
     parser = OkDataParser()
     key = "testcase_%s"%id
@@ -145,6 +148,7 @@ def init(id, option):
     parser.sqlExec(data[key]["data"]["steps"], result)
     
 if __name__ == "__main__":
+    multiprocessing.freeze_support()
     parser = argparse.ArgumentParser()
     
     parser.add_argument("-i", "--id", type=str, help="testcase id")

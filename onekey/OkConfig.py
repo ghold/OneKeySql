@@ -1,5 +1,6 @@
 from configparser import ConfigParser
 from PyQt4 import QtGui, QtCore
+import os
 
 class OkConfig(object):
     GLOBAL_DICT = {'date':['TODAY', 'YESTERDAY'], 'datetime':['CURRENT_DT'], 'time':['CURRENT_TM'], 'increment':[]}
@@ -26,7 +27,8 @@ class OkConfig(object):
     
     def __init__(self):
         self.config = ConfigParser()
-        self.config.read_file(open("config.conf"))
+        path =  os.environ['ONEKEY_HOME']
+        self.config.read_file(open(path + "/config.conf"))
         for section in self.config.sections():
             for val in self.config.items(section):
                 setattr(self, val[0].upper(), val[1])
@@ -36,7 +38,8 @@ class OkConfig(object):
         self.INCREMENT = None
         
     def save(self):
+        path =  os.environ['ONEKEY_HOME']
         for section in self.config.sections():
             for val in self.config.items(section):
                 self.config.set(section, val[0], self.callback(val[0].upper()))
-        self.config.write(open("config.conf", "w"))
+        self.config.write(open(path + "/config.conf", "w"))
