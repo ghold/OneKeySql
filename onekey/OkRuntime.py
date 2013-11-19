@@ -1,11 +1,11 @@
 from oracle.OkSqlHandler import OkSqlHandler
 import re
 import time
-from multiprocessing import Process
+from threading import Thread
 
-class OkExecProcess(Process):
-    def __init__(self, sql, daemon=False):
-        Process.__init__(self, daemon=daemon)
+class OkExecProcess(Thread):
+    def __init__(self, sql, daemon=True):
+        Thread.__init__(self, daemon=daemon)
         self.sql = sql
         
     def run(self):

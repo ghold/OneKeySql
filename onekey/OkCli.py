@@ -132,7 +132,8 @@ def isArgSet(data, options):
 
 def init(id, option):
     handler = OkTestcaseHandler()
-    path =  os.environ['ONEKEY_HOME']
+    #path =  os.environ['ONEKEY_HOME']
+    path = '.'
     parse(path + '/testcase/testcase.xml', handler)
     data = handler.getXmlData()
     parser = OkDataParser()
@@ -145,7 +146,7 @@ def init(id, option):
     
     #jsonDumpsIndentStr = json.dumps(data[key]["data"], indent=1)
     #print(jsonDumpsIndentStr)
-    parser.sqlExec(data[key]["data"]["steps"], result)
+    #parser.sqlExec(data[key]["data"]["steps"], result)
     
 if __name__ == "__main__":
     multiprocessing.freeze_support()
