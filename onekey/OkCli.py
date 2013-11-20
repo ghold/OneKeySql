@@ -7,9 +7,10 @@ from OkTagHandlerCli import OkTagHandler
 #import json
 import re
 import os
-import multiprocessing
+import time
 from OkXmlHandler import OkTestcaseHandler
-from OkRuntime import OkExecProcess
+#from OkRuntime import OkExecProcess
+from oracle.OkSqlHandler import OkSqlHandler
 
 class OkDataParser(object):
     def __init__(self):
@@ -44,8 +45,13 @@ class OkDataParser(object):
                             method = var[name][0] + "_arg"
                             value = OkTagHandler.callback(method, value, arg, var[name][1], self.config)
                             self.config.reset()
-                            #print(value)
                         self.sql.append(value)
+                    elif var[name][1] is not None:
+                        try:
+                            self.sql.append(int(var[name][1].strip("'")))
+                        except ValueError:
+                            print(var[name][1])
+                            self.sql.append(var[name][1])
                     if option.get(name, None) is not None and var[name][2] is None:
                         self.sql.append(option[name])
                         #print(option[name])
@@ -99,10 +105,22 @@ class OkDataParser(object):
         
     def sqlExec(self, data, result):
         self.setupData(data, result)
-        thread = OkExecProcess(''.join(self.sql))
-        thread.start()
-        self.config.save()
-
+        print(self.getSql())
+        #thread = OkExecProcess(''.join(self.sql))
+        #thread.start()
+        step_pattern = r";\n/\*Step [0-9 ]+.+\*/\n"
+        step_compiler = re.compile(step_pattern)
+        step_list = step_compiler.split(''.join(self.sql))
+        sql_pattern = r";\n|/\*Step [0-9 ]+.+\*/\n|\n"
+        sql_compiler = re.compile(sql_pattern)
+        for val in step_list:
+            val = sql_compiler.sub(r' ', val)
+            #Don't need to add " at start or at end
+            #if 'INSERT' in val:
+            #    OkSqlHandler.insertAction(val.strip())
+            #else:
+            #    exec(val.strip())
+        #self.config.save()
 
 def isArgSet(data, options):
     option_dict = {}
@@ -132,8 +150,8 @@ def isArgSet(data, options):
 
 def init(id, option):
     handler = OkTestcaseHandler()
-    #path =  os.environ['ONEKEY_HOME']
-    path = '.'
+    path =  os.environ['ONEKEY_HOME']
+    #path = '.'
     parse(path + '/testcase/testcase.xml', handler)
     data = handler.getXmlData()
     parser = OkDataParser()
@@ -146,10 +164,9 @@ def init(id, option):
     
     #jsonDumpsIndentStr = json.dumps(data[key]["data"], indent=1)
     #print(jsonDumpsIndentStr)
-    #parser.sqlExec(data[key]["data"]["steps"], result)
+    parser.sqlExec(data[key]["data"]["steps"], result)
     
 if __name__ == "__main__":
-    multiprocessing.freeze_support()
     parser = argparse.ArgumentParser()
     
     parser.add_argument("-i", "--id", type=str, help="testcase id")
