@@ -20,13 +20,13 @@ class OkDataParser(object):
         self.result = {}
         self.config = OkConfig()
         
-    def subTag(self, tags, data, result, spec):
+    def subTag(self, tags, data, step, result, spec):
         option = result["option"]
         var = result["var"]
         if spec:
             pass
         else:
-            self.sql.append("VALUES( ")
+            self.sql[step] = self.sql[step] + " VALUES("
             #print("VALUES( ")
         tag_pattern = r'\{[0-9a-zA-Z_]+\((?P<name>[0-9a-zA-Z_]+)\)\}'
         tag_compiler =re.compile(tag_pattern)
@@ -45,28 +45,24 @@ class OkDataParser(object):
                             method = var[name][0] + "_arg"
                             value = OkTagHandler.callback(method, value, arg, var[name][1], self.config)
                             self.config.reset()
-                        self.sql.append(value)
+                        self.sql[step] = self.sql[step] + value
                     elif var[name][1] is not None:
-                        try:
-                            self.sql.append(int(var[name][1].strip("'")))
-                        except ValueError:
-                            print(var[name][1])
-                            self.sql.append(var[name][1])
+                            self.sql[step] = self.sql[step] + var[name][1].strip("'")
                     if option.get(name, None) is not None and var[name][2] is None:
-                        self.sql.append(option[name])
+                        self.sql[step] = self.sql[step] + option[name]
                         #print(option[name])
                 else:
-                    self.sql.append(tags[val])
+                    self.sql[step] = self.sql[step] + tags[val]
                     #print(tags[val])
             else:
-                self.sql.append(val)
+                self.sql[step] = self.sql[step] + val
                 #print(val)
                 
         if spec:
-            self.sql.append(";\n")
+            pass
             #print(";\n")
         else:
-            self.sql.append(");\n")
+            self.sql[step] = self.sql[step] + ")"
             #print(");\n")
     
     #data setting
@@ -74,7 +70,7 @@ class OkDataParser(object):
         self.data = data
         self.result = result
         for step in range(0, len(data)):
-            
+            self.sql.append("")
             key =  "%s_%s" %(data[step]["type"], data[step]["from"])
             model = self.cache.get(key)
             
@@ -90,15 +86,13 @@ class OkDataParser(object):
             data_id = data[step]["type"] + "_" + data[step]["data_id"]
             step_data = model.data['unit'][data_id]["data"]
             
-            self.sql.append("/*Step %d：%s*/\n" % (step + 1, step_data['desc']))
-            
             if (step_data.get("table", None) is not None and step_data.get("column", None) is not None):
-                tp_sql = "INSERT INTO\n%s(%s)\n" % (step_data["table"], step_data["column"])
+                tp_sql = "INSERT INTO %s(%s) " % (step_data["table"], step_data["column"])
                 #print(tp_sql)
-                self.sql.append(tp_sql)
-                self.subTag(data[step]["tags"], step_data["value"], result, False)
+                self.sql[step] = self.sql[step] + tp_sql
+                self.subTag(data[step]["tags"], step_data["value"], step, result, False)
             else:
-                self.subTag(data[step]["tags"], step_data["value"], result, True)
+                self.subTag(data[step]["tags"], step_data["value"], step, result, True)
                 
     def getSql(self):
         return self.sql
@@ -108,19 +102,19 @@ class OkDataParser(object):
         print(self.getSql())
         #thread = OkExecProcess(''.join(self.sql))
         #thread.start()
-        step_pattern = r";\n/\*Step [0-9 ]+.+\*/\n"
-        step_compiler = re.compile(step_pattern)
-        step_list = step_compiler.split(''.join(self.sql))
-        sql_pattern = r";\n|/\*Step [0-9 ]+.+\*/\n|\n"
-        sql_compiler = re.compile(sql_pattern)
-        for val in step_list:
-            val = sql_compiler.sub(r' ', val)
+        #step_pattern = r";\n/\*Step [0-9 ]+.+\*/\n"
+        #step_compiler = re.compile(step_pattern)
+        #step_list = step_compiler.split(''.join(self.sql))
+        #sql_pattern = r";\n|/\*Step [0-9 ]+.+\*/\n|\n"
+        #sql_compiler = re.compile(sql_pattern)
+        for val in self.sql:
+            #val = sql_compiler.sub(r' ', val)
             #Don't need to add " at start or at end
-            #if 'INSERT' in val:
-            #    OkSqlHandler.insertAction(val.strip())
-            #else:
-            #    exec(val.strip())
-        #self.config.save()
+            if 'INSERT' in val:
+                OkSqlHandler.insertAction(val.strip())
+            else:
+                exec(val.strip())
+        self.config.save()
 
 def isArgSet(data, options):
     option_dict = {}
