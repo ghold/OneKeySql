@@ -1,7 +1,9 @@
 from xml.etree.ElementTree import ElementTree, Element
 from OkConfig import OkConfig
+import os
 
 class OkTestcaseWriter(object):
+    path =  os.environ['ONEKEY_HOME']
     def __init__(self, file):
         self.tree = ElementTree()
         self.tree.parse(file)
@@ -36,7 +38,7 @@ class OkTestcaseWriter(object):
         element.append(stepsElement)
         
         self.root.append(element)
-        self.writeXml('testcase/testcase.xml')
+        self.writeXml(self.path + '/testcase/testcase.xml')
         
     def makeupElement(self, data, id):
         #vars
@@ -110,12 +112,12 @@ class OkTestcaseWriter(object):
                 
         result = self.root.find("./testcase[@id='%s']/steps"% id)
         result.append(element)
-        self.writeXml('testcase/testcase.xml')
+        self.writeXml(self.path + '/testcase/testcase.xml')
         
     def deleteCase(self, id):
         result = self.root.find("./testcase[@id='%s']"% id)
         self.root.remove(result)
-        self.writeXml('testcase/testcase.xml')
+        self.writeXml(self.path + '/testcase/testcase.xml')
         
     def deleteLastStep(self, id):
         case = self.root.find("./testcase[@id='%s']"% id)
@@ -142,7 +144,7 @@ class OkTestcaseWriter(object):
         varEle.text = ','.join(varList)
         
         steps.remove(lastStep)
-        self.writeXml('testcase/testcase.xml')
+        self.writeXml(self.path + '/testcase/testcase.xml')
         
     def writeXml(self, file):
         self.tree.write(file, encoding="UTF-8", xml_declaration=True, method='xml')

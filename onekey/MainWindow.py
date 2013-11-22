@@ -14,6 +14,7 @@ from OkXmlWriter import OkTestcaseWriter
 from OkCover import OkCover
 from OkSplitter import OkSplitter
 from OkBasket import OkBasket
+import os
 
 class MainWindow(QtGui.QFrame):
     editWidget = None
@@ -32,8 +33,8 @@ class MainWindow(QtGui.QFrame):
         self.setWindowTitle("OneKeySql")
         
         # Set up the model.
-        self.model = OkModel(("testcase/testcase.xml", OkTestcaseHandler, 'case'), 
-                            ("testunit/testunit.xml", OkTestunitHandler, 'unit'), 
+        self.model = OkModel(( "testcase/testcase.xml", OkTestcaseHandler, 'case'),
+                            ("testunit/testunit.xml", OkTestunitHandler, 'unit'),
                             ("testunit/spec.xml", OkTestunitHandler, 'unit'))
         
         # Set up the widgets.
@@ -256,7 +257,7 @@ class MainWindow(QtGui.QFrame):
         else:
             name, cate, desc = self.addingWidget.getNameAndDesc()
             if len(name.strip()) >0 and len(cate.strip()) > 0:
-                writer = OkTestcaseWriter('testcase/testcase.xml')
+                writer = OkTestcaseWriter(self.path  + '/testcase/testcase.xml')
                 writer.createCase(name, cate, desc)
                 self.cancelButton.hide()
                 self.addingWidget.hide()

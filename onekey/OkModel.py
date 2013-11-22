@@ -9,14 +9,14 @@ import os
 #import json
 
 class OkModel(object):
+    path = os.environ['ONEKEY_HOME']
     def __init__(self,  *args):
         self.data = {}
-        path = os.environ['ONEKEY_HOME']
         if len(args) > 0:
             self.args = args
         for val in self.args:
             handler = val[1]()
-            parse(path + '\\' + val[0], handler)
+            parse(self.path + '\\' + val[0], handler)
             if self.data.get(val[2]) is None:
                 self.data[val[2]] = {}
             self.data[val[2]].update(handler.getXmlData())

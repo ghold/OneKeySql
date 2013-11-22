@@ -1,7 +1,9 @@
 from PyQt4 import QtGui, QtCore, Qt
 from OkXmlWriter import OkTestcaseWriter
+import os
 
 class OkBasket(QtGui.QListWidget):
+    path =  os.environ['ONEKEY_HOME']
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
         self.setFrameStyle(QtGui.QFrame.NoFrame)
@@ -32,7 +34,7 @@ class OkBasket(QtGui.QListWidget):
     def dropEvent(self, event):
         if event.mimeData().hasFormat('application/ok-case'):
             event.setDropAction(QtCore.Qt.CopyAction)
-            writer = OkTestcaseWriter('testcase/testcase.xml')
+            writer = OkTestcaseWriter(self.path + '/testcase/testcase.xml')
             data = eval(bytes(event.mimeData().data('application/ok-case')).decode("utf-8"))
             writer.deleteCase(data["id"])
             self.topLevelWidget().openEditMode(self.topLevelWidget().caseList.selectedItem)
@@ -45,10 +47,10 @@ class OkBasket(QtGui.QListWidget):
             event.accept()
         elif event.mimeData().hasFormat('application/ok-step'):
             event.setDropAction(QtCore.Qt.CopyAction)
-            writer = OkTestcaseWriter('testcase/testcase.xml')
+            writer = OkTestcaseWriter(self.path + '/testcase/testcase.xml')
             row = bytes(event.mimeData().data('application/ok-step')).decode("utf-8")
             selectedItem = self.topLevelWidget().caseList.selectedItem
-            parentId = selectedItem.data(Qt.Qt.UserRole)['id']
+            parentId = selectedItem.data(0,Qt.Qt.UserRole)['id']
             writer.deleteLastStep(parentId)
             self.topLevelWidget().stepList.takeItem(int(row))
             self.topLevelWidget().model.update()

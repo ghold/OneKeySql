@@ -7,11 +7,13 @@ from OkTagBox import OkTagBox
 from OkXmlWriter import OkTestcaseWriter
 from PyQt4.QtCore import pyqtSlot
 import re
+import os
 
 class OkCaseEditPad(QtGui.QWidget):
     editWidget = None
     caseData = {}
     insertData = {}
+    path =  os.environ['ONEKEY_HOME']
     def __init__(self, item, insertdata, parent=None):
         QtGui.QWidget.__init__(self,  parent)
         self.setWindowFlags(Qt.Qt.FramelessWindowHint)
@@ -84,7 +86,7 @@ class OkCaseEditPad(QtGui.QWidget):
         data = self.settingWidget.setupModelDict()
         if data is None:
             return
-        writer = OkTestcaseWriter('testcase/testcase.xml')
+        writer = OkTestcaseWriter(self.path + '/testcase/testcase.xml')
         writer.makeupElement(data, self.caseData['id'])
         self.parent().model.update()
         self.parent().model.updateCaseItem(self.item)
