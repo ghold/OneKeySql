@@ -257,7 +257,8 @@ class MainWindow(QtGui.QFrame):
         else:
             name, cate, desc = self.addingWidget.getNameAndDesc()
             if len(name.strip()) >0 and len(cate.strip()) > 0:
-                writer = OkTestcaseWriter(self.path  + '/testcase/testcase.xml')
+                path =  os.environ['ONEKEY_HOME']
+                writer = OkTestcaseWriter(path  + '/testcase/testcase.xml')
                 writer.createCase(name, cate, desc)
                 self.cancelButton.hide()
                 self.addingWidget.hide()

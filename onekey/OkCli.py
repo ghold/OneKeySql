@@ -99,7 +99,6 @@ class OkDataParser(object):
         
     def sqlExec(self, data, result):
         self.setupData(data, result)
-        print(self.getSql())
         #thread = OkExecProcess(''.join(self.sql))
         #thread.start()
         #step_pattern = r";\n/\*Step [0-9 ]+.+\*/\n"
