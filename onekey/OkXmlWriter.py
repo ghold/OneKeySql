@@ -15,8 +15,10 @@ class OkTestcaseWriter(object):
         idList = []
         for val in result:
             idList.append(int(val.get("id")))
+        if len(idList) == 0:
+            return 0
         return max(idList)
-        
+
     def createCase(self, name, cate, desc):
         #id
         id = self.getMaxId()
