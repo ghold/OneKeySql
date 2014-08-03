@@ -1,4 +1,4 @@
-from PyQt4 import QtGui, QtCore, Qt
+from PyQt4 import Qt, QtCore, Qt
 from OkToolBar import OkEditToolBar
 from OkLabel import OkEditWidgetLabel
 from OkButton import OkExecButton
@@ -9,13 +9,13 @@ from PyQt4.QtCore import pyqtSlot
 import re
 import os
 
-class OkCaseEditPad(QtGui.QWidget):
+class OkCaseEditPad(Qt.QWidget):
     editWidget = None
     caseData = {}
     insertData = {}
-    path =  os.environ['ONEKEY_HOME']
+    path =  os.environ['ONEKEY4499_HOME']
     def __init__(self, item, insertdata, parent=None):
-        QtGui.QWidget.__init__(self,  parent)
+        Qt.QWidget.__init__(self,  parent)
         self.setWindowFlags(Qt.Qt.FramelessWindowHint)
         self.setGeometry(QtCore.QRect(200, 0, self.parent().width() - 200 ,  self.parent().height()))
         self.item = item
@@ -25,8 +25,8 @@ class OkCaseEditPad(QtGui.QWidget):
         self.toolBar = OkEditToolBar(self)
         
         # Set up the widgets.
-        horizontalSpacer = QtGui.QSpacerItem(20, 30)
-        verticalSpacer = QtGui.QSpacerItem(20, 30)
+        horizontalSpacer = Qt.QSpacerItem(20, 30)
+        verticalSpacer = Qt.QSpacerItem(20, 30)
         #tag
         tagLabel = OkEditWidgetLabel("标签")
         self.labelTags = self.setupTag()
@@ -34,11 +34,11 @@ class OkCaseEditPad(QtGui.QWidget):
         settingLabel = OkEditWidgetLabel("设置")
         
         #add layout
-        gridLayout = QtGui.QGridLayout()
+        gridLayout = Qt.QGridLayout()
         gridLayout.setOriginCorner(Qt.Qt.TopLeftCorner)
         gridLayout.addItem(horizontalSpacer, 0, 0, 1, 4)
         gridLayout.addItem(verticalSpacer, 1, 0)
-        editLayout = QtGui.QVBoxLayout()
+        editLayout = Qt.QVBoxLayout()
         
         #setting layout
         self.settingWidget = self.setupTable()
@@ -46,7 +46,7 @@ class OkCaseEditPad(QtGui.QWidget):
         self.comfirmButton = OkExecButton("保存")
         self.comfirmButton.clicked.connect(self.saveCase)
         #
-        horizonLayout = QtGui.QHBoxLayout()
+        horizonLayout = Qt.QHBoxLayout()
         horizonLayout.addWidget(settingLabel)
         horizonLayout.addWidget(self.comfirmButton )
         
@@ -96,9 +96,9 @@ class OkCaseEditPad(QtGui.QWidget):
         
     def paintEvent(self, event):
         self.setGeometry(QtCore.QRect(200, 0, self.parent().width() - 200 ,  self.parent().height()))
-        tmpPainter = QtGui.QPainter()
+        tmpPainter = Qt.QPainter()
         tmpPainter.begin(self)
-        tmpBrush = QtGui.QBrush(QtGui.QColor(50,  50,  50))
+        tmpBrush = Qt.QBrush(Qt.QColor(50,  50,  50))
         tmpPainter.fillRect(QtCore.QRectF(self.rect().left() ,  self.rect().top(),  self.rect().width(),
                 self.rect().height()), tmpBrush)
         tmpPainter.end()

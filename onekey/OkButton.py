@@ -1,8 +1,8 @@
-from PyQt4 import QtGui, QtCore, Qt
+from PyQt4 import  Qt
 
-class OkModuleButton(QtGui.QPushButton):
+class OkModuleButton(Qt.QPushButton):
     def __init__(self,  text, image, parent=None):
-        QtGui.QPushButton.__init__(self, text, parent)
+        Qt.QPushButton.__init__(self, text, parent)
         self.setMinimumSize(200, 35)
         self.image = image
         self.setFlat(1)
@@ -30,9 +30,9 @@ class OkModuleButton(QtGui.QPushButton):
                     "background: #4da6ea url("+self.image+") no-repeat"
                 "}")
         
-class OkExecButton(QtGui.QPushButton):
+class OkExecButton(Qt.QPushButton):
     def __init__(self,  text, parent=None):
-        QtGui.QPushButton.__init__(self, text, parent)
+        Qt.QPushButton.__init__(self, text, parent)
         
         self.setStyleSheet("QPushButton{"
                     "border:1px solid #000000;"
@@ -51,9 +51,9 @@ class OkExecButton(QtGui.QPushButton):
                     "border:1px solid #7ECEFD;"              
                 "}")
         
-class windowButton(QtGui.QPushButton):
+class windowButton(Qt.QPushButton):
     def __init__(self, parent=None):
-        QtGui.QPushButton.__init__(self, parent)
+        Qt.QPushButton.__init__(self, parent)
         self.setFocusPolicy(Qt.Qt.NoFocus)
         self.setMaximumSize(26, 26)
         self.setFlat(1)

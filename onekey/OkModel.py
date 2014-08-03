@@ -1,5 +1,4 @@
 from PyQt4 import Qt
-from OkListItem import OkListItem
 from xml.sax import parse
 from OkListWidget import *
 from OkListItem import *
@@ -9,7 +8,7 @@ import os
 #import json
 
 class OkModel(object):
-    path = os.environ['ONEKEY_HOME']
+    path = os.environ['ONEKEY4499_HOME']
     def __init__(self,  *args):
         self.data = {}
         if len(args) > 0:

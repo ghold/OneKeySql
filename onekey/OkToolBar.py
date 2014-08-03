@@ -1,11 +1,11 @@
-from PyQt4 import QtGui, QtCore, Qt
+from PyQt4 import QtCore, Qt
 
-class OkMainToolBar(QtGui.QToolBar):
+class OkMainToolBar(Qt.QToolBar):
     
     def __init__(self, parent=None):
-        QtGui.QToolBar.__init__(self, parent)
-        spacer = QtGui.QWidget()
-        spacer.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        Qt.QToolBar.__init__(self, parent)
+        spacer = Qt.QWidget()
+        spacer.setSizePolicy(Qt.QSizePolicy.Expanding, Qt.QSizePolicy.Expanding)
         self.addWidget(spacer)
         self.addWidget(MinButton())
         self.maxOrResizeButton = MaxOrResizeButton(self)
@@ -47,19 +47,19 @@ class OkMainToolBar(QtGui.QToolBar):
                 
     def paintEvent(self,  event):
         self.setGeometryByHeight(44)
-        tmpPainter = QtGui.QPainter()
+        tmpPainter = Qt.QPainter()
         tmpPainter.begin(self)
-        #tmpBrush = QtGui.QBrush(QtGui.QColor(110,  202,  199))
+        #tmpBrush = Qt.QBrush(Qt.QColor(110,  202,  199))
         #tmpPainter.fillRect(QtCore.QRectF(self.rect()), tmpBrush)
         tmpPainter.end()
         event.accept()
 
-class OkEditToolBar(QtGui.QToolBar):
+class OkEditToolBar(Qt.QToolBar):
     
     def __init__(self, parent=None):
-        QtGui.QToolBar.__init__(self, parent)
-        spacer = QtGui.QWidget()
-        spacer.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        Qt.QToolBar.__init__(self, parent)
+        spacer = Qt.QWidget()
+        spacer.setSizePolicy(Qt.QSizePolicy.Expanding, Qt.QSizePolicy.Expanding)
         self.addWidget(backButton())
         self.addWidget(spacer)
         self.addWidget(MinButton())
@@ -102,16 +102,16 @@ class OkEditToolBar(QtGui.QToolBar):
                 
     def paintEvent(self,  event):
         self.setGeometryByHeight(44)
-        tmpPainter = QtGui.QPainter()
+        tmpPainter = Qt.QPainter()
         tmpPainter.begin(self)
-        tmpBrush = QtGui.QBrush(QtGui.QColor(50,  50,  50))
+        tmpBrush = Qt.QBrush(Qt.QColor(50,  50,  50))
         tmpPainter.fillRect(QtCore.QRectF(self.rect()), tmpBrush)
         tmpPainter.end()
         event.accept()
 
-class windowButton(QtGui.QPushButton):
+class windowButton(Qt.QPushButton):
     def __init__(self, parent=None):
-        QtGui.QPushButton.__init__(self, parent)
+        Qt.QPushButton.__init__(self, parent)
         self.setFocusPolicy(Qt.Qt.NoFocus)
         self.setMaximumSize(26, 26)
         self.setFlat(1)

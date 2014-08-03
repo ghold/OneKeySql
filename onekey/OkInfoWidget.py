@@ -1,16 +1,16 @@
-from PyQt4 import QtGui, QtCore, Qt
+from PyQt4 import  Qt
 
-class OkInfoWidget(QtGui.QTextEdit):
+class OkInfoWidget(Qt.QTextEdit):
     def __init__(self, parent=None):
-        QtGui.QTextEdit.__init__(self, parent)
+        Qt.QTextEdit.__init__(self, parent)
         self.setStyleSheet("QTextEdit{"
                     "border: 0px;"
                     "background: #eeeeee"
                 "}")
         self.setTextInteractionFlags(Qt.Qt.TextSelectableByMouse)
         
-        okInfoDocument = QtGui.QTextDocument()
-        self.cursor = QtGui.QTextCursor(okInfoDocument)
+        okInfoDocument = Qt.QTextDocument()
+        self.cursor = Qt.QTextCursor(okInfoDocument)
         self.setDocument(okInfoDocument)
         
     def infoGeneratorUTF8(self, item):
@@ -20,24 +20,24 @@ class OkInfoWidget(QtGui.QTextEdit):
         self.cursor.insertText("%s-%s\n"%(data['id'], data['data']['name']), OkTitleFormat())
         self.cursor.insertText("%s\n"%data['data']['desc'], OkContentFormat())
         
-class OkBlockFormat(QtGui.QTextBlockFormat):
+class OkBlockFormat(Qt.QTextBlockFormat):
     def __init__(self):
-        QtGui.QTextBlockFormat.__init__(self)
+        Qt.QTextBlockFormat.__init__(self)
         self.setTopMargin(20)
         
-class OkTitleFormat(QtGui.QTextCharFormat):
+class OkTitleFormat(Qt.QTextCharFormat):
     def __init__(self):
-        QtGui.QTextCharFormat.__init__(self)
-        self.setFont(QtGui.QFont("微软雅黑", 16))
+        Qt.QTextCharFormat.__init__(self)
+        self.setFont(Qt.QFont("微软雅黑", 16))
 
-class OkContentFormat(QtGui.QTextCharFormat):
+class OkContentFormat(Qt.QTextCharFormat):
     def __init__(self):
-        QtGui.QTextCharFormat.__init__(self)
-        self.setFont(QtGui.QFont("微软雅黑", 12))
+        Qt.QTextCharFormat.__init__(self)
+        self.setFont(Qt.QFont("微软雅黑", 12))
         
-class OkTagFormat(QtGui.QTextCharFormat):
+class OkTagFormat(Qt.QTextCharFormat):
     def __init__(self):
-        QtGui.QTextCharFormat.__init__(self)
-        self.setFont(QtGui.QFont("微软雅黑", 12))
+        Qt.QTextCharFormat.__init__(self)
+        self.setFont(Qt.QFont("微软雅黑", 12))
         
         

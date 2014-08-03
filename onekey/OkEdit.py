@@ -1,11 +1,11 @@
-from PyQt4 import QtCore, QtGui, Qt
+from PyQt4 import QtCore, Qt
 from PyQt4.QtCore import pyqtSignal, pyqtSlot
 
-class OkTextEdit(QtGui.QLineEdit):
+class OkTextEdit(Qt.QLineEdit):
     #define ValueChanged Signal
     ValueChanged = pyqtSignal(str, str, str, str)
     def __init__(self, name=None, default=None, parent=None):
-        QtGui.QTextEdit.__init__(self, parent)
+        Qt.QTextEdit.__init__(self, parent)
         self.name = name
         self.default = default
         self.setStyleSheet("QLineEdit{"
@@ -64,10 +64,10 @@ class OkIncrementEdit(OkTextEdit):
             text = '{' + self.name + '}'
         self.ValueChanged.emit(self.name, text, "increment", self.default)
 
-class OkDatetimeEdit(QtGui.QDateTimeEdit):
+class OkDatetimeEdit(Qt.QDateTimeEdit):
     ValueChanged = pyqtSignal(str, str, str, str)
     def __init__(self, name=None, default=None, parent=None):
-        QtGui.QDateTimeEdit.__init__(self, parent)
+        Qt.QDateTimeEdit.__init__(self, parent)
         self.name = name
         self.default = default
         self.setStyleSheet("QDateTimeEdit{"
@@ -85,7 +85,7 @@ class OkDatetimeEdit(QtGui.QDateTimeEdit):
                 "QDateTimeEdit:focus{"
                     "border:1px solid #7ECEFD;"              
                 "}")
-        #calendar = QtGui.QCalendarWidget()
+        #calendar = Qt.QCalendarWidget()
         self.setCalendarPopup(False)
         #self.setCalendarWidget(calendar)
         self.dateTimeChanged.connect(self.changeValue)
@@ -102,10 +102,10 @@ class OkDatetimeEdit(QtGui.QDateTimeEdit):
             return
         self.ValueChanged.emit(self.name, datetime.toString("yyyy-MM-dd hh:mm:ss"), "datetime", self.default)
         
-class OkDateEdit(QtGui.QDateEdit):
+class OkDateEdit(Qt.QDateEdit):
     ValueChanged = pyqtSignal(str, str, str, str)
     def __init__(self, name=None, default=None, parent=None):
-        QtGui.QDateEdit.__init__(self, parent)
+        Qt.QDateEdit.__init__(self, parent)
         self.name = name
         self.default = default
         self.setStyleSheet("QDateEdit{"
@@ -123,7 +123,7 @@ class OkDateEdit(QtGui.QDateEdit):
                 "QDateEdit:focus{"
                     "border:1px solid #7ECEFD;"              
                 "}")
-        #calendar = QtGui.QCalendarWidget()
+        #calendar = Qt.QCalendarWidget()
         #self.setDate(QtCore.QDate.currentDate())
         self.setCalendarPopup(False)
         #self.setCalendarWidget(calendar)
@@ -141,10 +141,10 @@ class OkDateEdit(QtGui.QDateEdit):
             return
         self.ValueChanged.emit(self.name, date.toString("yyyy-MM-dd"), "date", self.default )
         
-class OkTimeEdit(QtGui.QTimeEdit):
+class OkTimeEdit(Qt.QTimeEdit):
     ValueChanged = pyqtSignal(str, str, str, str)
     def __init__(self, name=None, default=None, parent=None):
-        QtGui.QTimeEdit.__init__(self, parent)
+        Qt.QTimeEdit.__init__(self, parent)
         self.name = name
         self.default = default
         self.setStyleSheet("QTimeEdit{"

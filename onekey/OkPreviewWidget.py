@@ -1,4 +1,4 @@
-from PyQt4 import QtGui, QtCore, Qt
+from PyQt4 import Qt, QtCore, Qt
 from PyQt4.QtCore import pyqtSlot
 from OkTagHandler import OkTagHandler
 from OkScroll import OkScrollBar
@@ -7,9 +7,9 @@ from OkModel import OkModel
 from OkConfig import OkConfig
 import re
 
-class OkPreviewWidget(QtGui.QTextEdit):
+class OkPreviewWidget(Qt.QTextEdit):
     def __init__(self, parent=None):
-        QtGui.QTextEdit.__init__(self, parent)
+        Qt.QTextEdit.__init__(self, parent)
         self.cache = {}
         self.data = {}
         self.tag_position = {}
@@ -19,12 +19,12 @@ class OkPreviewWidget(QtGui.QTextEdit):
                     "background: #656565"
                 "}")
         #self.setMaximumHeight(600)
-        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.MinimumExpanding)
+        self.setSizePolicy(Qt.QSizePolicy.Expanding, Qt.QSizePolicy.MinimumExpanding)
         self.setTextInteractionFlags(Qt.Qt.TextSelectableByMouse)
         self.setVerticalScrollBar(OkScrollBar())
         
-        okInfoDocument = QtGui.QTextDocument()
-        self.cursor = QtGui.QTextCursor(okInfoDocument)
+        okInfoDocument = Qt.QTextDocument()
+        self.cursor = Qt.QTextCursor(okInfoDocument)
         self.cursor.setBlockFormat(OkBlockFormat())
         self.setDocument(okInfoDocument)
         
@@ -55,7 +55,7 @@ class OkPreviewWidget(QtGui.QTextEdit):
                 self.subTag(data[step]["tags"], step_data["value"], False)
             else:
                 self.subTag(data[step]["tags"], step_data["value"], True)
-        self.cursor.movePosition(QtGui.QTextCursor.Start)
+        self.cursor.movePosition(Qt.QTextCursor.Start)
     
     @pyqtSlot(str, str, str, str)
     def tagValue(self, tag, text, type, default):
@@ -67,11 +67,17 @@ class OkPreviewWidget(QtGui.QTextEdit):
             it += (val[1] *2 + 1)
             fragment = it.fragment()
             self.cursor.setPosition(fragment.position())
-            self.cursor.movePosition(QtGui.QTextCursor.Right, QtGui.QTextCursor.KeepAnchor, fragment.length())
+            self.cursor.movePosition(Qt.QTextCursor.Right, Qt.QTextCursor.KeepAnchor, fragment.length())
             self.cursor.deleteChar()
             #if arg is set, it will be call the "_arg" suffix method
             if val[2] is not None:
-                ac_text = OkTagHandler.callback(type + "_arg", ac_text, val[2], default, self.config)
+                if val[2] != 'repeat':
+                    ac_text = OkTagHandler.callback(type + "_arg", ac_text, val[2], default, self.config)
+                else:
+                    ac_text = OkTagHandler.callback("repeat_arg", ac_text, val[2], default, self.config)
+                    val_new = (val[0],val[1],None)
+                    self.tag_position[tag].remove(val)
+                    self.tag_position[tag].insert(0, val_new)
             self.tagFormat(ac_text)
         
     def subTag(self, tags, data, spec):
@@ -79,7 +85,7 @@ class OkPreviewWidget(QtGui.QTextEdit):
             pass
         else:
             self.cursor.insertText("VALUES( ", OkContentFormat())
-        tag_pattern = r'\{[0-9a-zA-Z_]+\((?P<name>[0-9a-zA-Z_]+)\)\}'
+        tag_pattern = r'\{[0-9a-zA-Z_@%]+\((?P<name>(?:[@%]|)[0-9a-zA-Z_]+)\)\}'
         tag_compiler =re.compile(tag_pattern)
         tag_list = tag_compiler.split(data)
         order = 0
@@ -92,6 +98,20 @@ class OkPreviewWidget(QtGui.QTextEdit):
                     self.tag_position.setdefault(arg_match.group("name"), [])
                     self.tag_position[arg_match.group("name")].append((self.cursor.blockNumber(), order, arg_match.group("arg")))
                 self.tagFormat(tags[val])
+                order += 1
+            elif val[0:1] and tags.get(val[1:]) is not None:
+                arg_match = arg_compiler.match(tags[val[1:]])
+                if arg_match is not None and val[0:1] == '%':
+                    self.tag_position.setdefault(arg_match.group("name"), [])
+                    self.tag_position[arg_match.group("name")].append((self.cursor.blockNumber(), order, 'repeat'))
+                elif arg_match is not None and val[0:1] == '@':
+                    val_idx = len(self.tag_position[arg_match.group("name")])
+                    if val_idx == 0:
+                        continue
+                    else:
+                        self.tag_position[arg_match.group("name")].append((self.cursor.blockNumber(), order,self.tag_position[arg_match.group("name")][val_idx-1][2]))
+
+                self.tagFormat(tags[val[1:]])
                 order += 1
             else:
                 self.contentFormat(val)
@@ -110,27 +130,27 @@ class OkPreviewWidget(QtGui.QTextEdit):
     def tagFormat(self, tag):
         self.cursor.insertText("%s"% tag, OkTagFormat())
         
-class OkBlockFormat(QtGui.QTextBlockFormat):
+class OkBlockFormat(Qt.QTextBlockFormat):
     def __init__(self):
-        QtGui.QTextBlockFormat.__init__(self)
+        Qt.QTextBlockFormat.__init__(self)
         self.setTopMargin(5)
         
-class OkTitleFormat(QtGui.QTextCharFormat):
+class OkTitleFormat(Qt.QTextCharFormat):
     def __init__(self):
-        QtGui.QTextCharFormat.__init__(self)
-        self.setFont(QtGui.QFont("微软雅黑", 8))
+        Qt.QTextCharFormat.__init__(self)
+        self.setFont(Qt.QFont("微软雅黑", 8))
 
-class OkContentFormat(QtGui.QTextCharFormat):
+class OkContentFormat(Qt.QTextCharFormat):
     def __init__(self):
-        QtGui.QTextCharFormat.__init__(self)
-        self.setFont(QtGui.QFont("微软雅黑", 9))
+        Qt.QTextCharFormat.__init__(self)
+        self.setFont(Qt.QFont("微软雅黑", 9))
         
-class OkTagFormat(QtGui.QTextCharFormat):
+class OkTagFormat(Qt.QTextCharFormat):
     def __init__(self):
-        QtGui.QTextCharFormat.__init__(self)
-        self.setFont(QtGui.QFont("微软雅黑", 12))
+        Qt.QTextCharFormat.__init__(self)
+        self.setFont(Qt.QFont("微软雅黑", 12))
         self.setFontUnderline(True)
-        tmpBrush = QtGui.QBrush(QtGui.QColor(255, 127, 102))
+        tmpBrush = Qt.QBrush(Qt.QColor(255, 127, 102))
         self.setForeground(tmpBrush)
         
         

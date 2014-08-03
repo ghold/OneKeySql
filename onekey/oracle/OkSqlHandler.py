@@ -6,8 +6,9 @@ os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.UTF8'
 class OkSqlHandler(object):
     @classmethod
     def setupConn(cls):
-        dsn = cx_Oracle.makedsn("10.0.44.99", "1521", "ompdb")
-        conn = cx_Oracle.connect('omp', 'omp', dsn)
+        # dsn = cx_Oracle.makedsn("10.0.44.99", "1521", "ompdb")
+        dsn = cx_Oracle.makedsn("10.0.76.128", "1521", "omp2st")
+        conn = cx_Oracle.connect('OMPBASE', 'OMPBASE', dsn)
         return conn
         
     @classmethod

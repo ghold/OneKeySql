@@ -1,14 +1,14 @@
-from PyQt4 import QtGui, QtCore, Qt
+from PyQt4 import Qt, QtCore, Qt
 from OkListItem import OkListItem
 from OkScroll import OkScrollBar
 
 from PyQt4.QtCore import pyqtSlot
 
-class OkListWidget(QtGui.QListWidget):
+class OkListWidget(Qt.QListWidget):
     def __init__(self, parent=None):
-        QtGui.QListWidget.__init__(self, parent)
+        Qt.QListWidget.__init__(self, parent)
         self.selectedItem = None
-        self.setFrameStyle(QtGui.QFrame.NoFrame)
+        self.setFrameStyle(Qt.QFrame.NoFrame)
         self.setSelectionMode(0)
         self.setFocusPolicy(Qt.Qt.NoFocus)
         self.setMinimumWidth(250)
@@ -65,10 +65,10 @@ class OkCaseWidget(OkListWidget):
         
         itemIndex = self.indexFromItem(item)
         itemRect = self.visualRect(itemIndex)
-        pixmap = QtGui.QPixmap(itemRect.size())
-        self.render(pixmap, QtCore.QPoint(0, 0), QtGui.QRegion(itemRect))
+        pixmap = Qt.QPixmap(itemRect.size())
+        self.render(pixmap, QtCore.QPoint(0, 0), Qt.QRegion(itemRect))
 
-        drag = QtGui.QDrag(self)
+        drag = Qt.QDrag(self)
         drag.setMimeData(mimeData)
         drag.setHotSpot(QtCore.QPoint(pixmap.width()/2, pixmap.height()/2))
         drag.setPixmap(pixmap)
@@ -85,11 +85,11 @@ class OkStepWidget(OkListWidget):
         OkListWidget.__init__(self, parent)
         self.item = item
         
-        image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
-        image.fill(QtGui.QColor(221, 221, 221))
-        image.setPixel(0, 39, QtGui.qRgba(33, 133, 197, 255))
-        image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
-        brush = QtGui.QBrush()
+        image = Qt.QImage(1, 41, Qt.QImage.Format_RGB32)
+        image.fill(Qt.QColor(221, 221, 221))
+        image.setPixel(0, 39, Qt.qRgba(33, 133, 197, 255))
+        image.setPixel(0, 40, Qt.qRgba(255, 255, 255, 255))
+        brush = Qt.QBrush()
         brush.setTextureImage(image)
         
         self.setStyleSheet("OkStepWidget::item:hover{"
@@ -132,10 +132,10 @@ class OkStepWidget(OkListWidget):
     
             itemIndex = self.indexFromItem(item)
             itemRect = self.visualRect(itemIndex)
-            pixmap = QtGui.QPixmap(itemRect.size())
-            self.render(pixmap, QtCore.QPoint(0, 0), QtGui.QRegion(itemRect))
+            pixmap = Qt.QPixmap(itemRect.size())
+            self.render(pixmap, QtCore.QPoint(0, 0), Qt.QRegion(itemRect))
     
-            drag = QtGui.QDrag(self)
+            drag = Qt.QDrag(self)
             drag.setMimeData(mimeData)
             drag.setHotSpot(QtCore.QPoint(pixmap.width()/2, pixmap.height()/2))
             drag.setPixmap(pixmap)
@@ -181,10 +181,10 @@ class OkUnitWidget(OkListWidget):
 
         itemIndex = self.indexFromItem(item)
         itemRect = self.visualRect(itemIndex)
-        pixmap = QtGui.QPixmap(itemRect.size())
-        self.render(pixmap, QtCore.QPoint(0, 0), QtGui.QRegion(itemRect))
+        pixmap = Qt.QPixmap(itemRect.size())
+        self.render(pixmap, QtCore.QPoint(0, 0), Qt.QRegion(itemRect))
 
-        drag = QtGui.QDrag(self)
+        drag = Qt.QDrag(self)
         drag.setMimeData(mimeData)
         drag.setHotSpot(QtCore.QPoint(pixmap.width()/2, pixmap.height()/2))
         drag.setPixmap(pixmap)

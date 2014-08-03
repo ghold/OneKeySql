@@ -1,4 +1,4 @@
-from PyQt4 import QtGui, QtCore, Qt
+from PyQt4 import Qt
 from PyQt4.QtCore import pyqtSlot
 from OkTagHandler import OkTagHandler
 from OkToolBar import OkEditToolBar
@@ -13,11 +13,11 @@ from OkEdit import *
 import re
 import time
 
-class OkArgSetPad(QtGui.QWidget):
+class OkArgSetPad(Qt.QWidget):
     editWidget = None
     data = {}
     def __init__(self, data, parent=None):
-        QtGui.QWidget.__init__(self,  parent)
+        Qt.QWidget.__init__(self,  parent)
         self.data = data
         self.config = OkConfig()
         self.setWindowFlags(Qt.Qt.FramelessWindowHint)
@@ -27,7 +27,7 @@ class OkArgSetPad(QtGui.QWidget):
         self.toolBar = OkEditToolBar(self)
         
         # Set up the widgets.
-        spacer = QtGui.QSpacerItem(20, 30)
+        spacer = Qt.QSpacerItem(20, 30)
         caseLabel = OkEditWidgetLabel("标签")
         previewLabel = OkEditWidgetLabel("预览")
         #comfireButton
@@ -35,16 +35,16 @@ class OkArgSetPad(QtGui.QWidget):
         self.comfirmButton.clicked.connect(self.sqlExec)
         
         #
-        horizonLayout = QtGui.QHBoxLayout()
+        horizonLayout = Qt.QHBoxLayout()
         horizonLayout.addWidget(previewLabel)
         horizonLayout.addWidget(self.comfirmButton )
         
         #add layout
-        gridLayout = QtGui.QGridLayout()
+        gridLayout = Qt.QGridLayout()
         gridLayout.setOriginCorner(Qt.Qt.TopLeftCorner)
         gridLayout.addItem(spacer, 0, 0, 1, 4)
         gridLayout.addItem(spacer, 1, 0)
-        editLayout = QtGui.QVBoxLayout()
+        editLayout = Qt.QVBoxLayout()
         
         #previewWidget
         self.previewWidget = self.setupPreview()
@@ -66,10 +66,10 @@ class OkArgSetPad(QtGui.QWidget):
         #setting layout
         settingWidget = OkScrollArea()
         #label layout
-        labelWidget = QtGui.QWidget()
+        labelWidget = Qt.QWidget()
         labelWidget.setStyleSheet("background-color: #323232;")
-        labelLayout = QtGui.QFormLayout()
-        labelLayout.setFieldGrowthPolicy(QtGui.QFormLayout.FieldsStayAtSizeHint)
+        labelLayout = Qt.QFormLayout()
+        labelLayout.setFieldGrowthPolicy(Qt.QFormLayout.FieldsStayAtSizeHint)
         labelLayout.setLabelAlignment(Qt.Qt.AlignRight)
         
         #match the form like {type_name(tag_name:default_val)}
@@ -132,9 +132,9 @@ class OkArgSetPad(QtGui.QWidget):
         
     def paintEvent(self, event):
         self.setGeometry(QtCore.QRect(200, 0, self.parent().width() - 200 ,  self.parent().height()))
-        tmpPainter = QtGui.QPainter()
+        tmpPainter = Qt.QPainter()
         tmpPainter.begin(self)
-        tmpBrush = QtGui.QBrush(QtGui.QColor(50,  50,  50))
+        tmpBrush = Qt.QBrush(Qt.QColor(50,  50,  50))
         tmpPainter.fillRect(QtCore.QRectF(self.rect().left() ,  self.rect().top(),  self.rect().width(),
                 self.rect().height()), tmpBrush)
         tmpPainter.end()

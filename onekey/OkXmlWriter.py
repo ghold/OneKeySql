@@ -3,7 +3,7 @@ from OkConfig import OkConfig
 import os
 
 class OkTestcaseWriter(object):
-    path =  os.environ['ONEKEY_HOME']
+    path =  os.environ['ONEKEY4499_HOME']
     def __init__(self, file):
         self.tree = ElementTree()
         self.tree.parse(file)

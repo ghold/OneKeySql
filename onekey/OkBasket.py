@@ -1,12 +1,12 @@
-from PyQt4 import QtGui, QtCore, Qt
+from PyQt4 import Qt, QtCore
 from OkXmlWriter import OkTestcaseWriter
 import os
 
-class OkBasket(QtGui.QListWidget):
-    path =  os.environ['ONEKEY_HOME']
+class OkBasket(Qt.QListWidget):
+    path =  os.environ['ONEKEY4499_HOME']
     def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
-        self.setFrameStyle(QtGui.QFrame.NoFrame)
+        Qt.QWidget.__init__(self, parent)
+        self.setFrameStyle(Qt.QFrame.NoFrame)
         self.setMaximumSize(50, 50)
         
         self.setStyleSheet("OkBasket{"

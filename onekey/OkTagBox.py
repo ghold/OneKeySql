@@ -1,16 +1,16 @@
-from PyQt4 import QtCore, QtGui, Qt
+from PyQt4 import QtCore, Qt, Qt
 
-class DragLabel(QtGui.QLabel):
+class DragLabel(Qt.QLabel):
     def __init__(self, var, parent):
-        QtGui.QLabel.__init__(self, parent)
+        Qt.QLabel.__init__(self, parent)
         self.var = var
         self.setText(self.var[1])
         self.setMinimumSize(7 * (len(self.text().encode('utf-8')) + len(self.text())), 30)
         self.setAlignment(Qt.Qt.AlignCenter)
         
         self.setAutoFillBackground(True)
-        self.setFrameShape(QtGui.QFrame.Panel)
-        self.setFrameShadow(QtGui.QFrame.Raised)
+        self.setFrameShape(Qt.QFrame.Panel)
+        self.setFrameShadow(Qt.QFrame.Raised)
         
         self.setStyleSheet("QLabel{"
                     "border:1px solid #000000;"
@@ -38,10 +38,10 @@ class DragLabel(QtGui.QLabel):
         mimeData.setData('application/x-point',
                 '%d %d' % (self.pos().x(), self.pos().y()))
 
-        pixmap = QtGui.QPixmap(self.size())
+        pixmap = Qt.QPixmap(self.size())
         self.render(pixmap)
 
-        drag = QtGui.QDrag(self)
+        drag = Qt.QDrag(self)
         drag.setMimeData(mimeData)
         drag.setPixmap(pixmap)
         drag.setHotSpot(hotSpot)
@@ -52,9 +52,9 @@ class DragLabel(QtGui.QLabel):
             self.close()
             self.update()
 
-class OkTagBox(QtGui.QWidget):
+class OkTagBox(Qt.QWidget):
     def __init__(self, tag, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+        Qt.QWidget.__init__(self, parent)
         x = 25
         y = 5
         for var in tag:
@@ -67,7 +67,7 @@ class OkTagBox(QtGui.QWidget):
             wordLabel.show()
             x += wordLabel.minimumWidth() + 2
         newPalette = self.palette()
-        newPalette.setColor(QtGui.QPalette.Window, QtGui.QColor(50,  50,  50))
+        newPalette.setColor(Qt.QPalette.Window, Qt.QColor(50,  50,  50))
         self.setPalette(newPalette)
 
         self.setAcceptDrops(True)

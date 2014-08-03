@@ -1,14 +1,14 @@
 import argparse
 from xml.sax import parse
-import OkXmlHandler
-from OkModel import OkModel
-from OkConfig import OkConfig
-from OkTagHandlerCli import OkTagHandler
+from . import OkXmlHandler
+from .OkModel import OkModel
+from .OkConfig import OkConfig
+from .OkTagHandlerCli import OkTagHandler
 #import json
 import re
 import os
 import time
-from OkXmlHandler import OkTestcaseHandler
+from .OkXmlHandler import OkTestcaseHandler
 #from OkRuntime import OkExecProcess
 from oracle.OkSqlHandler import OkSqlHandler
 
@@ -143,7 +143,7 @@ def isArgSet(data, options):
 
 def init(id, option):
     handler = OkTestcaseHandler()
-    path =  os.environ['ONEKEY_HOME']
+    path =  os.environ['ONEKEY4499_HOME']
     #path = '.'
     parse(path + '/testcase/testcase.xml', handler)
     data = handler.getXmlData()

@@ -1,13 +1,13 @@
-from PyQt4 import QtGui, QtCore
+from PyQt4 import Qt, QtCore
 from PyQt4.QtCore import pyqtSignal, pyqtSlot
 from OkTagHandler import OkTagHandler
 from OkScroll import OkScrollBar
 from OkConfig import OkConfig
 
-class OkTypeBox(QtGui.QComboBox):
+class OkTypeBox(Qt.QComboBox):
     changeType = pyqtSignal(int, QtCore.QModelIndex)
     def __init__(self, parent=None):
-        QtGui.QComboBox.__init__(self, parent)
+        Qt.QComboBox.__init__(self, parent)
         strList = ["固定值", "自定义标签", "标签引用"]
         self.addItems(strList)
         self.currentIndexChanged.connect(self.typeChanged)
@@ -17,24 +17,24 @@ class OkTypeBox(QtGui.QComboBox):
     def typeChanged(self, type):
         self.changeType.emit(type, self.parent().parent().currentIndex())
         
-class OkDefaultValBox(QtGui.QWidget):
-    closeEditor = pyqtSignal(QtGui.QWidget, QtGui.QAbstractItemDelegate.EndEditHint)
-    commitData = pyqtSignal(QtGui.QWidget)
+class OkDefaultValBox(Qt.QWidget):
+    closeEditor = pyqtSignal(Qt.QWidget, Qt.QAbstractItemDelegate.EndEditHint)
+    commitData = pyqtSignal(Qt.QWidget)
     def __init__(self, subtype, config, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+        Qt.QWidget.__init__(self, parent)
         self.subtype = subtype
         self.config = config
         self.defGlobalVal = None
         self.defCustomVal = None
         self.subeditor = None
         
-        self.comboBox = QtGui.QComboBox()
+        self.comboBox = Qt.QComboBox()
         strList = ["","全局变量", "固定值"]
         self.comboBox.addItems(strList)
         self.comboBox.setCurrentIndex(0)
         self.comboBox.activated.connect(self.typeActivated)
         
-        layout = QtGui.QVBoxLayout()
+        layout = Qt.QVBoxLayout()
         layout.setSpacing(0)
         layout.setMargin(0)
         layout.addWidget(self.comboBox)
@@ -60,7 +60,7 @@ class OkDefaultValBox(QtGui.QWidget):
     def typeActivated(self, type):
         if type == 1:
             self.defCustomVal = None
-            self.subeditor = QtGui.QComboBox()
+            self.subeditor = Qt.QComboBox()
             self.subeditor.setStyleSheet("QComboBox{"
                     "border:1px solid #000000;"
                     "height: 25px;"
@@ -96,22 +96,22 @@ class OkDefaultValBox(QtGui.QWidget):
             except AttributeError:
                 self.defGlobalVal = self.subeditor.currentText()
         self.commitData.emit(self)
-        self.closeEditor.emit(self, QtGui.QAbstractItemDelegate.NoHint)
+        self.closeEditor.emit(self, Qt.QAbstractItemDelegate.NoHint)
         
-class OkParamBox(QtGui.QWidget):
-    closeEditor = pyqtSignal(QtGui.QWidget, QtGui.QAbstractItemDelegate.EndEditHint)
-    commitData = pyqtSignal(QtGui.QWidget)
+class OkParamBox(Qt.QWidget):
+    closeEditor = pyqtSignal(Qt.QWidget, Qt.QAbstractItemDelegate.EndEditHint)
+    commitData = pyqtSignal(Qt.QWidget)
     def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+        Qt.QWidget.__init__(self, parent)
         
         #OperatorComboBox
-        self.operator = QtGui.QComboBox(self)
+        self.operator = Qt.QComboBox(self)
         opList = ["+", "-"]
         self.operator.addItems(opList)
         self.operator.setCurrentIndex(0)
         
         #textEdit
-        self.param = QtGui.QLineEdit(self)
+        self.param = Qt.QLineEdit(self)
         self.param.setStyleSheet("QLineEdit{"
                     "border:1px solid #000000;"
                     "background-color: #656565;"
@@ -130,7 +130,7 @@ class OkParamBox(QtGui.QWidget):
         self.param.editingFinished.connect(self.dataCommit)
         self.operator.activated.connect(self.param.setFocus)
         #layout
-        layout = QtGui.QHBoxLayout()
+        layout = Qt.QHBoxLayout()
         layout.setSpacing(0)
         layout.setMargin(0)
         layout.addWidget(self.operator, 0)
@@ -157,12 +157,12 @@ class OkParamBox(QtGui.QWidget):
     @pyqtSlot()
     def dataCommit(self):
         self.commitData.emit(self)
-        self.closeEditor.emit(self, QtGui.QAbstractItemDelegate.NoHint)
+        self.closeEditor.emit(self, Qt.QAbstractItemDelegate.NoHint)
         
-class OkComboBoxDelegate(QtGui.QStyledItemDelegate):
+class OkComboBoxDelegate(Qt.QStyledItemDelegate):
     #if use qss for delegate, please use QStyledItemDelegate
     def __init__(self, parent=None):
-        QtGui.QStyledItemDelegate.__init__(self, parent)
+        Qt.QStyledItemDelegate.__init__(self, parent)
         
     def createEditor(self, parent, option, index):
         editor = OkTypeBox(parent)
@@ -182,10 +182,10 @@ class OkComboBoxDelegate(QtGui.QStyledItemDelegate):
     def updateEditorGeometry(self, editor, option, index):
         editor.setGeometry(option.rect)
         
-class OkTagNameDelegate(QtGui.QStyledItemDelegate):
+class OkTagNameDelegate(Qt.QStyledItemDelegate):
     #if use qss for delegate, please use QStyledItemDelegate
     def __init__(self, tagList, varDict, confDict, customTagsUser, tagConn, parent=None):
-        QtGui.QStyledItemDelegate.__init__(self, parent)
+        Qt.QStyledItemDelegate.__init__(self, parent)
         self.tagList = tagList
         self.varDict = varDict
         self.confDict = confDict
@@ -207,7 +207,7 @@ class OkTagNameDelegate(QtGui.QStyledItemDelegate):
             self.finalList = self.accessList.copy()
         #delete the editing one
         
-        editor = QtGui.QComboBox(parent)
+        editor = Qt.QComboBox(parent)
         editor.addItems(self.finalList)
         editor.setEditable(True)
         return editor
@@ -336,10 +336,10 @@ class OkTagNameDelegate(QtGui.QStyledItemDelegate):
     def updateEditorGeometry(self, editor, option, index):
         editor.setGeometry(option.rect)
         
-class OkDefaultValDelegate(QtGui.QStyledItemDelegate):
+class OkDefaultValDelegate(Qt.QStyledItemDelegate):
     #if use qss for delegate, please use QStyledItemDelegate
     def __init__(self, tagList, config, parent=None):
-        QtGui.QStyledItemDelegate.__init__(self, parent)
+        Qt.QStyledItemDelegate.__init__(self, parent)
         self.tagList = tagList
         self.config = config
         
@@ -369,10 +369,10 @@ class OkDefaultValDelegate(QtGui.QStyledItemDelegate):
     def updateEditorGeometry(self, defValEdit, option, index):
         defValEdit.setGeometry(option.rect)
         
-class OkParamDelegate(QtGui.QStyledItemDelegate):
+class OkParamDelegate(Qt.QStyledItemDelegate):
     #if use qss for delegate, please use QStyledItemDelegate
     def __init__(self, tagList, parent=None):
-        QtGui.QStyledItemDelegate.__init__(self, parent)
+        Qt.QStyledItemDelegate.__init__(self, parent)
         self.tagList = tagList
         
     def createEditor(self, parent, option, index):
@@ -396,9 +396,9 @@ class OkParamDelegate(QtGui.QStyledItemDelegate):
     def updateEditorGeometry(self, editor, option, index):
         editor.setGeometry(option.rect)
         
-class OkTagSetting(QtGui.QTableView):
+class OkTagSetting(Qt.QTableView):
     def __init__(self, tagVars, tagLabels, data, parent = None):
-        QtGui.QTableView.__init__(self, parent)
+        Qt.QTableView.__init__(self, parent)
         self.tagVars = tagVars
         self.tagLabels = tagLabels
         self.data = data
@@ -408,7 +408,7 @@ class OkTagSetting(QtGui.QTableView):
         self.setVerticalScrollBar(OkScrollBar())
         self.setAlternatingRowColors(False)
         self.setShowGrid(False)
-        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.MinimumExpanding)
+        self.setSizePolicy(Qt.QSizePolicy.Expanding, Qt.QSizePolicy.MinimumExpanding)
         
         self.setStyleSheet("QTableView{"
                     "border: 1px solid #323232;"
@@ -467,7 +467,7 @@ class OkTagSetting(QtGui.QTableView):
         #setupModel
         horizontalHeaderList = ["类型", "标签名", "默认值", "计算参数","是否可配置"]
         self.settingColumn = len(horizontalHeaderList)
-        self.model = QtGui.QStandardItemModel(self.settingRow, self.settingColumn)
+        self.model = Qt.QStandardItemModel(self.settingRow, self.settingColumn)
         self.model.setHorizontalHeaderLabels(horizontalHeaderList)
         self.model.itemChanged.connect(self.checkableChange)
         self.setSelectionMode(3)
@@ -592,7 +592,7 @@ class OkTagSetting(QtGui.QTableView):
                             self.model.setData(index, '', QtCore.Qt.UserRole)
                         self.model.itemFromIndex(index).setEnabled(True)
     
-    @pyqtSlot(QtGui.QStandardItem)
+    @pyqtSlot(Qt.QStandardItem)
     def checkableChange(self, item):
         if item.column() != 4:
             return

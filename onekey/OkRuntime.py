@@ -19,5 +19,6 @@ class OkExecProcess(Thread):
             #Don't need to add " at start or at end
             if 'INSERT' in val:
                 OkSqlHandler.insertAction(val.strip())
+                time.sleep(1)
             else:
                 exec(val.strip())

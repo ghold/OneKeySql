@@ -42,7 +42,12 @@ class OkTagHandler(object):
         from OkEdit import OkMinuteEdit
         name, default, parent = args
         return OkMinuteEdit(name, default, parent)
-        
+
+    @classmethod
+    def repeat_arg(cls, *args):
+        val, arg, default, config = args
+        return config.callback(default)
+
     @classmethod
     def minute_arg(cls, *args):
         number, arg, default, config = args
@@ -79,4 +84,5 @@ class OkTagHandler(object):
             return config.INCREMENT
         except ValueError:
             return number.strip("}") + "(" + arg + ")}"
-    
+
+

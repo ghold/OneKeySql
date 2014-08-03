@@ -1,11 +1,10 @@
-from PyQt4 import QtGui, QtCore, Qt
+from PyQt4 import Qt, QtCore
 from PyQt4.QtCore import pyqtSlot
 from OkButton import *
 from OkToolBar import OkMainToolBar
 from OkModel import OkModel
 from OkXmlHandler import OkTestcaseHandler, OkTestunitHandler
 from OkInfoWidget import OkInfoWidget
-from OkListItem import OkListItem
 from OkListItem import OkTreeItem
 from OkCaseEditPad import OkCaseEditPad
 from OkArgSetPad import OkArgSetPad
@@ -16,12 +15,12 @@ from OkSplitter import OkSplitter
 from OkBasket import OkBasket
 import os
 
-class MainWindow(QtGui.QFrame):
+class MainWindow(Qt.QFrame):
     editWidget = None
     def __init__(self,  parent=None):
-        QtGui.QFrame.__init__(self,  parent)
+        Qt.QFrame.__init__(self,  parent)
         self.setWindowFlags(Qt.Qt.FramelessWindowHint|Qt.Qt.WindowSystemMenuHint|Qt.Qt.WindowMinMaxButtonsHint)
-        self.screen = QtGui.QDesktopWidget().screenGeometry()
+        self.screen = Qt.QDesktopWidget().screenGeometry()
         self.setGeometry(QtCore.QRect().adjusted(self.screen.width()/2 - 500, self.screen.height()/2 - 300, 
                 self.screen.width()/2 + 500,  self.screen.height()/2 + 300))
         self.setObjectName("MainWindow")
@@ -38,12 +37,12 @@ class MainWindow(QtGui.QFrame):
                             ("testunit/spec.xml", OkTestunitHandler, 'unit'))
         
         # Set up the widgets.
-        self.Spacer = QtGui.QSpacerItem(20, 30)
-        txButton = OkModuleButton("测试执行", ":/images/tx_35x35.png")
+        self.Spacer = Qt.QSpacerItem(20, 30)
+        txButton = OkModuleButton("操作模拟", ":/images/tx_35x35.png")
         txButton.setChecked(True)
-        tcButton = OkModuleButton("测试用例", ":/images/tc_35x35.png")
+        tcButton = OkModuleButton("模板制作", ":/images/tc_35x35.png")
         #buttonGroup
-        self.moduleGroup = QtGui.QButtonGroup()
+        self.moduleGroup = Qt.QButtonGroup()
         self.moduleGroup.addButton(txButton, 1)
         self.moduleGroup.addButton(tcButton, 2)
         self.moduleGroup.buttonClicked.connect(self.moduleChange)
@@ -53,14 +52,14 @@ class MainWindow(QtGui.QFrame):
         #mainSplitter
         self.mainSplitter =OkSplitter()
         #moduleWidget
-        moduleWidget = QtGui.QWidget()
-        moduleLayout = QtGui.QVBoxLayout(moduleWidget)
+        moduleWidget = Qt.QWidget()
+        moduleLayout = Qt.QVBoxLayout(moduleWidget)
         moduleLayout.addWidget(txButton, 0, Qt.Qt.AlignTop)
         moduleLayout.addWidget(tcButton, 1, Qt.Qt.AlignTop)
         moduleLayout.addWidget(self.basket, 1, Qt.Qt.AlignBottom)
         self.mainSplitter.addWidget(moduleWidget)
         #mainLayout
-        gridLayout = QtGui.QGridLayout()
+        gridLayout = Qt.QGridLayout()
         gridLayout.setOriginCorner(Qt.Qt.TopLeftCorner)
         gridLayout.addItem(self.Spacer, 0, 0, 1, 4)
         gridLayout.addItem(self.Spacer, 1, 0)
@@ -84,10 +83,10 @@ class MainWindow(QtGui.QFrame):
         
         #completer
         wordList = ["中转" ,  "运输" ,  "散货" ,  "收仓"]
-        completer = QtGui.QCompleter(wordList)
+        completer = Qt.QCompleter(wordList)
         
         #
-        searchEdit = QtGui.QLineEdit()
+        searchEdit = Qt.QLineEdit()
         searchEdit.setCompleter(completer)
         searchEdit.textChanged.connect(self.caseList.search)
         
@@ -96,7 +95,7 @@ class MainWindow(QtGui.QFrame):
         self.cancelButton = OkCancelButton()
         self.cancelButton.pressed.connect(self.pushCancel)
         
-        searchLayout = QtGui.QHBoxLayout()
+        searchLayout = Qt.QHBoxLayout()
         searchLayout.addWidget(searchEdit)
         searchLayout.addWidget(self.addButton)
         searchLayout.addWidget(self.cancelButton)
@@ -106,16 +105,16 @@ class MainWindow(QtGui.QFrame):
         self.addingWidget = OkAddCase()
         self.addingWidget.hide()
         #
-        topLayout = QtGui.QVBoxLayout()
+        topLayout = Qt.QVBoxLayout()
         topLayout.addLayout(searchLayout)
         topLayout.addWidget(self.addingWidget)
         
         #
-        caseLayout = QtGui.QVBoxLayout()
+        caseLayout = Qt.QVBoxLayout()
         caseLayout.addLayout(topLayout)
         caseLayout.addWidget(self.caseList)
         
-        caseWidget = QtGui.QWidget()
+        caseWidget = Qt.QWidget()
         caseWidget.setLayout(caseLayout)
         moduleSplitter.addWidget(caseWidget)
 #        moduleSplitter.addWidget(stepList)
@@ -130,13 +129,13 @@ class MainWindow(QtGui.QFrame):
         self.caseList = self.model.makeupExecList()
         #completer
         wordList = ["中转" ,  "运输" ,  "散货" ,  "收仓"]
-        completer = QtGui.QCompleter(wordList)
+        completer = Qt.QCompleter(wordList)
         #caseWidget
-        caseWidget = QtGui.QWidget()
-        lineEdit = QtGui.QLineEdit()
+        caseWidget = Qt.QWidget()
+        lineEdit = Qt.QLineEdit()
         lineEdit.setCompleter(completer)
         lineEdit.textChanged.connect(self.caseList.search)
-        caseLayout = QtGui.QVBoxLayout()
+        caseLayout = Qt.QVBoxLayout()
         caseLayout.addWidget(lineEdit)
         caseLayout.addWidget(self.caseList)
         caseWidget.setLayout(caseLayout)
@@ -191,13 +190,13 @@ class MainWindow(QtGui.QFrame):
                 self.addButton.setEnabled(True)
                 item.treeWidget().editState = False
                 #change background
-                image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
-                image.fill(QtGui.QColor(238,  238,  238))
-                image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
-                brush = QtGui.QBrush()
+                image = Qt.QImage(1, 41, Qt.QImage.Format_RGB32)
+                image.fill(Qt.QColor(238,  238,  238))
+                image.setPixel(0, 40, Qt.qRgba(255, 255, 255, 255))
+                brush = Qt.QBrush()
                 brush.setTextureImage(image)
                 item.setBackground(0, brush)
-                item.setTextColor(0, QtGui.QColor(110,  110,  110))
+                item.setTextColor(0, Qt.QColor(110,  110,  110))
                 item.state = False
                 item.treeWidget().selectedItem = None
                 
@@ -210,13 +209,13 @@ class MainWindow(QtGui.QFrame):
                 unitList.itemPressed.connect(unitList.pressItem)
                 #completer
                 wordList = ["中转" ,  "运输" ,  "散货" ,  "收仓"]
-                completer = QtGui.QCompleter(wordList)
+                completer = Qt.QCompleter(wordList)
                 #unitWidget
-                unitWidget = QtGui.QWidget()
-                lineEdit = QtGui.QLineEdit()
+                unitWidget = Qt.QWidget()
+                lineEdit = Qt.QLineEdit()
                 lineEdit.setCompleter(completer)
                 lineEdit.textChanged.connect(unitList.search)
-                unitLayout = QtGui.QVBoxLayout()
+                unitLayout = Qt.QVBoxLayout()
                 unitLayout.addWidget(lineEdit)
                 unitLayout.addWidget(unitList)
                 unitWidget.setLayout(unitLayout)
@@ -227,14 +226,14 @@ class MainWindow(QtGui.QFrame):
                 self.addButton.setEnabled(False)
                 item.treeWidget().editState = True
                 #change background
-                image = QtGui.QImage(1, 41, QtGui.QImage.Format_RGB32)
-                image.fill(QtGui.QColor(221, 221, 221))
-                image.setPixel(0, 39, QtGui.qRgba(33, 133, 197, 255))
-                image.setPixel(0, 40, QtGui.qRgba(255, 255, 255, 255))
-                brush = QtGui.QBrush()
+                image = Qt.QImage(1, 41, Qt.QImage.Format_RGB32)
+                image.fill(Qt.QColor(221, 221, 221))
+                image.setPixel(0, 39, Qt.qRgba(33, 133, 197, 255))
+                image.setPixel(0, 40, Qt.qRgba(255, 255, 255, 255))
+                brush = Qt.QBrush()
                 brush.setTextureImage(image)
                 item.setBackground(0, brush)
-                item.setTextColor(0, QtGui.QColor(59,  66,  76))
+                item.setTextColor(0, Qt.QColor(59,  66,  76))
                 item.setItemSelected(item)
             
     def showArgSetPad(self, item):
@@ -257,7 +256,7 @@ class MainWindow(QtGui.QFrame):
         else:
             name, cate, desc = self.addingWidget.getNameAndDesc()
             if len(name.strip()) >0 and len(cate.strip()) > 0:
-                path =  os.environ['ONEKEY_HOME']
+                path =  os.environ['ONEKEY4499_HOME']
                 writer = OkTestcaseWriter(path  + '/testcase/testcase.xml')
                 writer.createCase(name, cate, desc)
                 self.cancelButton.hide()

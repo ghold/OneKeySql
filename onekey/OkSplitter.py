@@ -1,8 +1,8 @@
-from PyQt4 import QtGui, QtCore, Qt
+from PyQt4 import Qt
 
-class OkSplitter(QtGui.QSplitter):
+class OkSplitter(Qt.QSplitter):
     def __init__(self, parent=None):
-        QtGui.QSplitter.__init__(self, parent)
+        Qt.QSplitter.__init__(self, parent)
         self.setHandleWidth(1)
         self.setChildrenCollapsible(False)
         

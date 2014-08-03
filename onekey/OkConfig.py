@@ -27,7 +27,7 @@ class OkConfig(object):
     
     def __init__(self):
         self.config = ConfigParser()
-        path =  os.environ['ONEKEY_HOME']
+        path =  os.environ['ONEKEY4499_HOME']
         self.config.read_file(open(path + "/config.conf"))
         for section in self.config.sections():
             for val in self.config.items(section):
@@ -38,7 +38,7 @@ class OkConfig(object):
         self.INCREMENT = None
         
     def save(self):
-        path =  os.environ['ONEKEY_HOME']
+        path =  os.environ['ONEKEY4499_HOME']
         for section in self.config.sections():
             for val in self.config.items(section):
                 self.config.set(section, val[0], self.callback(val[0].upper()))

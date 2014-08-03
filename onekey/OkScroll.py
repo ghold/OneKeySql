@@ -1,17 +1,17 @@
-from PyQt4 import QtGui, QtCore, Qt
-class OkScrollArea(QtGui.QScrollArea):
+from PyQt4 import Qt, QtCore, Qt
+class OkScrollArea(Qt.QScrollArea):
     def __init__(self, parent=None):
-        QtGui.QScrollArea.__init__(self, parent)
+        Qt.QScrollArea.__init__(self, parent)
         self.setVerticalScrollBar(OkScrollBar())
         self.setStyleSheet("QScrollArea{"
                     "border: 0px;"
                     "background: #323232;"
                 "}")
-        #self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        #self.setSizePolicy(Qt.QSizePolicy.Fixed, Qt.QSizePolicy.Fixed)
         
-class OkScrollBar(QtGui.QScrollBar):
+class OkScrollBar(Qt.QScrollBar):
     def __init__(self, parent=None):
-        QtGui.QScrollBar.__init__(self, parent)
+        Qt.QScrollBar.__init__(self, parent)
         self.setStyleSheet("QScrollBar:vertical {"
                     "border:0px solid #ebece4;"
                     "width: 5px;"

@@ -1,14 +1,14 @@
-from PyQt4 import QtGui, QtCore, Qt
+from PyQt4 import QtCore, Qt
 from OkScroll import OkScrollBar
 from PyQt4.QtCore import pyqtSlot
 from OkListItem import OkTreeItem
 
-class OkTreeWidget(QtGui.QTreeWidget):
+class OkTreeWidget(Qt.QTreeWidget):
     def __init__(self, parent=None):
-        QtGui.QTreeWidget.__init__(self, parent)
+        Qt.QTreeWidget.__init__(self, parent)
         self.selectedItem = None
         self.setHeaderHidden(True)
-        #self.setFrameStyle(QtGui.QFrame.NoFrame)
+        #self.setFrameStyle(Qt.QFrame.NoFrame)
         self.setSelectionMode(0)
         self.setFocusPolicy(Qt.Qt.NoFocus)
         self.setMinimumWidth(250)
@@ -21,14 +21,14 @@ class OkTreeWidget(QtGui.QTreeWidget):
     @pyqtSlot(str)        
     def search(self, text):
         if len(text) == 0:
-            iterator = QtGui.QTreeWidgetItemIterator(self, QtGui.QTreeWidgetItemIterator.Hidden)
+            iterator = Qt.QTreeWidgetItemIterator(self, Qt.QTreeWidgetItemIterator.Hidden)
             while iterator.value() is not None:
                 item = iterator.value()
                 item.setHidden(False)
                 iterator += 1
             self.collapseAll()
         else:
-            iterator = QtGui.QTreeWidgetItemIterator(self)
+            iterator = Qt.QTreeWidgetItemIterator(self)
             while iterator.value() is not None:
                 item = iterator.value()
                 step = 1
@@ -70,7 +70,7 @@ class OkCaseTreeWidget(OkTreeWidget):
     @pyqtSlot(OkTreeItem, int)    
     def itemEnter(self, item, col):
         if item != self.selectedItem:
-            item.setBackgroundColor(col, QtGui.QColor(238,  238,  238))
+            item.setBackgroundColor(col, Qt.QColor(238,  238,  238))
         
     @pyqtSlot(OkTreeItem, int)
     def pressItem(self, item, col):
@@ -90,10 +90,10 @@ class OkCaseTreeWidget(OkTreeWidget):
         
         itemIndex = self.indexFromItem(item)
         itemRect = self.visualRect(itemIndex)
-        pixmap = QtGui.QPixmap(itemRect.size())
-        self.render(pixmap, QtCore.QPoint(0, 0), QtGui.QRegion(itemRect))
+        pixmap = Qt.QPixmap(itemRect.size())
+        self.render(pixmap, QtCore.QPoint(0, 0), Qt.QRegion(itemRect))
 
-        drag = QtGui.QDrag(self)
+        drag = Qt.QDrag(self)
         drag.setMimeData(mimeData)
         drag.setHotSpot(QtCore.QPoint(pixmap.width()/2, pixmap.height()/2))
         drag.setPixmap(pixmap)

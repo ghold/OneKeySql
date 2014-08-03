@@ -1,10 +1,10 @@
 import sys
-from PyQt4 import QtGui
-from MainWindow import MainWindow
+from PyQt4 import Qt
+import MainWindow
 import onekey_rc
 
 if __name__ == "__main__":
-    app = QtGui.QApplication(sys.argv)
-    main_window = MainWindow()
+    app = Qt.QApplication(sys.argv)
+    main_window = MainWindow.MainWindow()
     main_window.show()
     sys.exit(app.exec_())
